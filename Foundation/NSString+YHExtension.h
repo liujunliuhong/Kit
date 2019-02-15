@@ -37,6 +37,9 @@ static NSString *const k_YH_URL_Regex = @"^(https?|ftps?|file)://[-A-Za-z0-9+&@#
 // Determine whether a string is an URL.
 @property (nonatomic, assign, readonly) BOOL yh_isURL;
 
+// URL transcoding if contain chinese.
+@property (nonatomic, copy, readonly) NSString *yh_urlTranscoding;
+
 // timeStamp -> timeString.
 - (nullable NSString *)yh_timeStringWithFormat:(NSString *)format;
 
