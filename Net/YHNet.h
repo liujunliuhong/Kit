@@ -47,6 +47,7 @@ typedef NS_ENUM(NSUInteger, YHHttpResponseSerializerType) {
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 
+#if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 
 // HTTP请求
 - (nullable NSURLSessionDataTask *)httpRequestWithMethod:(YHHttpMethod)httpMethod
@@ -84,6 +85,8 @@ typedef NS_ENUM(NSUInteger, YHHttpResponseSerializerType) {
 
 
 - (void)cancelRequestWithTask:(nullable NSURLSessionDataTask *)task;
+
+#endif
 
 @end
 

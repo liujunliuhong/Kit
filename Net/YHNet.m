@@ -16,7 +16,9 @@
 #define kUnLock   pthread_mutex_unlock(&self->_lock);
 
 @interface YHNet()
+#if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 @property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
+#endif
 @end
 
 @implementation YHNet {
@@ -31,6 +33,8 @@
     });
     return sharedInstance;
 }
+
+#if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 
 - (instancetype)init
 {
@@ -72,16 +76,7 @@
     }
     
     if (isUseHttps) {
-        //NSString *cerPath = [[NSBundle mainBundle] pathForResource:@"cerName" ofType:@"cer"];//证书的路径
-        //NSData *cerData = [NSData dataWithContentsOfFile:cerPath];
-        AFSecurityPolicy *securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
-        // 如果是需要验证自建证书，需要设置为YES   allowInvalidCertificates  是否允许无效证书（也就是自建的证书），默认为NO
-        securityPolicy.allowInvalidCertificates = YES;
-        //validatesDomainName 是否需要验证域名，默认为YES；
-        securityPolicy.validatesDomainName = YES;
-        //securityPolicy.pinnedCertificates = [NSSet setWithObject:cerData];
-        securityPolicy.pinnedCertificates = [AFSecurityPolicy certificatesInBundle:[NSBundle mainBundle]];
-        self.sessionManager.securityPolicy = securityPolicy;
+        [self useHttps];
     }
     
     if (headers) {
@@ -103,6 +98,50 @@
     kUnLock
     
     return task;
+}
+
+- (NSURLSessionDataTask *)httpCommonRequestWithMethod:(YHHttpMethod)httpMethod
+                                                  url:(NSString *)url
+                                                param:(id)param
+                                              headers:(NSDictionary<NSString *,NSString *> *)headers
+                                           isUseHttps:(BOOL)isUseHttps
+                                        progressBlock:(YHHttpRequestProgressBlock)progressBlock
+                                         successBlock:(YHHttpRequestSuccessBlock)successBlock
+                                           errorBlock:(YHHttpRequestErrorBlock)errorBlock{
+    
+    NSURLSessionDataTask *task = nil;
+    
+    kLock
+    
+    NSString *newURL = url.yh_urlTranscoding;
+    
+    self.sessionManager.requestSerializer = [YHNet requestSerializerForJSON];
+    self.sessionManager.responseSerializer = [YHNet responseSerializerForJSON];
+    
+    if (isUseHttps) {
+        [self useHttps];
+    }
+    
+    if (headers) {
+        [headers enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
+            [self.sessionManager.requestSerializer setValue:obj forHTTPHeaderField:key];
+        }];
+    }
+    
+    // 开启转圈圈
+    [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
+    
+    
+    if (httpMethod == YHHttpMethodPOST) {
+        task = [self POST_WithURL:newURL param:param responseSerializerType:YHHttpResponseSerializerTypeJSON progressBlock:progressBlock successBlock:successBlock errorBlock:errorBlock];
+    } else if (httpMethod == YHHttpMethodGET) {
+        task = [self GET_WithURL:newURL param:param responseSerializerType:YHHttpResponseSerializerTypeJSON progressBlock:progressBlock successBlock:successBlock errorBlock:errorBlock];
+    }
+    
+    kUnLock
+    
+    return task;
+    
 }
 
 - (NSURLSessionDataTask *)POST_WithURL:(NSString *)url
@@ -130,59 +169,6 @@
         }
     }];
     return task;
-}
-
-- (NSURLSessionDataTask *)httpCommonRequestWithMethod:(YHHttpMethod)httpMethod
-                                                  url:(NSString *)url
-                                                param:(id)param
-                                              headers:(NSDictionary<NSString *,NSString *> *)headers
-                                           isUseHttps:(BOOL)isUseHttps
-                                        progressBlock:(YHHttpRequestProgressBlock)progressBlock
-                                         successBlock:(YHHttpRequestSuccessBlock)successBlock
-                                           errorBlock:(YHHttpRequestErrorBlock)errorBlock{
-    
-    NSURLSessionDataTask *task = nil;
-    
-    kLock
-    
-    NSString *newURL = url.yh_urlTranscoding;
-    
-    self.sessionManager.requestSerializer = [YHNet requestSerializerForJSON];
-    self.sessionManager.responseSerializer = [YHNet responseSerializerForJSON];
-    
-    if (isUseHttps) {
-        //NSString *cerPath = [[NSBundle mainBundle] pathForResource:@"cerName" ofType:@"cer"];//证书的路径
-        //NSData *cerData = [NSData dataWithContentsOfFile:cerPath];
-        AFSecurityPolicy *securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
-        // 如果是需要验证自建证书，需要设置为YES   allowInvalidCertificates  是否允许无效证书（也就是自建的证书），默认为NO
-        securityPolicy.allowInvalidCertificates = YES;
-        //validatesDomainName 是否需要验证域名，默认为YES；
-        securityPolicy.validatesDomainName = YES;
-        //securityPolicy.pinnedCertificates = [NSSet setWithObject:cerData];
-        securityPolicy.pinnedCertificates = [AFSecurityPolicy certificatesInBundle:[NSBundle mainBundle]];
-        self.sessionManager.securityPolicy = securityPolicy;
-    }
-    
-    if (headers) {
-        [headers enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
-            [self.sessionManager.requestSerializer setValue:obj forHTTPHeaderField:key];
-        }];
-    }
-    
-    // 开启转圈圈
-    [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
-    
-    
-    if (httpMethod == YHHttpMethodPOST) {
-        task = [self POST_WithURL:newURL param:param responseSerializerType:YHHttpResponseSerializerTypeJSON progressBlock:progressBlock successBlock:successBlock errorBlock:errorBlock];
-    } else if (httpMethod == YHHttpMethodGET) {
-        task = [self GET_WithURL:newURL param:param responseSerializerType:YHHttpResponseSerializerTypeJSON progressBlock:progressBlock successBlock:successBlock errorBlock:errorBlock];
-    }
-    
-    kUnLock
-    
-    return task;
-    
 }
 
 - (NSURLSessionDataTask *)GET_WithURL:(NSString *)url
@@ -232,16 +218,7 @@
     self.sessionManager.responseSerializer = [YHNet responseSerializerForJSON];
     
     if (isUseHttps) {
-        //NSString *cerPath = [[NSBundle mainBundle] pathForResource:@"cerName" ofType:@"cer"];//证书的路径
-        //NSData *cerData = [NSData dataWithContentsOfFile:cerPath];
-        AFSecurityPolicy *securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
-        // 如果是需要验证自建证书，需要设置为YES   allowInvalidCertificates  是否允许无效证书（也就是自建的证书），默认为NO
-        securityPolicy.allowInvalidCertificates = YES;
-        //validatesDomainName 是否需要验证域名，默认为YES；
-        securityPolicy.validatesDomainName = YES;
-        //securityPolicy.pinnedCertificates = [NSSet setWithObject:cerData];
-        securityPolicy.pinnedCertificates = [AFSecurityPolicy certificatesInBundle:[NSBundle mainBundle]];
-        self.sessionManager.securityPolicy = securityPolicy;
+        [self useHttps];
     }
     
     if (headers) {
@@ -280,6 +257,19 @@
     return task;
 }
 
+- (void)useHttps{
+    //NSString *cerPath = [[NSBundle mainBundle] pathForResource:@"cerName" ofType:@"cer"];//证书的路径
+    //NSData *cerData = [NSData dataWithContentsOfFile:cerPath];
+    AFSecurityPolicy *securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
+    // 如果是需要验证自建证书，需要设置为YES   allowInvalidCertificates  是否允许无效证书（也就是自建的证书），默认为NO
+    securityPolicy.allowInvalidCertificates = YES;
+    //validatesDomainName 是否需要验证域名，默认为YES；
+    securityPolicy.validatesDomainName = YES;
+    //securityPolicy.pinnedCertificates = [NSSet setWithObject:cerData];
+    securityPolicy.pinnedCertificates = [AFSecurityPolicy certificatesInBundle:[NSBundle mainBundle]];
+    self.sessionManager.securityPolicy = securityPolicy;
+}
+
 - (void)cancelRequestWithTask:(NSURLSessionDataTask *)task{
     kLock
     if (!task) {
@@ -288,6 +278,8 @@
     [task cancel];
     kUnLock
 }
+
+#endif
 
 @end
 
