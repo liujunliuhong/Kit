@@ -1,0 +1,25 @@
+//
+//  YHAuthorizetionReminder.h
+//  chanDemo
+//
+//  Created by apple on 2019/1/5.
+//  Copyright © 2019 银河. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+#import <EventKit/EventKit.h>
+
+NS_ASSUME_NONNULL_BEGIN
+/**
+ * the reminder authorizetion.
+ */
+@interface YHAuthorizetionReminder : NSObject
+
+// Determine whether authorization is currently available.
++ (BOOL)isAuthorized;
+
+// Request reminder authorizetion.
++ (void)requestAuthorizetionWithCompletion:(void(^)(BOOL granted, BOOL isFirst))completion;
+
+@end
+NS_ASSUME_NONNULL_END
