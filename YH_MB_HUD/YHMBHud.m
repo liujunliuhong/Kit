@@ -15,6 +15,8 @@
 
 @implementation YHMBHud
 
+#if __has_include(<MBProgressHUD/MBProgressHUD.h>) || __has_include("MBProgressHUD.h")
+
 /** 菊花旋转，提示信息可为空，view可为空 */
 + (MBProgressHUD *)hudWithMessage:(NSString *)message inView:(UIView *)view{
     UIView *tmpView = view;
@@ -57,5 +59,7 @@
     [hud hideAnimated:YES afterDelay:DISMISSTIME];//必须在主线程，源码规定
     hud.completionBlock = dismissBlock;
 }
+
+#endif
 
 @end
