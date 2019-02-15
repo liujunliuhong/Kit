@@ -60,6 +60,13 @@
     hud.completionBlock = dismissBlock;
 }
 
+// 在主线程隐藏hud
++ (void)hideHud:(MBProgressHUD *)hud{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [hud hideAnimated:YES];
+    });
+}
+
 #endif
 
 @end

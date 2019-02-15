@@ -34,6 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 /** 仅仅只有一段提示信息，一段时间后消失 */
 + (void)hudOnlyMessage:(NSString *)message inView:(UIView * _Nullable)view dismissBlock:(void(^ _Nullable)(void))dismissBlock;
 
+// 在主线程隐藏hud
++ (void)hideHud:(MBProgressHUD *)hud;
+
 #endif
 @end
 
