@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreGraphics/CoreGraphics.h>
 
 #if __has_include(<AFNetworking/AFNetworking.h>)
     #import <AFNetworking/AFNetworking.h>
@@ -83,8 +84,15 @@ typedef NS_ENUM(NSUInteger, YHHttpResponseSerializerType) {
                                     successBlock:(nullable YHHttpRequestSuccessBlock)successBlock
                                       errorBlock:(nullable YHHttpRequestErrorBlock)errorBlock;
 
-
+// 取消某个网络请求
 - (void)cancelRequestWithTask:(nullable NSURLSessionDataTask *)task;
+
+// 根据URL取消某个网络请求
+// 此处的url为baseURL之后的相对路径
+- (void)cancelRequestWithURL:(nullable NSString *)url;
+
+// 取消所有的网络请求
+- (void)cancelAllRequest;
 
 #endif
 

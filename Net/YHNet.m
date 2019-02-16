@@ -18,6 +18,7 @@
 @interface YHNet()
 #if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 @property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
+@property (nonatomic, strong) NSMutableArray<NSURLSessionTask *> *tasks;
 #endif
 @end
 
@@ -42,6 +43,7 @@
     if (self) {
         pthread_mutex_init(&_lock, NULL);
         self.sessionManager = [AFHTTPSessionManager manager];
+        self.tasks = [NSMutableArray array];
     }
     return self;
 }
@@ -57,9 +59,9 @@
                                    successBlock:(YHHttpRequestSuccessBlock)successBlock
                                      errorBlock:(YHHttpRequestErrorBlock)errorBlock{
     
-    NSURLSessionDataTask *task = nil;
-    
     kLock
+    
+    NSURLSessionDataTask *task = nil;
     
     NSString *newURL = url.yh_urlTranscoding;
     
@@ -95,6 +97,10 @@
         task = [self GET_WithURL:newURL param:param responseSerializerType:responseSerializerType progressBlock:progressBlock successBlock:successBlock errorBlock:errorBlock];
     }
     
+    if (task) {
+        [self.tasks addObject:task];
+    }
+    
     kUnLock
     
     return task;
@@ -109,9 +115,9 @@
                                          successBlock:(YHHttpRequestSuccessBlock)successBlock
                                            errorBlock:(YHHttpRequestErrorBlock)errorBlock{
     
-    NSURLSessionDataTask *task = nil;
-    
     kLock
+    
+    NSURLSessionDataTask *task = nil;
     
     NSString *newURL = url.yh_urlTranscoding;
     
@@ -138,6 +144,10 @@
         task = [self GET_WithURL:newURL param:param responseSerializerType:YHHttpResponseSerializerTypeJSON progressBlock:progressBlock successBlock:successBlock errorBlock:errorBlock];
     }
     
+    if (task) {
+        [self.tasks addObject:task];
+    }
+    
     kUnLock
     
     return task;
@@ -160,10 +170,20 @@
         if (responseSerializerType == YHHttpResponseSerializerTypeHTTP) {
             result = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
         }
+        
+        if ([self.tasks containsObject:task]) {
+            [self.tasks removeObject:task];
+        }
+        
         if (successBlock) {
             successBlock(result);
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+        if ([self.tasks containsObject:task]) {
+            [self.tasks removeObject:task];
+        }
+        
         if (errorBlock) {
             errorBlock(error);
         }
@@ -187,10 +207,20 @@
         if (responseSerializerType == YHHttpResponseSerializerTypeHTTP) {
             result = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
         }
+        
+        if ([self.tasks containsObject:task]) {
+            [self.tasks removeObject:task];
+        }
+        
         if (successBlock) {
             successBlock(result);
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+        if ([self.tasks containsObject:task]) {
+            [self.tasks removeObject:task];
+        }
+        
         if (errorBlock) {
             errorBlock(error);
         }
@@ -208,9 +238,9 @@
                            successBlock:(YHHttpRequestSuccessBlock)successBlock
                              errorBlock:(YHHttpRequestErrorBlock)errorBlock{
     
-    NSURLSessionDataTask *task = nil;
-    
     kLock
+    
+    NSURLSessionDataTask *task = nil;
     
     NSString *newURL = url.yh_urlTranscoding;
     
@@ -243,14 +273,28 @@
             progressBlock(progress);
         }
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        if ([self.tasks containsObject:task]) {
+            [self.tasks removeObject:task];
+        }
+        
         if (successBlock) {
             successBlock(responseObject);
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+        if ([self.tasks containsObject:task]) {
+            [self.tasks removeObject:task];
+        }
+        
         if (errorBlock) {
             errorBlock(error);
         }
     }];
+    
+    if (task) {
+        [self.tasks addObject:task];
+    }
     
     kUnLock
     
@@ -270,14 +314,49 @@
     self.sessionManager.securityPolicy = securityPolicy;
 }
 
+// 取消某个网络请求
 - (void)cancelRequestWithTask:(NSURLSessionDataTask *)task{
     kLock
     if (!task) {
         return;
     }
     [task cancel];
+    if ([self.tasks containsObject:task]) {
+        [self.tasks removeObject:task];
+    }
     kUnLock
 }
+
+// 根据URL取消某个网络请求
+// 此处的url为baseURL之后的相对路径
+- (void)cancelRequestWithURL:(NSString *)url{
+    kLock
+    if (!url) {
+        return;
+    }
+    [self.tasks enumerateObjectsUsingBlock:^(NSURLSessionTask * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj.currentRequest.URL.absoluteString hasSuffix:url]) {
+            [obj cancel];
+            [self.tasks removeObject:obj];
+            *stop = YES;
+        }
+    }];
+    kUnLock
+}
+
+// 取消所有的网络请求
+- (void)cancelAllRequest{
+    kLock
+    if (self.tasks.count <= 0) {
+        return;
+    }
+    [self.tasks enumerateObjectsUsingBlock:^(NSURLSessionTask * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj cancel];
+    }];
+    [self.tasks removeAllObjects];
+    kUnLock
+}
+
 
 #endif
 
