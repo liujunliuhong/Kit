@@ -90,6 +90,23 @@
     return [urlReg evaluateWithObject:self];
 }
 
+// URL transcoding if contain chinese.
+- (NSString *)yh_urlTranscoding{
+    NSString *transcodingString = @"";
+    if (self.length == 0 || !self) {
+        return transcodingString;
+    }
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_9_0
+    transcodingString = [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+#else
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    transcodingString = [self stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+#pragma clang diagnostic pop
+#endif
+    return transcodingString;
+}
+
 // timeStamp -> timeString.
 - (NSString *)yh_timeStringWithFormat:(NSString *)format{
     NSString *timeString = nil;
