@@ -23,7 +23,7 @@
 
 - (NSString *)yh_decodeToStringWithKey:(NSString *)key defaultStringValue:(NSString *)defaultStringValue{
     NSString *result = defaultStringValue;
-    if ([self.allKeys containsObject:key]) {
+    if (self && [self.allKeys containsObject:key]) {
         id object = self[key];
         result = [NSString stringWithFormat:@"%@",object];
     }
@@ -32,7 +32,7 @@
 
 - (NSArray *)yh_decodeToArrayWithKey:(NSString *)key defaultArrayValue:(NSArray *)defaultArrayValue{
     NSArray *result = defaultArrayValue;
-    if ([self.allKeys containsObject:key]) {
+    if (self &&[self.allKeys containsObject:key]) {
         id object = self[key];
         if ([object isKindOfClass:[NSArray class]]) {
             result = object;
@@ -43,7 +43,7 @@
 
 - (NSDictionary *)yh_decodeToDictionaryWithKey:(NSString *)key defaultDictionaryValue:(NSDictionary *)defaultDictionaryValue{
     NSDictionary *result = defaultDictionaryValue;
-    if ([self.allKeys containsObject:key]) {
+    if (self && [self.allKeys containsObject:key]) {
         id object = self[key];
         if ([object isKindOfClass:[NSDictionary class]]) {
             result = object;
