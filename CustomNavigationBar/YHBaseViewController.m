@@ -200,14 +200,6 @@
 // 更新导航栏的约束
 - (void)updateNavigationBarConstraint{
     __weak typeof(self) weakSelf = self;
-    UIInterfaceOrientation statusBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
-    if (statusBarOrientation == UIInterfaceOrientationPortrait || statusBarOrientation == UIInterfaceOrientationPortraitUpsideDown || statusBarOrientation == UIInterfaceOrientationUnknown) {
-        self.yh_navigationBar.leftHorizontalEdgeInset = 0.0;
-        self.yh_navigationBar.rightHorizontalEdgeInset = 0.0;
-    } else {
-        self.yh_navigationBar.leftHorizontalEdgeInset = YH_IS_IPHONE_X ? 34.0 : 0.0;
-        self.yh_navigationBar.rightHorizontalEdgeInset = YH_IS_IPHONE_X ? 34.0 : 0.0;
-    }
     
     // 测试发现，A页面Push或者Present到B页面之后，如果B页面在竖屏的情况下隐藏状态栏，然后再横屏，然后再竖屏，最后返回到A页面，发现A页面获取到的状态栏高度为0，但是状态栏却显示出来了，导致导航栏高度不正确，因此加了个属性updateFlagWhenPop，初始为NO，在viewWillAppear里面做判断，当为YES的时候，更新导航栏.
     dispatch_block_t naviFrameBlock = ^(void){
@@ -289,8 +281,6 @@
             
             naviFrameBlock();
             [self.yh_navigationBar updateSubViewsConstraint];
-            
-            
             
             if (weakSelf.yh_isHideBar) {
                 weakSelf.yh_navigationBar.barContentView.hidden = YES;
@@ -441,8 +431,7 @@
         [_yh_naviDefaultBackButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         _yh_naviDefaultBackButton.titleLabel.font = [UIFont systemFontOfSize:15];
         [_yh_naviDefaultBackButton addTarget:self action:@selector(yh_naviDefaultBackButtonClickAction) forControlEvents:UIControlEventTouchUpInside];
-        _yh_naviDefaultBackButton.backgroundColor = [UIColor purpleColor];
-        //[_yh_naviDefaultBackButton setImage:[UIImage imageNamed:@"yh_customNavigationBar_default_back"] forState:UIControlStateNormal];
+        [_yh_naviDefaultBackButton setImage:[UIImage imageNamed:@"yh_customNavigationBar_default_back"] forState:UIControlStateNormal];
     }
     return _yh_naviDefaultBackButton;
 }
