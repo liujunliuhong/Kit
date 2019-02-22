@@ -16,7 +16,14 @@ NS_ASSUME_NONNULL_BEGIN
 // System location.
 // 单次定位.
 // 使用中才定位.
+// 使用前请先调用requestLocationAuthorizationStatusWhenInUseWithTarget方法
 + (void)startLocationWithTarget:(id)target completionBlock:(void(^_Nullable)(CLPlacemark *_Nullable placemark, NSError *_Nullable error))completionBlock;
+
+// 获取当前的定位授权状态
++ (CLAuthorizationStatus)locationAuthorizationStatus;
+
+// 获取定位使用中的授权状态
++ (void)requestLocationAuthorizationStatusWhenInUseWithTarget:(id)target completionBlock:(void(^_Nullable)(BOOL granted, NSError *_Nullable error))completionBlock;
 
 @end
 
