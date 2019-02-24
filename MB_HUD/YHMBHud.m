@@ -9,9 +9,9 @@
 #import "YHMBHud.h"
 
 //HUD的背景颜色，默认黑色
-#define MB_HUD_COLOR      [UIColor blackColor]
+#define YHMBHUD_COLOR             [UIColor blackColor]
 //HUD消失的时间
-#define DISMISSTIME       2
+#define YHMBHUD_DISMISSTIME       2
 
 @implementation YHMBHud
 
@@ -19,6 +19,7 @@
 
 /** 菊花旋转，提示信息可为空，view可为空 */
 + (MBProgressHUD *)hudWithMessage:(NSString *)message inView:(UIView *)view{
+    NSAssert([NSThread isMainThread], @"MBProgressHUD must be in main thread.");
     UIView *tmpView = view;
     if (!view) {
         tmpView = [UIApplication sharedApplication].keyWindow;
@@ -28,7 +29,7 @@
     hud.mode = MBProgressHUDModeIndeterminate;
     hud.contentColor = [UIColor whiteColor];
     hud.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
-    hud.bezelView.color = [MB_HUD_COLOR colorWithAlphaComponent:0.6];
+    hud.bezelView.color = [YHMBHUD_COLOR colorWithAlphaComponent:0.6];
     hud.removeFromSuperViewOnHide = YES;
     if (message.length > 0) {
         hud.label.text = message;
@@ -38,10 +39,11 @@
 }
 /** 仅仅只有一段提示信息，一段时间后消失 */
 + (void)hudOnlyMessage:(NSString *)message inView:(UIView *)view dismissBlock:(void (^)(void))dismissBlock{
+    NSAssert([NSThread isMainThread], @"MBProgressHUD must be in main thread.");
+    
     if (!message || message.length == 0) {
         return;
     }
-    
     UIView *tmpView = view;
     if (!view) {
         tmpView = [UIApplication sharedApplication].keyWindow;
@@ -54,9 +56,9 @@
     hud.label.text = message;
     hud.label.numberOfLines = 0;
     hud.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
-    hud.bezelView.color = [MB_HUD_COLOR colorWithAlphaComponent:0.6];
+    hud.bezelView.color = [YHMBHUD_COLOR colorWithAlphaComponent:0.6];
     hud.removeFromSuperViewOnHide = YES;
-    [hud hideAnimated:YES afterDelay:DISMISSTIME];//必须在主线程，源码规定
+    [hud hideAnimated:YES afterDelay:YHMBHUD_DISMISSTIME];//必须在主线程，源码规定
     hud.completionBlock = dismissBlock;
 }
 
