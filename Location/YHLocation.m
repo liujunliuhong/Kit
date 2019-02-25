@@ -121,7 +121,7 @@ static char yh_location_request_status_completion_key;
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status{
     void(^block)(BOOL granted, NSError *error) = objc_getAssociatedObject(self, &yh_location_request_status_completion_key);
     if (status == kCLAuthorizationStatusNotDetermined) {
-        //[YHLocation requestLocationAuthorizationStatusWhenInUseWithTarget:self.target completionBlock:block];
+        return;
     } else if (status == kCLAuthorizationStatusRestricted || status == kCLAuthorizationStatusDenied) {
         if (block) {
             block(NO, [NSError errorWithDomain:@"com.yhkit.location" code:-1 userInfo:@{NSLocalizedDescriptionKey:@"Location Service Unavailable."}]);
