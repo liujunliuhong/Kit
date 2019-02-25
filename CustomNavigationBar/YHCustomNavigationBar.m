@@ -21,7 +21,16 @@
 @implementation YHCustomNavigationBar
 
 - (void)dealloc{
-    
+    if (self.rightViews && self.rightViews.count > 0) {
+        [self.rightViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [obj removeObserver:self forKeyPath:@"frame"];
+        }];
+    }
+    if (self.leftViews && self.leftViews.count > 0) {
+        [self.leftViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [obj removeObserver:self forKeyPath:@"frame"];
+        }];
+    }
 }
 
 - (instancetype)init
