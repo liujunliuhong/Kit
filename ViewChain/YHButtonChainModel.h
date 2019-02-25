@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, readonly) YHButtonChainModel *(^image)(UIImage *image);
 @property (nonatomic, copy, readonly) YHButtonChainModel *(^imageHL)(UIImage *imageHL);
+@property (nonatomic, copy, readonly) YHButtonChainModel *(^imageSelected)(UIImage *imageSelected);
 
 @property (nonatomic, copy, readonly) YHButtonChainModel *(^backgroundImage)(UIImage *backgroundImage);
 @property (nonatomic, copy, readonly) YHButtonChainModel *(^backgroundImageHL)(UIImage *backgroundImageHL);

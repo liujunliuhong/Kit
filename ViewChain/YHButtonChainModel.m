@@ -51,6 +51,13 @@
         return weakSelf;
     };
 }
+- (YHButtonChainModel * _Nonnull (^)(UIImage * _Nonnull))imageSelected{
+    __weak typeof(self) weakSelf = self;
+    return ^YHButtonChainModel * (UIImage *imageSelected) {
+        [((UIButton *)weakSelf.view) setImage:imageSelected forState:UIControlStateSelected];
+        return weakSelf;
+    };
+}
 - (YHButtonChainModel * _Nonnull (^)(UIImage * _Nonnull))backgroundImage{
     __weak typeof(self) weakSelf = self;
     return ^YHButtonChainModel * (UIImage *backgroundImage) {
