@@ -19,6 +19,7 @@
 #if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 @property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
 @property (nonatomic, strong) NSMutableArray<NSURLSessionTask *> *tasks;
+@property (nonatomic, assign) YHNetworkStatus networkStatus;
 #endif
 @end
 
@@ -26,7 +27,14 @@
     pthread_mutex_t _lock;
 }
 
-+ (YHNet *)sharedNet{
++ (void)load{
+    // 延迟2秒开启网络监控
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [[YHNet sharedInstance] startMonitoringNetwork];
+    });
+}
+
++ (YHNet *)sharedInstance{
     static id sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -355,6 +363,24 @@
     }];
     [self.tasks removeAllObjects];
     kUnLock
+}
+
+// 网络监控
+- (void)startMonitoringNetwork{
+    __weak typeof(self) weakSelf = self;
+    AFNetworkReachabilityManager *reachabilityManager = [AFNetworkReachabilityManager sharedManager];
+    [reachabilityManager startMonitoring];
+    [reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        if (status == AFNetworkReachabilityStatusNotReachable){
+            weakSelf.networkStatus = YHNetworkStatus_NotReachable;
+        } else if (status == AFNetworkReachabilityStatusUnknown){
+            weakSelf.networkStatus = YHNetworkStatus_Unkonwn;
+        } else if (status == AFNetworkReachabilityStatusReachableViaWWAN){
+            weakSelf.networkStatus = YHNetworkStatus_ViaWWAN;
+        } else if (status == AFNetworkReachabilityStatusReachableViaWiFi){
+            weakSelf.networkStatus = YHNetworkStatus_ViaWiFi;
+        }
+    }];
 }
 
 

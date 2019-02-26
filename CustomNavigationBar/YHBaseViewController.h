@@ -89,7 +89,7 @@ NS_CLASS_AVAILABLE_IOS(8_0) @interface YHBaseViewController : UIViewController
 @property (nonatomic, assign) BOOL yh_isForceHideStatusBarWhenIphoneX;
 
 // 状态栏颜色
-// Default is UIStatusBarStyleDefault.
+// 默认是info.plist里面的配置.
 @property (nonatomic, assign) UIStatusBarStyle yh_statusBarStyle;
 
 // 状态栏动画样式

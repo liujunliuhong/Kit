@@ -9,6 +9,8 @@
 #import "YHCustomNavigationBar.h"
 #import <Masonry/Masonry.h>
 
+#define keyPath_frame   @"frame"
+
 @interface YHCustomNavigationBar()
 @property (nonatomic, strong) UIView *barContentView;
 @property (nonatomic, strong) UIView *bottomContentView;
@@ -23,12 +25,12 @@
 - (void)dealloc{
     if (self.rightViews && self.rightViews.count > 0) {
         [self.rightViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [obj removeObserver:self forKeyPath:@"frame"];
+            [obj removeObserver:self forKeyPath:keyPath_frame];
         }];
     }
     if (self.leftViews && self.leftViews.count > 0) {
         [self.leftViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [obj removeObserver:self forKeyPath:@"frame"];
+            [obj removeObserver:self forKeyPath:keyPath_frame];
         }];
     }
 }
@@ -158,7 +160,7 @@
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
-    if ([keyPath isEqualToString:@"frame"]) {
+    if ([keyPath isEqualToString:keyPath_frame]) {
         [self updateSubViewsConstraint];
     }
 }
@@ -225,7 +227,7 @@
 - (void)setLeftViews:(NSArray<UIView *> *)leftViews{
     if (_leftViews && _leftViews.count > 0) {
         [_leftViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [obj removeObserver:self forKeyPath:@"frame"];
+            [obj removeObserver:self forKeyPath:keyPath_frame];
             [obj removeFromSuperview];
         }];
     }
@@ -235,7 +237,7 @@
     if (_leftViews) {
         [_leftViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [self.barContentView addSubview:obj];
-            [obj addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+            [obj addObserver:self forKeyPath:keyPath_frame options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
         }];
     }
 }
@@ -243,7 +245,7 @@
 - (void)setRightViews:(NSArray<UIView *> *)rightViews{
     if (_rightViews && _rightViews.count > 0) {
         [_rightViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [obj removeObserver:self forKeyPath:@"frame"];
+            [obj removeObserver:self forKeyPath:keyPath_frame];
             [obj removeFromSuperview];
         }];
     }
@@ -253,7 +255,7 @@
     if (_rightViews) {
         [_rightViews enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [self.barContentView addSubview:obj];
-            [obj addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+            [obj addObserver:self forKeyPath:keyPath_frame options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
         }];
     }
 }

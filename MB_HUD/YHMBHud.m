@@ -29,7 +29,7 @@
     hud.mode = MBProgressHUDModeIndeterminate;
     hud.contentColor = [UIColor whiteColor];
     hud.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
-    hud.bezelView.color = [YHMBHUD_COLOR colorWithAlphaComponent:0.6];
+    hud.bezelView.color = [YHMBHUD_COLOR colorWithAlphaComponent:1];
     hud.removeFromSuperViewOnHide = YES;
     if (message.length > 0) {
         hud.label.text = message;
@@ -39,27 +39,27 @@
 }
 /** 仅仅只有一段提示信息，一段时间后消失 */
 + (void)hudOnlyMessage:(NSString *)message inView:(UIView *)view dismissBlock:(void (^)(void))dismissBlock{
-    NSAssert([NSThread isMainThread], @"MBProgressHUD must be in main thread.");
-    
-    if (!message || message.length == 0) {
-        return;
-    }
-    UIView *tmpView = view;
-    if (!view) {
-        tmpView = [UIApplication sharedApplication].keyWindow;
-    }
-    
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:tmpView animated:YES];//必须在主线程，源码规定
-    
-    hud.mode = MBProgressHUDModeText;
-    hud.contentColor = [UIColor whiteColor];
-    hud.label.text = message;
-    hud.label.numberOfLines = 0;
-    hud.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
-    hud.bezelView.color = [YHMBHUD_COLOR colorWithAlphaComponent:0.6];
-    hud.removeFromSuperViewOnHide = YES;
-    [hud hideAnimated:YES afterDelay:YHMBHUD_DISMISSTIME];//必须在主线程，源码规定
-    hud.completionBlock = dismissBlock;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (!message || message.length == 0) {
+            return;
+        }
+        UIView *tmpView = view;
+        if (!view) {
+            tmpView = [UIApplication sharedApplication].keyWindow;
+        }
+        
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:tmpView animated:YES];//必须在主线程，源码规定
+        
+        hud.mode = MBProgressHUDModeText;
+        hud.contentColor = [UIColor whiteColor];
+        hud.label.text = message;
+        hud.label.numberOfLines = 0;
+        hud.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+        hud.bezelView.color = [YHMBHUD_COLOR colorWithAlphaComponent:1];
+        hud.removeFromSuperViewOnHide = YES;
+        [hud hideAnimated:YES afterDelay:YHMBHUD_DISMISSTIME];//必须在主线程，源码规定
+        hud.completionBlock = dismissBlock;
+    });
 }
 
 // 在主线程隐藏hud

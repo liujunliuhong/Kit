@@ -34,7 +34,9 @@
 
 @implementation YHBaseViewController
 - (void)dealloc{
-    
+    // Remove observe.
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -72,7 +74,7 @@
     
     self.yh_isHideStatusBar = NO;
     self.yh_statusBarAnimation = UIStatusBarAnimationFade;
-    self.yh_statusBarStyle = UIStatusBarStyleDefault;
+    self.yh_statusBarStyle = [YH_DefaultStatusBarStyle integerValue];
     self.yh_shouldAutorotate = YES;
     self.yh_supportedInterfaceOrientations = UIInterfaceOrientationMaskAll;
     self.yh_preferredInterfaceOrientationForPresentation = UIInterfaceOrientationPortrait;

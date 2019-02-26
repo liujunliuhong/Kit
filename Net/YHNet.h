@@ -41,14 +41,25 @@ typedef NS_ENUM(NSUInteger, YHHttpResponseSerializerType) {
     YHHttpResponseSerializerTypeHTTP = 1,        // HTTP
 };
 
+/** Network status **/
+typedef NS_ENUM(NSUInteger, YHNetworkStatus) {
+    YHNetworkStatus_Unkonwn,        // 未知网络
+    YHNetworkStatus_NotReachable,   // 无网络连接
+    YHNetworkStatus_ViaWWAN,        // 移动网络(2G、3G、4G...)
+    YHNetworkStatus_ViaWiFi,        // WiFi
+};
+
 @class YHUploadFileModel;
 @interface YHNet : NSObject
 
-+ (YHNet *)sharedNet;
++ (YHNet *)sharedInstance;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 
 #if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
+
+// 当前网络状态，会根据实际网络状态实时变化
+@property (nonatomic, assign, readonly) YHNetworkStatus networkStatus;
 
 // HTTP请求
 - (nullable NSURLSessionDataTask *)httpRequestWithMethod:(YHHttpMethod)httpMethod
