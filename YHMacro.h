@@ -16,7 +16,7 @@
 // __LINE__:宏在预编译时会替换成当前的行号.
 // __FUNCTION__:宏在预编译时会替换成当前的函数名称
 #ifdef DEBUG
-    #define YHDebugLog(format, ...)  printf("[YHDebugLog] [%s] [%d] %s\n" ,[[[NSString stringWithUTF8String:__FILE__] lastPathComponent] UTF8String], __LINE__, [[NSString stringWithFormat:format, ##__VA_ARGS__] UTF8String])
+    #define YHDebugLog(format, ...)  printf("👉👉👉👉👉✅✅✅✅✅[YHDebugLog] [%s] [%d] %s\n" ,[[[NSString stringWithUTF8String:__FILE__] lastPathComponent] UTF8String], __LINE__, [[NSString stringWithFormat:format, ##__VA_ARGS__] UTF8String])
 #else
     #define YHDebugLog(format, ...)
 #endif

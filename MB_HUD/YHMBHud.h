@@ -17,6 +17,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+
+#define YH_MB_HUD_Tip(__tip__)    [YHMBHud hudOnlyMessage:__tip__ inView:nil dismissBlock:nil];
+
+
 /**
  此类是对MBProgressHUD的封装，要使用此类，请选择按照方法1或者方法2的方式引入
  
