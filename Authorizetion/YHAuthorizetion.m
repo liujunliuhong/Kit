@@ -8,6 +8,9 @@
 
 #import "YHAuthorizetion.h"
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+    #import <UserNotifications/UserNotifications.h>
+#endif
 
 @implementation YHAuthorizetion
 
@@ -89,4 +92,47 @@
             break;
     }
 }
+
+// Check whether turned on push permission.
++ (void)checkNotificationAuthorizationWithResultBlock:(void (^)(YHNotificationAuthorizationType))resultBlock{
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+    if (@available(iOS 10.0, *)) {
+        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+        [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+            switch (settings.authorizationStatus) {
+                case UNAuthorizationStatusAuthorized:
+                {
+                    resultBlock ? resultBlock(YHNotificationAuthorizationType_Authorization) : nil;
+                }
+                    break;
+                case UNAuthorizationStatusDenied:
+                {
+                    resultBlock ? resultBlock(YHNotificationAuthorizationType_Denied) : nil;
+                }
+                    break;
+                case UNAuthorizationStatusNotDetermined:
+                {
+                    resultBlock ? resultBlock(YHNotificationAuthorizationType_NotDetermined) : nil;
+                }
+                    break;
+                default:
+                    break;
+            }
+        }];
+    }
+#else
+    UIUserNotificationSettings *settings = [UIApplication sharedApplication].currentUserNotificationSettings;
+    if (settings.types == UIUserNotificationTypeNone) {
+        resultBlock ? resultBlock(YHNotificationAuthorizationType_Denied) : nil;
+    } else {
+        resultBlock ? resultBlock(YHNotificationAuthorizationType_Authorization) : nil;
+    }
+#endif
+}
+
+
++ (void)rigsterAPNs{
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+}
+
 @end
