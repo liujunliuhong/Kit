@@ -1,8 +1,8 @@
 //
-//  NSAttributedString+YHExtension.h
+//  NSMutableAttributedString+YHExtension.h
 //  QAQSmooth
 //
-//  Created by apple on 2019/3/6.
+//  Created by apple on 2019/3/12.
 //  Copyright © 2019 yinhe. All rights reserved.
 //
 
@@ -11,8 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSAttributedString (YHExtension)
-
+@interface NSMutableAttributedString (YHExtension)
 
 
 @end

@@ -60,4 +60,10 @@
 #import "NSDictionary+YHExtension.h"
 #import "NSArray+YHExtension.h"
 
+
+// AsyncDisplayKit.
+#import "YHASEnlargeEdgeControlNode.h"
+#import "ASDisplayNode+YHAddTap.h"
+#import "ASControlNode+YHAddTap.h"
+
 #endif /* YHKit_h */

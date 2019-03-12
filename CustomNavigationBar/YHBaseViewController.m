@@ -74,7 +74,12 @@
     
     self.yh_isHideStatusBar = NO;
     self.yh_statusBarAnimation = UIStatusBarAnimationFade;
-    self.yh_statusBarStyle = [YH_DefaultStatusBarStyle integerValue];
+    if ([YH_DefaultStatusBarStyle isEqualToString:@"UIStatusBarStyleLightContent"]) {
+        self.yh_statusBarStyle = UIStatusBarStyleLightContent;
+    } else {
+        self.yh_statusBarStyle = UIStatusBarStyleDefault;
+    }
+    
     self.yh_shouldAutorotate = YES;
     self.yh_supportedInterfaceOrientations = UIInterfaceOrientationMaskAll;
     self.yh_preferredInterfaceOrientationForPresentation = UIInterfaceOrientationPortrait;
@@ -355,6 +360,26 @@
     self.yh_navigationBar.bottomView = bottomView;
 }
 
+- (NSBundle *)naviBundle {
+    NSBundle *bundle = [NSBundle bundleForClass:[YHBaseViewController class]];
+    NSURL *url = [bundle URLForResource:@"YHCustomNavigationBar" withExtension:@"bundle"];
+    bundle = [NSBundle bundleWithURL:url];
+    return bundle;
+}
+
+- (UIImage *)bundleImageWithName:(NSString *)name{
+    NSBundle *imageBundle = [self naviBundle];
+    name = [name stringByAppendingString:@"@2x"];
+    NSString *imagePath = [imageBundle pathForResource:name ofType:@"png"];
+    UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
+    if (!image) {
+        // 兼容业务方自己设置图片的方式
+        name = [name stringByReplacingOccurrencesOfString:@"@2x" withString:@""];
+        image = [UIImage imageNamed:name];
+    }
+    return image;
+}
+
 #pragma mark - Setter
 
 - (void)setYh_isHideDefaultBackButton:(BOOL)yh_isHideDefaultBackButton{
@@ -433,7 +458,7 @@
         [_yh_naviDefaultBackButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         _yh_naviDefaultBackButton.titleLabel.font = [UIFont systemFontOfSize:15];
         [_yh_naviDefaultBackButton addTarget:self action:@selector(yh_naviDefaultBackButtonClickAction) forControlEvents:UIControlEventTouchUpInside];
-        [_yh_naviDefaultBackButton setImage:[UIImage imageNamed:@"yh_customNavigationBar_default_back"] forState:UIControlStateNormal];
+        [_yh_naviDefaultBackButton setImage:[self bundleImageWithName:@"yh_navi_back"] forState:UIControlStateNormal];
     }
     return _yh_naviDefaultBackButton;
 }

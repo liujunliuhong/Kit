@@ -32,7 +32,7 @@
 /** APP Name */
 #define YH_AppName                [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"]
 /** APP Default StatusBarStyle **/
-#define YH_DefaultStatusBarStyle  @([[[[NSBundle mainBundle] infoDictionary] objectForKey:@"UIStatusBarStyle"] integerValue])
+#define YH_DefaultStatusBarStyle  [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UIStatusBarStyle"] // NSString
 
 
 

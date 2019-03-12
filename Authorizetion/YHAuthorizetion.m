@@ -131,8 +131,4 @@
 }
 
 
-+ (void)rigsterAPNs{
-    [[UIApplication sharedApplication] registerForRemoteNotifications];
-}
-
 @end
