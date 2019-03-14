@@ -59,11 +59,15 @@
 #import "NSString+YHExtension.h"
 #import "NSDictionary+YHExtension.h"
 #import "NSArray+YHExtension.h"
+#import "NSAttributedString+YHExtension.h"
+#import "NSMutableAttributedString+YHExtension.h"
+#import "NSParagraphStyle+YHExtension.h"
 
 
 // AsyncDisplayKit.
 #import "YHASEnlargeEdgeControlNode.h"
 #import "ASDisplayNode+YHAddTap.h"
 #import "ASControlNode+YHAddTap.h"
+#import "ASTextNode+YHHighlight.h"
 
 #endif /* YHKit_h */
