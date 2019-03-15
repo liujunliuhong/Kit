@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSString *const k_YH_Email_Regex = @"^[a-zA-Z0-9]+@[a-zA-Z0-9.]+\\.[a-zA-Z0-9]+$";
 static NSString *const k_YH_URL_Regex = @"^(https?|ftps?|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]";
+static NSString *const k_YH_Chinese_Regex = @"[\\u4e00-\\u9fa5\\w\\-]+";
 
 @interface NSString (YHExtension)
 
@@ -20,6 +21,9 @@ static NSString *const k_YH_URL_Regex = @"^(https?|ftps?|file)://[-A-Za-z0-9+&@#
 
 // Determine whether a string is empty.
 @property (nonatomic, assign, readonly) BOOL yh_isEmpty;
+
+// Determine whether a string contain chinese.
+@property (nonatomic, assign, readonly) BOOL yh_isContainChinese;
 
 // timeStamp -> NSDate.
 // yyyy-MM-dd HH:mm:ss.

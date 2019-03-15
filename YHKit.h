@@ -70,4 +70,8 @@
 #import "ASControlNode+YHAddTap.h"
 #import "ASTextNode+YHHighlight.h"
 
+// YYLabel.
+#import "YYLabel+YHBugFix.h"
+
+
 #endif /* YHKit_h */

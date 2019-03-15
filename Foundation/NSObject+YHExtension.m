@@ -80,7 +80,7 @@
 
 // Determine whether a object is an empty.
 - (BOOL)yh_isNilOrNull{
-    return self == nil || [self isEqual:[NSNull null]];
+    return ((self == nil) || ([self isEqual:[NSNull null]]) || (!self));
 }
 
 // Determine whether a object is an NSString class.

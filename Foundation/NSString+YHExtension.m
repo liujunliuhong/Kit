@@ -28,7 +28,13 @@
 
 // Determine whether a string is empty.
 - (BOOL)yh_isEmpty{
-    return !self || self.length == 0 || [self isEqualToString:@""] || [self isEqual:[NSNull null]];
+    return !self || self.length == 0 || [self isEqualToString:@""] || [self isEqual:[NSNull null]] || self == nil;
+}
+
+// Determine whether a string contain chinese.
+- (BOOL)yh_isContainChinese{
+    NSArray<NSTextCheckingResult *> *matches = [[NSRegularExpression regularExpressionWithPattern:k_YH_Chinese_Regex options:NSRegularExpressionDotMatchesLineSeparators error:nil] matchesInString:self options:0 range:NSMakeRange(0, self.length)];
+    return matches.count > 0;
 }
 
 // timeStamp -> NSDate.
