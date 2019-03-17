@@ -21,10 +21,12 @@
 - (void)_yh_setAttributedText:(NSAttributedString *)attributedText{
     if (attributedText.string.yh_isContainChinese) {
         NSMutableAttributedString *atr = (NSMutableAttributedString *)attributedText;
-        if (@available(iOS 11.0, *)) {
-            [atr addAttribute:NSBaselineOffsetAttributeName value:@(-1) range:NSMakeRange(0, atr.length)];
-        } else {
-            [atr addAttribute:NSBaselineOffsetAttributeName value:@(-0.4) range:NSMakeRange(0, atr.length)];
+        if (atr.yy_underlineStyle == NSUnderlineStyleNone) {
+            if (@available(iOS 11.0, *)) {
+                [atr addAttribute:NSBaselineOffsetAttributeName value:@(-1) range:NSMakeRange(0, atr.length)];
+            } else {
+                [atr addAttribute:NSBaselineOffsetAttributeName value:@(-0.4) range:NSMakeRange(0, atr.length)];
+            }
         }
     }
     [self _yh_setAttributedText:attributedText];
