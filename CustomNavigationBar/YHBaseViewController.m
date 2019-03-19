@@ -80,7 +80,7 @@
         self.yh_statusBarStyle = UIStatusBarStyleDefault;
     }
     
-    self.yh_shouldAutorotate = YES;
+    self.yh_shouldAutorotate = NO; // 默认不旋转
     self.yh_supportedInterfaceOrientations = UIInterfaceOrientationMaskAll;
     self.yh_preferredInterfaceOrientationForPresentation = UIInterfaceOrientationPortrait;
     self.yh_isForceHideStatusBarWhenIphoneX = NO;
