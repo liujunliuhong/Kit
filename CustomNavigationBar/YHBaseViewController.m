@@ -81,9 +81,10 @@
     }
     
     self.yh_shouldAutorotate = NO; // 默认不旋转
-    self.yh_supportedInterfaceOrientations = UIInterfaceOrientationMaskAll;
-    self.yh_preferredInterfaceOrientationForPresentation = UIInterfaceOrientationPortrait;
-    self.yh_isForceHideStatusBarWhenIphoneX = NO;
+    //self.yh_supportedInterfaceOrientations = UIInterfaceOrientationMaskAll;
+    self.yh_supportedInterfaceOrientations = UIInterfaceOrientationMaskPortrait; // 默认只支持竖屏        如果屏幕需要旋转，请在TARGETS -> General -> Deployment Info -> Device Orientation 修改屏幕支持方向的集合
+    self.yh_preferredInterfaceOrientationForPresentation = UIInterfaceOrientationPortrait; // 默认初始进入为竖屏
+    self.yh_isForceHideStatusBarWhenIphoneX = NO; // 默认在iPhone X系列手机上不隐藏状态栏
     
     
     [self yh_updateNavigationBarConstraintWithAnimation:NO];
