@@ -25,7 +25,7 @@ typedef void(^__actionBlock)(void);
     if (block) {
         block();
     }
-    objc_setAssociatedObject(self, &actionKey, nil, OBJC_ASSOCIATION_COPY);
+    //objc_setAssociatedObject(self, &actionKey, nil, OBJC_ASSOCIATION_COPY);
 }
 
 @end
