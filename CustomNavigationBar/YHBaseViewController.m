@@ -30,6 +30,8 @@
 
 @property (nonatomic, assign) BOOL updateFlagWhenPop;
 
+@property (nonatomic, assign) BOOL isUpdateStatusBarFlag; // 标记   测试发现，初次进入页面时，状态栏样式默认为Default样式，如果页面样式为light，就会出现状态栏由黑变白的变化
+
 @end
 
 @implementation YHBaseViewController
@@ -55,6 +57,7 @@
     [UITableView appearance].estimatedSectionFooterHeight = 0;
     
     self.updateFlagWhenPop = NO;
+    self.isUpdateStatusBarFlag = NO;
     self.isAnimationWhenUpdateNavigationBar = NO;
     
     [self.view addSubview:self.yh_navigationBar];
@@ -86,6 +89,9 @@
     self.yh_preferredInterfaceOrientationForPresentation = UIInterfaceOrientationPortrait; // 默认初始进入为竖屏
     self.yh_isForceHideStatusBarWhenIphoneX = NO; // 默认在iPhone X系列手机上不隐藏状态栏
     
+    [self yh_reloadStatusBarStyle]; // 刷新状态栏样式
+    
+    
     
     [self yh_updateNavigationBarConstraintWithAnimation:NO];
 }
@@ -114,6 +120,16 @@
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle{
+    // 默认UIStatusBarStyleDefault.
+    if (!self.isUpdateStatusBarFlag) {
+        UIStatusBarStyle style = UIStatusBarStyleDefault;
+        if ([YH_DefaultStatusBarStyle isEqualToString:@"UIStatusBarStyleLightContent"]) {
+            style = UIStatusBarStyleLightContent;
+        } else {
+            style = UIStatusBarStyleDefault;
+        }
+        return style;
+    }
     return self.yh_statusBarStyle;
 }
 
@@ -361,6 +377,11 @@
     self.yh_navigationBar.bottomView = bottomView;
 }
 
+- (void)yh_reloadStatusBarStyle{
+    self.isUpdateStatusBarFlag = YES;
+    [self setNeedsStatusBarAppearanceUpdate];
+}
+
 - (NSBundle *)naviBundle {
     NSBundle *bundle = [NSBundle bundleForClass:[YHBaseViewController class]];
     NSURL *url = [bundle URLForResource:@"YHCustomNavigationBar" withExtension:@"bundle"];
@@ -410,40 +431,40 @@
     [self updateSafeAreaViewConstraint];
 }
 
-- (void)setYh_isHideStatusBar:(BOOL)yh_isHideStatusBar{
-    _yh_isHideStatusBar = yh_isHideStatusBar;
-    [self setNeedsStatusBarAppearanceUpdate];
-}
-
-- (void)setYh_isForceHideStatusBarWhenIphoneX:(BOOL)yh_isForceHideStatusBarWhenIphoneX{
-    _yh_isForceHideStatusBarWhenIphoneX = yh_isForceHideStatusBarWhenIphoneX;
-    [self setNeedsStatusBarAppearanceUpdate];
-}
-
-- (void)setYh_statusBarAnimation:(UIStatusBarAnimation)yh_statusBarAnimation{
-    _yh_statusBarAnimation = yh_statusBarAnimation;
-    [self setNeedsStatusBarAppearanceUpdate];
-}
-
-- (void)setYh_statusBarStyle:(UIStatusBarStyle)yh_statusBarStyle{
-    _yh_statusBarStyle = yh_statusBarStyle;
-    [self setNeedsStatusBarAppearanceUpdate];
-}
-
-- (void)setYh_shouldAutorotate:(BOOL)yh_shouldAutorotate{
-    _yh_shouldAutorotate = yh_shouldAutorotate;
-    [self setNeedsStatusBarAppearanceUpdate];
-}
-
-- (void)setYh_supportedInterfaceOrientations:(UIInterfaceOrientationMask)yh_supportedInterfaceOrientations{
-    _yh_supportedInterfaceOrientations = yh_supportedInterfaceOrientations;
-    [self setNeedsStatusBarAppearanceUpdate];
-}
-
-- (void)setYh_preferredInterfaceOrientationForPresentation:(UIInterfaceOrientation)yh_preferredInterfaceOrientationForPresentation{
-    _yh_preferredInterfaceOrientationForPresentation = yh_preferredInterfaceOrientationForPresentation;
-    [self setNeedsStatusBarAppearanceUpdate];
-}
+//- (void)setYh_isHideStatusBar:(BOOL)yh_isHideStatusBar{
+//    _yh_isHideStatusBar = yh_isHideStatusBar;
+//    [self setNeedsStatusBarAppearanceUpdate];
+//}
+//
+//- (void)setYh_isForceHideStatusBarWhenIphoneX:(BOOL)yh_isForceHideStatusBarWhenIphoneX{
+//    _yh_isForceHideStatusBarWhenIphoneX = yh_isForceHideStatusBarWhenIphoneX;
+//    [self setNeedsStatusBarAppearanceUpdate];
+//}
+//
+//- (void)setYh_statusBarAnimation:(UIStatusBarAnimation)yh_statusBarAnimation{
+//    _yh_statusBarAnimation = yh_statusBarAnimation;
+//    [self setNeedsStatusBarAppearanceUpdate];
+//}
+//
+//- (void)setYh_statusBarStyle:(UIStatusBarStyle)yh_statusBarStyle{
+//    _yh_statusBarStyle = yh_statusBarStyle;
+//    [self setNeedsStatusBarAppearanceUpdate];
+//}
+//
+//- (void)setYh_shouldAutorotate:(BOOL)yh_shouldAutorotate{
+//    _yh_shouldAutorotate = yh_shouldAutorotate;
+//    [self setNeedsStatusBarAppearanceUpdate];
+//}
+//
+//- (void)setYh_supportedInterfaceOrientations:(UIInterfaceOrientationMask)yh_supportedInterfaceOrientations{
+//    _yh_supportedInterfaceOrientations = yh_supportedInterfaceOrientations;
+//    [self setNeedsStatusBarAppearanceUpdate];
+//}
+//
+//- (void)setYh_preferredInterfaceOrientationForPresentation:(UIInterfaceOrientation)yh_preferredInterfaceOrientationForPresentation{
+//    _yh_preferredInterfaceOrientationForPresentation = yh_preferredInterfaceOrientationForPresentation;
+//    [self setNeedsStatusBarAppearanceUpdate];
+//}
 
 
 #pragma mark - Getter

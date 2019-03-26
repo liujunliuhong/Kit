@@ -31,6 +31,7 @@
 }
 - (UIViewController *)childViewControllerForStatusBarStyle{
     UIViewController *vc = [self topViewControllerWithRootViewController:self];
+    NSLog(@"%ld", vc.preferredStatusBarStyle);
     return vc;
 }
 - (UIViewController *)childViewControllerForStatusBarHidden{
@@ -45,6 +46,8 @@
     UIViewController *vc = [self topViewControllerWithRootViewController:self];
     return vc.supportedInterfaceOrientations;
 }
+
+
 
 //这个方法感觉没怎么调用。。。。em......
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation{

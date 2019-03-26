@@ -27,7 +27,7 @@ static NSString *const k_YH_Chinese_Regex = @"[\\u4e00-\\u9fa5\\w\\-]+";
 
 // timeStamp -> NSDate.
 // yyyy-MM-dd HH:mm:ss.
-@property (nonatomic, strong, readonly, nullable) NSDate *yh_date;
+@property (nonatomic, strong, readonly, nullable) NSDate *yh_stamp_to_date;
 
 // Get pinyin.
 @property (nonatomic, copy, readonly) NSString *yh_pinYin;
@@ -45,7 +45,10 @@ static NSString *const k_YH_Chinese_Regex = @"[\\u4e00-\\u9fa5\\w\\-]+";
 @property (nonatomic, copy, readonly) NSString *yh_urlTranscoding;
 
 // timeStamp -> timeString.
-- (nullable NSString *)yh_timeStringWithFormat:(NSString *)format;
+- (nullable NSString *)yh_timeStampToTimeStringWithFormat:(NSString *)format;
+
+// timeString -> NSDate.
+- (nullable NSDate *)yh_timeStringToDateWithWithFormat:(NSString *)format;
 
 // Determine whether a string is legal.
 - (BOOL)yh_validateWithRegex:(NSString *)regex;

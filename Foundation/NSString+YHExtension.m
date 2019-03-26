@@ -39,7 +39,7 @@
 
 // timeStamp -> NSDate.
 // yyyy-MM-dd HH:mm:ss.
-- (NSDate *)yh_date{
+- (NSDate *)yh_stamp_to_date{
     NSDate *date = nil;
     if (self.yh_isInt) {
         if (self.length == 10) {
@@ -114,12 +114,23 @@
 }
 
 // timeStamp -> timeString.
-- (NSString *)yh_timeStringWithFormat:(NSString *)format{
+- (NSString *)yh_timeStampToTimeStringWithFormat:(NSString *)format{
     NSString *timeString = nil;
-    if (self.yh_date) {
-        timeString = [self.yh_date yh_dateStringWithFormat:format];
+    if (self.yh_stamp_to_date) {
+        timeString = [self.yh_stamp_to_date yh_dateStringWithFormat:format];
     }
     return timeString;
+}
+
+// timeString -> NSDate.
+- (NSDate *)yh_timeStringToDateWithWithFormat:(NSString *)format{
+    if (self.yh_isEmpty) {
+        return nil;
+    }
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateFormat = format;
+    NSDate *date = [dateFormatter dateFromString:self];
+    return date;
 }
 
 // Determine whether a string is legal.

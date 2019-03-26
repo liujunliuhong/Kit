@@ -79,34 +79,39 @@ NS_CLASS_AVAILABLE_IOS(8_0) @interface YHBaseViewController : UIViewController
 
 // 是否隐藏状态栏
 // Default is NO.
-// 😄
+// 需要调用:yh_reloadStatusBarStyle.
 @property (nonatomic, assign) BOOL yh_isHideStatusBar;
 
 // 在iPhone X系列手机上，是否强制隐藏状态栏，由于iPhone X在横屏的时候，默认就隐藏了状态栏，因此此属性只在竖屏情况下有效
 // 当设置为YES时，只有在yh_isHideStatusBar为YES的情况下，且在iPhone X系列手机m，且是竖屏的情况下才会生效
 // Default is NO.
-// 😄
+// 需要调用:yh_reloadStatusBarStyle.
 @property (nonatomic, assign) BOOL yh_isForceHideStatusBarWhenIphoneX;
 
 // 状态栏颜色
 // 默认是info.plist里面的配置.
+// 需要调用:yh_reloadStatusBarStyle.
 @property (nonatomic, assign) UIStatusBarStyle yh_statusBarStyle;
 
 // 状态栏动画样式
 // Default is UIStatusBarAnimationFade.
+// 需要调用:yh_reloadStatusBarStyle.
 @property (nonatomic, assign) UIStatusBarAnimation yh_statusBarAnimation;
 
 // 当前控制器是否支持旋转
 // 为了适配横屏返回上个界面仍然是竖屏，因此这儿默认设置为YES。导致界面可以旋转，若想禁止旋转，请设置self.yh_supportedInterfaceOrientations = UIInterfaceOrientationMaskPortrait;
 // Default is YES.
+// 需要调用:yh_reloadStatusBarStyle.
 @property (nonatomic, assign) BOOL yh_shouldAutorotate;
 
 // 当前控制器支持的旋转方向
 // Default is UIInterfaceOrientationMaskAll.
+// 需要调用:yh_reloadStatusBarStyle.
 @property (nonatomic, assign) UIInterfaceOrientationMask yh_supportedInterfaceOrientations;
 
 // 当前控制器初始的旋转方向
 // Default is UIInterfaceOrientationPortrait.
+// 需要调用:yh_reloadStatusBarStyle.
 @property (nonatomic, assign) UIInterfaceOrientation yh_preferredInterfaceOrientationForPresentation;
 
 #pragma mark - +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -148,6 +153,11 @@ NS_CLASS_AVAILABLE_IOS(8_0) @interface YHBaseViewController : UIViewController
 // 有"😄"这个表情的，代表都需要调用此方法
 // 可以把带有多个"😄"表情的方法结合起来一起调用，最后再调用此方法
 - (void)yh_updateNavigationBarConstraintWithAnimation:(BOOL)isAnimation;
+
+#pragma mark ------------------------------------
+// 刷新状态栏样式.
+- (void)yh_reloadStatusBarStyle;
+
 
 @end
 
