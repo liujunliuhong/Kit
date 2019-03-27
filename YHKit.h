@@ -69,6 +69,8 @@
 #import "ASDisplayNode+YHAddTap.h"
 #import "ASControlNode+YHAddTap.h"
 #import "ASTextNode+YHHighlight.h"
+#import "YHASNetworkImageNode.h"
+#import "ASTableNode+YHASReload.h"
 
 // YYLabel.
 #import "YYLabel+YHBugFix.h"
