@@ -37,26 +37,6 @@
     return matches.count > 0;
 }
 
-// timeStamp -> NSDate.
-// yyyy-MM-dd HH:mm:ss.
-- (NSDate *)yh_stamp_to_date{
-    NSDate *date = nil;
-    if (self.yh_isInt) {
-        if (self.length == 10) {
-            // if length is 10.
-            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-            formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
-            date = [NSDate dateWithTimeIntervalSince1970:[self integerValue]];
-        } else if (self.length == 13) {
-            // if length is 13.
-            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-            formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
-            date = [NSDate dateWithTimeIntervalSince1970:[self integerValue] / 1000];
-        }
-    }
-    return date;
-}
-
 // Get pinyin.
 - (NSString *)yh_pinYin{
     NSMutableString *mutableString = [NSMutableString stringWithString:self];
@@ -114,15 +94,18 @@
 }
 
 // timeStamp -> timeString.
+// yyyy-MM-dd HH:mm:ss
 - (NSString *)yh_timeStampToTimeStringWithFormat:(NSString *)format{
     NSString *timeString = nil;
-    if (self.yh_stamp_to_date) {
-        timeString = [self.yh_stamp_to_date yh_dateStringWithFormat:format];
+    NSDate *date = [self yh_timeStampToDateWithFormat:format];
+    if (date) {
+        timeString = [date yh_dateStringWithFormat:format];
     }
     return timeString;
 }
 
 // timeString -> NSDate.
+// yyyy-MM-dd HH:mm:ss
 - (NSDate *)yh_timeStringToDateWithWithFormat:(NSString *)format{
     if (self.yh_isEmpty) {
         return nil;
@@ -130,6 +113,27 @@
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.dateFormat = format;
     NSDate *date = [dateFormatter dateFromString:self];
+    return date;
+}
+
+// timeStamp -> NSDate.
+// 时间戳可以是10位或者13位.
+// yyyy-MM-dd HH:mm:ss
+- (NSDate *)yh_timeStampToDateWithFormat:(NSString *)format{
+    NSDate *date = nil;
+    if (self.yh_isInt) {
+        if (self.length == 10) {
+            // if length is 10.
+            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+            formatter.dateFormat = format;
+            date = [NSDate dateWithTimeIntervalSince1970:[self integerValue]];
+        } else if (self.length == 13) {
+            // if length is 13.
+            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+            formatter.dateFormat = format;
+            date = [NSDate dateWithTimeIntervalSince1970:[self integerValue] / 1000];
+        }
+    }
     return date;
 }
 

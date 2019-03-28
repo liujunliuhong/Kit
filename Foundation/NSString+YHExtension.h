@@ -25,10 +25,6 @@ static NSString *const k_YH_Chinese_Regex = @"[\\u4e00-\\u9fa5\\w\\-]+";
 // Determine whether a string contain chinese.
 @property (nonatomic, assign, readonly) BOOL yh_isContainChinese;
 
-// timeStamp -> NSDate.
-// yyyy-MM-dd HH:mm:ss.
-@property (nonatomic, strong, readonly, nullable) NSDate *yh_stamp_to_date;
-
 // Get pinyin.
 @property (nonatomic, copy, readonly) NSString *yh_pinYin;
 
@@ -45,10 +41,17 @@ static NSString *const k_YH_Chinese_Regex = @"[\\u4e00-\\u9fa5\\w\\-]+";
 @property (nonatomic, copy, readonly) NSString *yh_urlTranscoding;
 
 // timeStamp -> timeString.
+// yyyy-MM-dd HH:mm:ss
 - (nullable NSString *)yh_timeStampToTimeStringWithFormat:(NSString *)format;
 
 // timeString -> NSDate.
+// yyyy-MM-dd HH:mm:ss
 - (nullable NSDate *)yh_timeStringToDateWithWithFormat:(NSString *)format;
+
+// timeStamp -> NSDate.
+// 时间戳可以是10位或者13位.
+// yyyy-MM-dd HH:mm:ss
+- (nullable NSDate *)yh_timeStampToDateWithFormat:(NSString *)format;
 
 // Determine whether a string is legal.
 - (BOOL)yh_validateWithRegex:(NSString *)regex;

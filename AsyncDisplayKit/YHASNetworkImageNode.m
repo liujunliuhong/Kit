@@ -126,4 +126,17 @@
     self.netImageNode.imageModificationBlock = _imageModificationBlock;
 }
 
+
+//        self.imageNode.imageModificationBlock = ^UIImage * _Nullable(UIImage * _Nonnull image) {
+//            YHDebugLog(@"image:%@", image);
+//            UIImage *modifiedImage;
+//            CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
+//            UIGraphicsBeginImageContextWithOptions(image.size, false, [[UIScreen mainScreen] scale]);
+//            [image drawInRect:rect];
+//            modifiedImage = UIGraphicsGetImageFromCurrentImageContext();
+//            UIGraphicsEndImageContext();
+//            YHDebugLog(@"modifiedImage:%@", modifiedImage);
+//            return modifiedImage;
+//        };
+
 @end
