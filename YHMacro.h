@@ -73,7 +73,7 @@
  IPhone 7 plus:       414 x 736             3x
  
  IPhone 6:            375 x 667             2x
- IPhone 6s:           375 x 667             2x
+ IPhone 6s:           375 x 667             2x  (UI设计图一般都是以6s为基准的，如果不是，那么锤他)
  iPhone 6 Plus:       414 x 736             3x
  IPhone 6s plus:      414 x 736             3x
  
@@ -148,14 +148,24 @@ if (YH_IS_IPHONE_X) { \
 
 
 //只有当设备是5系列时，才对宽度做处理，其他情况用实际宽度    基于6s
-#define YH_Width(w) \
-({ \
-CGFloat width = w; \
-if (YH_ScreenWidth == 320.0) { \
-width = w/375.f*YH_ScreenWidth; \
-} \
-(width); \
-})
+//#define YH_Width(w) \
+//({ \
+//CGFloat width = w; \
+//if (YH_ScreenWidth == 320.0) { \
+//width = w/375.f*YH_ScreenWidth; \
+//} \
+//(width); \
+//})
 
+
+
+// 不同机型的适配(已6s为基准)
+#define YH_Base_6S_AutoFit(__vale__) \
+({ \
+CGFloat tmp = __vale__; \
+CGFloat min = MIN([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height); \
+tmp = min / 375.0 * __vale__; \
+(tmp); \
+})
 
 #endif /* YHMacro_h */
