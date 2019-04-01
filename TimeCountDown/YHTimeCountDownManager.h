@@ -11,9 +11,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const kYHTimeCountDownNotification;       // NotificationName
+
 extern NSString *const kYHTimeCountDownIdentifierKey;      // identifier
-extern NSString *const kYHTimeCountDownGroupIdentifierKey; // groupIdentifier
-extern NSString *const kYHTimeCountDownRemainingTimeKey;   // 剩余时间
+extern NSString *const kYHTimeCountDownIntervalKey;        // interval
+extern NSString *const kYHTimeCountDownTimeIntervalKey;    // timeInterval
 
 @interface YHTimeCountDownManager : NSObject
 
@@ -22,14 +23,10 @@ extern NSString *const kYHTimeCountDownRemainingTimeKey;   // 剩余时间
 + (instancetype)new NS_UNAVAILABLE;
 
 
+- (void)addTimeInterval:(NSTimeInterval)interval
+             identifier:(NSString *)identifier;
 
-- (void)startTimeCountDownWithGroupIdentifier:(NSString *)groupIdentifier
-                                   identifier:(NSString *)identifier
-                                     interval:(NSTimeInterval)interval
-                            startTimeInterval:(NSTimeInterval)startTimeInterval
-                              endTimeInterval:(NSTimeInterval)endTimeInterval;
-
-- (void)removeTimerIntervalWithGroupIdentifer:(NSString *)groupIdentifier;
+- (void)removeTimerIntervalWithIdentifer:(NSString *)identifier;
 - (void)removeAllTimer;
 
 @end
