@@ -28,7 +28,7 @@
 
 // Determine whether a string is empty.
 - (BOOL)yh_isEmpty{
-    return !self || self.length == 0 || [self isEqualToString:@""] || [self isEqual:[NSNull null]] || self == nil;
+    return !self || self.length == 0 || [self isEqualToString:@""] || [self isEqual:[NSNull null]] || self == nil || [self isEqualToString:@"null"] || [self isEqualToString:@"NSNull"];
 }
 
 // Determine whether a string contain chinese.
