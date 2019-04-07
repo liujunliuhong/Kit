@@ -31,7 +31,6 @@
 }
 - (UIViewController *)childViewControllerForStatusBarStyle{
     UIViewController *vc = [self topViewControllerWithRootViewController:self];
-    NSLog(@"%ld", vc.preferredStatusBarStyle);
     return vc;
 }
 - (UIViewController *)childViewControllerForStatusBarHidden{
