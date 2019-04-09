@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isAuthorized;
 
 // Request calendar authorizetion.
-+ (void)requestAuthorizetionWithCompletion:(void(^)(BOOL granted, BOOL isFirst))completion;
++ (void)requestAuthorizetionWithCompletion:(void(^_Nullable)(BOOL granted, BOOL isFirst))completion;
 
 @end
 NS_ASSUME_NONNULL_END

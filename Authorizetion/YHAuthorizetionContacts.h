@@ -23,7 +23,7 @@ NS_CLASS_AVAILABLE_IOS(8_0) @interface YHAuthorizetionContacts : NSObject
 + (BOOL)isAuthorized;
 
 // Request contacts authorizetion.
-+ (void)requestAuthorizetionWithCompletion:(void(^)(BOOL granted, BOOL isFirst))completion;
++ (void)requestAuthorizetionWithCompletion:(void(^_Nullable)(BOOL granted, BOOL isFirst))completion;
 
 @end
 NS_ASSUME_NONNULL_END
