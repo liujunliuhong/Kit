@@ -190,4 +190,19 @@
     return result;
 }
 
+// Get local plist file.
++ (id)yh_getLocalPlistFileWithFileName:(NSString *)fileName{
+    NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"plist"];
+    NSData *data = [[NSData alloc] initWithContentsOfFile:path];
+    NSError *error = nil;
+    //id result = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+    id result = [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:&error];
+    if (error) {
+        YHDebugLog(@"Get local plist file faild : %@", error);
+    } else {
+        YHDebugLog(@"Get local plist file successful.");
+    }
+    return result;
+}
+
 @end

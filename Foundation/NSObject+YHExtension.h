@@ -55,6 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
 // Get local json file.
 + (nullable id)yh_getLocalJsonFileWithFileName:(NSString *)fileName;
 
+// Get local plist file.
++ (nullable id)yh_getLocalPlistFileWithFileName:(NSString *)fileName;
+
 @end
 
 NS_ASSUME_NONNULL_END
