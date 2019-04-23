@@ -132,48 +132,56 @@
 
 // make call.
 + (void)yh_makeCallWithPhone:(NSString *)phone{
-    if (!phone) {
-        return;
-    }
-    NSString *string = [NSString stringWithFormat:@"tel://%@",phone];
-    NSURL *url = [NSURL URLWithString:string];
-    if (@available(iOS 10.0, *)) {
-        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
-    } else {
-        [[UIApplication sharedApplication] openURL:url];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (!phone) {
+            return;
+        }
+        NSString *string = [NSString stringWithFormat:@"tel://%@",phone];
+        NSURL *url = [NSURL URLWithString:string];
+        if (@available(iOS 10.0, *)) {
+            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+        } else {
+            [[UIApplication sharedApplication] openURL:url];
+        }
+    });
 }
 
 // open app settings.
 + (void)yh_openAppSettings{
-    if (@available(iOS 10.0, *)) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
-    } else {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (@available(iOS 10.0, *)) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
+        } else {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+        }
+    });
 }
 
 // Open App Store.
 + (void)yh_openAppStoreWithAppID:(NSString *)appID{
-    NSString *urlString = [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@",appID];
-    NSURL *url = [NSURL URLWithString:urlString];
-    if (@available(iOS 10.0, *)) {
-        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
-    } else {
-        [[UIApplication sharedApplication] openURL:url];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *urlString = [NSString stringWithFormat:@"https://itunes.apple.com/app/id%@",appID];
+        NSURL *url = [NSURL URLWithString:urlString];
+        if (@available(iOS 10.0, *)) {
+            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+        } else {
+            [[UIApplication sharedApplication] openURL:url];
+        }
+    });
 }
 
 // Send SMS without SMS content.
 // If you want to send SMS with content, please use 'YHSendSMS'.
 + (void)yh_sendSmsWithoutContentWithPhone:(NSString *)phone{
-    NSString *string = [NSString stringWithFormat:@"sms://%@",phone];
-    NSURL *url = [NSURL URLWithString:string];
-    if (@available(iOS 10.0, *)) {
-        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
-    } else {
-        [[UIApplication sharedApplication] openURL:url];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *string = [NSString stringWithFormat:@"sms://%@",phone];
+        NSURL *url = [NSURL URLWithString:string];
+        if (@available(iOS 10.0, *)) {
+            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+        } else {
+            [[UIApplication sharedApplication] openURL:url];
+        }
+    });
 }
 
 // Get local json file.
