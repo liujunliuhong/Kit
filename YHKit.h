@@ -74,6 +74,8 @@
 #import "ASTextNode+YHHighlight.h"
 #import "YHASNetworkImageNode.h"
 #import "ASTableNode+YHASReload.h"
+#import "YHASCollectionLayoutDelegate.h"
+
 
 // YYLabel.
 #import "YYLabel+YHBugFix.h"
