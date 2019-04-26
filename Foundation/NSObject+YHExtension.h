@@ -48,6 +48,9 @@ NS_ASSUME_NONNULL_BEGIN
 // Open App Store.
 + (void)yh_openAppStoreWithAppID:(NSString *)appID;
 
+// Open App Store Review.
++ (void)yh_openAppStoreReviewWithAppID:(NSString *)appID;
+
 // Send SMS without SMS content.
 // If you want to send SMS with content, please use 'YHSendSMS'.
 + (void)yh_sendSmsWithoutContentWithPhone:(NSString *)phone;

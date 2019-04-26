@@ -157,6 +157,18 @@
     });
 }
 
+// Open App Store Review.
++ (void)yh_openAppStoreReviewWithAppID:(NSString *)appID{
+    NSString *appURL = [NSString stringWithFormat:@"https://itunes.apple.com/cn/app/id%@?action=write-review", appID];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (@available(iOS 10.0, *)) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appURL] options:@{} completionHandler:nil];
+        } else {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appURL]];
+        }
+    });
+}
+
 // Open App Store.
 + (void)yh_openAppStoreWithAppID:(NSString *)appID{
     dispatch_async(dispatch_get_main_queue(), ^{
