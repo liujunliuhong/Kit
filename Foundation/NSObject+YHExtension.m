@@ -182,6 +182,18 @@
     });
 }
 
+// Open Safari.
++ (void)yh_openSafariWithURL:(NSString *)url{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSURL *URL = [NSURL URLWithString:url];
+        if (@available(iOS 10.0, *)) {
+            [[UIApplication sharedApplication] openURL:URL options:@{} completionHandler:nil];
+        } else {
+            [[UIApplication sharedApplication] openURL:URL];
+        }
+    });
+}
+
 // Send SMS without SMS content.
 // If you want to send SMS with content, please use 'YHSendSMS'.
 + (void)yh_sendSmsWithoutContentWithPhone:(NSString *)phone{

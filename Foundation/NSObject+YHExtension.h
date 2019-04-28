@@ -51,6 +51,9 @@ NS_ASSUME_NONNULL_BEGIN
 // Open App Store Review.
 + (void)yh_openAppStoreReviewWithAppID:(NSString *)appID;
 
+// Open Safari.
++ (void)yh_openSafariWithURL:(NSString *)url;
+
 // Send SMS without SMS content.
 // If you want to send SMS with content, please use 'YHSendSMS'.
 + (void)yh_sendSmsWithoutContentWithPhone:(NSString *)phone;
