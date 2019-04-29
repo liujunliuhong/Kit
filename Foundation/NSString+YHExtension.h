@@ -25,6 +25,9 @@ static NSString *const k_YH_Chinese_Regex = @"[\\u4e00-\\u9fa5\\w\\-]+";
 // Determine whether a string contain chinese.
 @property (nonatomic, assign, readonly) BOOL yh_isContainChinese;
 
+// Determine whether a string contain emoji.
+@property (nonatomic, assign, readonly) BOOL yh_isContainEmoji;
+
 // Get pinyin.
 @property (nonatomic, copy, readonly) NSString *yh_pinYin;
 

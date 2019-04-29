@@ -19,7 +19,7 @@
 }
 
 - (void)_yh_setAttributedText:(NSAttributedString *)attributedText{
-    if (attributedText.string.yh_isContainChinese) {
+    if (attributedText.string.yh_isContainChinese && !attributedText.string.yh_isContainEmoji) {
         NSMutableAttributedString *atr = (NSMutableAttributedString *)attributedText;
         if (atr.yy_underlineStyle == NSUnderlineStyleNone) {
             if (@available(iOS 11.0, *)) {
