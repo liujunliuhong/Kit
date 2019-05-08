@@ -185,11 +185,42 @@
 // Open Safari.
 + (void)yh_openSafariWithURL:(NSString *)url{
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSURL *URL = [NSURL URLWithString:url];
+        NSString *tmpURL = url;
+        NSURL *URL = [NSURL URLWithString:tmpURL];
         if (@available(iOS 10.0, *)) {
-            [[UIApplication sharedApplication] openURL:URL options:@{} completionHandler:nil];
+            [[UIApplication sharedApplication] openURL:URL options:@{} completionHandler:^(BOOL success) {
+                if (!success) {
+                    if (![tmpURL hasPrefix:@"http://"]) {
+                        // 先判断 http:// 能不能打开
+                        NSString *modifyURL = [NSString stringWithFormat:@"http://%@", tmpURL];
+                        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:modifyURL] options:@{} completionHandler:^(BOOL success) {
+                            if (!success) {
+                                if (![tmpURL hasPrefix:@"https://"]) {
+                                    // 再判断 https:// 能不能打开
+                                    NSString *modifyURL = [NSString stringWithFormat:@"https://%@", tmpURL];
+                                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:modifyURL] options:@{} completionHandler:nil];
+                                }
+                            }
+                        }];
+                    }
+                }
+            }];
         } else {
-            [[UIApplication sharedApplication] openURL:URL];
+            BOOL res1 = [[UIApplication sharedApplication] openURL:URL];
+            if (!res1) {
+                if (![tmpURL hasPrefix:@"http://"]) {
+                    // 先判断 http:// 能不能打开
+                    NSString *modifyURL = [NSString stringWithFormat:@"http://%@", tmpURL];
+                    BOOL res2 = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:modifyURL]];
+                    if (!res2) {
+                        if (![tmpURL hasPrefix:@"https://"]) {
+                            // 再判断 https:// 能不能打开
+                            NSString *modifyURL = [NSString stringWithFormat:@"https://%@", tmpURL];
+                            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:modifyURL]];
+                        }
+                    }
+                }
+            }
         }
     });
 }
