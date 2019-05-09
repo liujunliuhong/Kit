@@ -9,7 +9,7 @@
 #import "YHASNetworkImageNode.h"
 #import <PINCache/PINCache.h>
 #import <PINRemoteImage/PINRemoteImage.h>
-
+#import <SDWebImage/SDImageCache.h>
 
 //@interface SDWebImageDownloader (YHASCustomDownloadImage) <ASImageCacheProtocol, ASImageDownloaderProtocol>
 //

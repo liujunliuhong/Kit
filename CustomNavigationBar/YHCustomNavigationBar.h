@@ -12,11 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_CLASS_AVAILABLE_IOS(8_0) @interface YHCustomNavigationBar : UIView
 
-// 导航栏左边的偏移量
+// 横屏情况下导航栏左边的偏移量
 // 默认0.0
 @property (nonatomic, assign) CGFloat leftHorizontalEdgeInset;
 
-// 导航栏左边的偏移量
+// 横屏情况下导航栏右边的偏移量
 // 默认0.0
 @property (nonatomic, assign) CGFloat rightHorizontalEdgeInset;
 

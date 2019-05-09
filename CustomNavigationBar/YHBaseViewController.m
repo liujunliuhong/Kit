@@ -166,14 +166,6 @@
 #pragma mark - Methods
 // 设置导航栏初始状态下的约束
 - (void)setInitialNavigationBarConstraint{
-    UIInterfaceOrientation statusBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
-    if (statusBarOrientation == UIInterfaceOrientationPortrait || statusBarOrientation == UIInterfaceOrientationPortraitUpsideDown || statusBarOrientation == UIInterfaceOrientationUnknown) {
-        self.yh_navigationBar.leftHorizontalEdgeInset = 0.0;
-        self.yh_navigationBar.rightHorizontalEdgeInset = 0.0;
-    } else {
-        self.yh_navigationBar.leftHorizontalEdgeInset = YH_IS_IPHONE_X ? 34.0 : 0.0;
-        self.yh_navigationBar.rightHorizontalEdgeInset = YH_IS_IPHONE_X ? 34.0 : 0.0;
-    }
     
     CGFloat naviBottomViewHeight = self.yh_naviBottomView ? self.yh_naviBottomView.frame.size.height : 0.0;
     

@@ -8,6 +8,7 @@
 
 #import "YHCustomNavigationBar.h"
 #import <Masonry/Masonry.h>
+#import "YHMacro.h"
 
 #define keyPath_frame   @"frame"
 
@@ -40,8 +41,8 @@
     self = [super init];
     if (self) {
         self.backgroundColor = [UIColor colorWithRed:247/255.0 green:247/255.0 blue:247/255.0 alpha:1];
-        self.leftHorizontalEdgeInset = 0.0;
-        self.rightHorizontalEdgeInset = 0.0;
+        self.leftHorizontalEdgeInset = 34.0;
+        self.rightHorizontalEdgeInset = 34.0;
         
         [self addSubview:self.bottomContentView];
         [self addSubview:self.barContentView];
@@ -82,7 +83,7 @@
         [self.leftViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [obj mas_remakeConstraints:^(MASConstraintMaker *make) {
                 if (!leftView) {
-                    make.left.equalTo(weakSelf.barContentView).mas_offset(weakSelf.leftHorizontalEdgeInset);
+                    make.left.equalTo(weakSelf.barContentView).mas_offset([self isPortrait] ? 0.0 : (YH_IS_IPHONE_X ? weakSelf.leftHorizontalEdgeInset : 0.0));
                     make.bottom.equalTo(weakSelf.barContentView);
                     make.top.equalTo(weakSelf.barContentView);
                     make.width.mas_equalTo(obj.frame.size.width > 0 ? obj.frame.size.width : [YHCustomNavigationBar itemBaseWidth]);
@@ -102,7 +103,7 @@
         [self.rightViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [obj mas_remakeConstraints:^(MASConstraintMaker *make) {
                 if (!rightView) {
-                    make.right.equalTo(weakSelf.barContentView).mas_offset(-weakSelf.rightHorizontalEdgeInset);
+                    make.right.equalTo(weakSelf.barContentView).mas_offset([self isPortrait] ? 0.0 : (YH_IS_IPHONE_X ? -weakSelf.rightHorizontalEdgeInset : 0.0));
                     make.bottom.equalTo(weakSelf.barContentView);
                     make.top.equalTo(weakSelf.barContentView);
                     make.width.mas_equalTo(obj.frame.size.width > 0 ? obj.frame.size.width : [YHCustomNavigationBar itemBaseWidth]);
@@ -171,6 +172,15 @@
 
 + (CGFloat)barHeight{
     return 44.0;
+}
+
+- (BOOL)isPortrait{
+    UIInterfaceOrientation statusBarOrientation = [UIApplication sharedApplication].statusBarOrientation;
+    if (statusBarOrientation == UIInterfaceOrientationPortrait || statusBarOrientation == UIInterfaceOrientationPortraitUpsideDown || statusBarOrientation == UIInterfaceOrientationUnknown) {
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 #pragma mark - Setter
