@@ -12,12 +12,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface YHPickerToolBar : UIView
 
-@property (nonatomic, copy) NSString *cancelTitle;
+@property (nonatomic, copy) NSString *cancelTitle;// default is 'Cancel'.
 @property (nonatomic, strong) UIColor *cancelTitleColor;
 @property (nonatomic, strong) UIFont *cancelTitleFont;
 @property (nonatomic, copy) void(^cancelBlock)(void);
 
-@property (nonatomic, copy) NSString *doneTitle;
+@property (nonatomic, copy) NSString *doneTitle; // default is 'Sure'.
 @property (nonatomic, strong) UIColor *doneTitleColor;
 @property (nonatomic, strong) UIFont *doneTitleFont;
 @property (nonatomic, copy) void(^doneBlock)(void);

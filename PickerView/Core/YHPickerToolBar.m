@@ -34,6 +34,7 @@
         [self addSubview:self.doneButton];
         
         self.titleLabel = [[UILabel alloc] init];
+        self.titleLabel.adjustsFontSizeToFitWidth = YES;
         self.titleLabel.textAlignment = NSTextAlignmentCenter;
         [self addSubview:self.titleLabel];
         

@@ -65,7 +65,8 @@
             [weakSelf dismiss];
         };
         
-        
+        self.separatorLineColor = [UIColor groupTableViewBackgroundColor];
+        self.isHideSeparatorLine = NO;
     }
     return self;
 }
@@ -78,7 +79,8 @@
         if ([subView1 isKindOfClass:[UIPickerView class]]) { //取出UIPickerView(这儿不是UIDatePicker)
             for (UIView *subView2 in subView1.subviews) {
                 if (subView2.frame.size.height < 1) {  //取出分割线view
-                    subView2.backgroundColor = [UIColor groupTableViewBackgroundColor];
+                    subView2.backgroundColor = self.separatorLineColor;
+                    subView2.hidden = self.isHideSeparatorLine;
                 }
             }
         }
@@ -90,7 +92,7 @@
     
     self.backgroundView.frame = [UIScreen mainScreen].bounds;
     self.maskView.frame = [UIScreen mainScreen].bounds;
-    self.frame = CGRectMake(0, CGRectGetHeight(self.maskView.frame) - contentHeight, CGRectGetWidth(self.maskView.frame), contentHeight);
+    self.frame = CGRectMake(0, CGRectGetHeight(self.backgroundView.frame) - contentHeight, CGRectGetWidth(self.backgroundView.frame), contentHeight);
     self.toolBar.frame = CGRectMake(0, 0, CGRectGetWidth(self.frame), kToolBarHeight);
     self.pickerView.frame = CGRectMake(0, CGRectGetMaxY(self.toolBar.frame), CGRectGetWidth(self.maskView.frame), self.pickerView.frame.size.height);
 }
@@ -108,7 +110,7 @@
     
     [window addSubview:self.backgroundView];
     [self.backgroundView addSubview:self.maskView];
-    [self.maskView addSubview:self];
+    [self.backgroundView addSubview:self];
     [self addSubview:self.toolBar];
     [self addSubview:self.pickerView];
     
@@ -117,7 +119,7 @@
     
     self.backgroundView.frame = [UIScreen mainScreen].bounds;
     self.maskView.frame = [UIScreen mainScreen].bounds;
-    self.frame = CGRectMake(0, CGRectGetMaxY(self.maskView.frame), CGRectGetWidth(self.maskView.frame), contentHeight);
+    self.frame = CGRectMake(0, CGRectGetMaxY(self.backgroundView.frame), CGRectGetWidth(self.backgroundView.frame), contentHeight);
     self.toolBar.frame = CGRectMake(0, 0, CGRectGetWidth(self.frame), kToolBarHeight);
     self.pickerView.frame = CGRectMake(0, CGRectGetMaxY(self.toolBar.frame), CGRectGetWidth(self.maskView.frame), self.pickerView.frame.size.height);
     
@@ -136,7 +138,7 @@
 - (CGFloat)getContentHeight{
     CGFloat contentHeight = 0.0;
     if (YH_DeviceOrientation == UIInterfaceOrientationPortrait || YH_DeviceOrientation == UIDeviceOrientationPortraitUpsideDown) {
-        // 倒立翻转就不考虑了，还没有见到过这样的a应用
+        // 倒立翻转就不考虑了，还没有见到过这样的应用
         contentHeight += YH_Bottom_Height;
     }
     [self.pickerView sizeToFit];
@@ -192,18 +194,29 @@
 
 - (void)setMinimumDate:(NSDate *)minimumDate{
     _minimumDate = minimumDate;
-    self.minimumDate = _minimumDate;
+    self.pickerView.minimumDate = _minimumDate;
 }
 
 - (void)setMaximumDate:(NSDate *)maximumDate{
     _maximumDate = maximumDate;
-    self.maximumDate = _maximumDate;
+    self.pickerView.maximumDate = _maximumDate;
 }
 
 - (void)setCurrentDate:(NSDate *)currentDate{
     _currentDate = currentDate;
-    self.pickerView.date = _currentDate;
+    [self setDate:_currentDate animated:NO];
 }
 
+- (void)setSeparatorLineColor:(UIColor *)separatorLineColor{
+    _separatorLineColor = separatorLineColor;
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
+}
+
+- (void)setIsHideSeparatorLine:(BOOL)isHideSeparatorLine{
+    _isHideSeparatorLine = isHideSeparatorLine;
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
+}
 
 @end

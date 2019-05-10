@@ -47,7 +47,7 @@ NS_CLASS_AVAILABLE_IOS(8_0) @interface YHBaseViewController : UIViewController
 @property (nonatomic, strong, readonly, nullable) UIView *yh_naviBottomView;
 
 // 是否隐藏导航栏(readonly)
-// Default is NO
+// Default is YES（默认为YES的原因是：如果为NO，那么push下一个界面时，如果下个界面隐藏导航栏，导航栏会有个闪动的效果）
 @property (nonatomic, assign, readonly) BOOL yh_isHideNavigationBar;
 
 // 是否隐藏导航栏的bar(readonly)

@@ -64,6 +64,9 @@
     [self.view addSubview:self.yh_safeAreaView];
     [self.view bringSubviewToFront:self.yh_navigationBar];
     
+    // 默认导航栏隐藏
+    self.yh_isHideNavigationBar = YES;
+    
     [self setInitialNavigationBarConstraint];
     
     self.yh_navigationBar.titleView = self.yh_naviDefaultTitleLabel;
@@ -83,7 +86,7 @@
         self.yh_statusBarStyle = UIStatusBarStyleDefault;
     }
     
-    self.yh_shouldAutorotate = NO; // 默认不旋转
+    self.yh_shouldAutorotate = YES; // 默认旋转
     //self.yh_supportedInterfaceOrientations = UIInterfaceOrientationMaskAll;
     self.yh_supportedInterfaceOrientations = UIInterfaceOrientationMaskPortrait; // 默认只支持竖屏        如果屏幕需要旋转，请在TARGETS -> General -> Deployment Info -> Device Orientation 修改屏幕支持方向的集合
     self.yh_preferredInterfaceOrientationForPresentation = UIInterfaceOrientationPortrait; // 默认初始进入为竖屏
