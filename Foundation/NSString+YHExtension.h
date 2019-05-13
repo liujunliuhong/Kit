@@ -20,6 +20,7 @@ static NSString *const k_YH_Chinese_Regex = @"[\\u4e00-\\u9fa5\\w\\-]+";
 @property (nonatomic, assign, readonly) BOOL yh_isInt;
 
 // Determine whether a string is empty.
+// 注意:空对象不会调用    比如 NSString *str = nil;   str.yh_isEmpty    此时返回NO
 @property (nonatomic, assign, readonly) BOOL yh_isEmpty;
 
 // Determine whether a string contain chinese.
