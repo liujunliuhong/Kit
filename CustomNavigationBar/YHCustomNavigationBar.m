@@ -133,6 +133,11 @@
     CGFloat max_margin = MAX(left_origin_x, right_origin_x);
     CGFloat titleViewWidth = self.frame.size.width - max_margin * 2;
     
+    // 如果titleView有自己的宽度m，就取自己的宽度
+    if (self.titleView.frame.size.width > 0 && self.titleView.frame.size.width <= titleViewWidth) {
+        titleViewWidth = self.titleView.frame.size.width;
+    }
+    
     [self.titleView mas_remakeConstraints:^(MASConstraintMaker *make) {
         make.bottom.equalTo(weakSelf.barContentView);
         make.top.equalTo(weakSelf.barContentView);
