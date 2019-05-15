@@ -80,6 +80,7 @@ static CGSize kMaxImageSize = (CGSize){4096, 4096};
         }
     } else {
         self.dataState = YHImageBrowserCellDataState_ImageReady;
+        
     }
 }
 
@@ -101,6 +102,38 @@ static CGSize kMaxImageSize = (CGSize){4096, 4096};
     });
 }
 
+- (void)queryImageCache{
+    if (!self.URL) {
+        return;
+    }
+    
+    self.dataState = YHImageBrowserCellDataState_IsQueryingCache;
+    
+    [YHImageBrowserWebImageManager queryCacheImageWithKey:self.URL completionBlock:^(UIImage * _Nullable image, NSData * _Nullable data) {
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.dataState = YHImageBrowserCellDataState_QueryCacheComplete;
+                if (self.image) {
+                    [self loadLocalImage];
+                } else {
+                    [self downLoadImage];
+                }
+            });
+            
+        });
+    }];
+    
+}
+
+- (void)downLoadImage{
+    if (!self.URL) {
+        return;
+    }
+    
+    
+}
+
 
 // 判断是否需要压缩图片
 - (BOOL)isNeedCompressImage{
@@ -115,7 +148,18 @@ static CGSize kMaxImageSize = (CGSize){4096, 4096};
 
 // 压缩图片
 - (void)compressedImage{
+    if (!self.image) {
+        return;
+    }
+    self.dataState = YHImageBrowserCellDataState_IsCompressingImage;
     
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+       
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+        });
+        
+    });
 }
 
 

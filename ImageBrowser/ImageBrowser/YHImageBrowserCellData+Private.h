@@ -20,6 +20,9 @@ typedef NS_ENUM(NSUInteger, YHImageBrowserCellDataState) {
     
     YHImageBrowserCellDataState_IsDecoding,
     YHImageBrowserCellDataState_DecodeComplete,
+    
+    YHImageBrowserCellDataState_IsQueryingCache,
+    YHImageBrowserCellDataState_QueryCacheComplete,
 };
 
 
