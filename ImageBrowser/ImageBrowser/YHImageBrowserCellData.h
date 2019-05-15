@@ -8,7 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <Photos/Photos.h>
 #import "YHImageBrowserDataProtocol.h"
+#import "YHImage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,8 +22,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, nullable) NSURL *thumbURL;
 
+@property (nonatomic, copy, nullable) YHImage *(^localImageBlock)(void);
+
+
+
+@property (nonatomic, strong, readonly) YHImage *image;
+
+
 
 - (void)loadData;
+
+
+
+
+
+
+
+
+
+
 
 @end
 

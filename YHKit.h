@@ -64,6 +64,7 @@
 #import "UIViewController+YHExtension.h"
 #import "UINavigationController+YHRotationExtension.h"
 #import "AppDelegate+YHNotiExtension.h"
+#import "UIButton+YHExtension.h"
 
 // Foundation.
 #import "NSObject+YHExtension.h"

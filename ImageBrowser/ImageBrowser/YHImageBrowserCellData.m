@@ -13,10 +13,16 @@
 #import "YHImageBrowserWebImageManager.h"
 #import "YHImageBrowserCell.h"
 
+#import "YHImageBrowserCellData+Private.h"
+
+static CGSize kMaxImageSize = (CGSize){4096, 4096};
+
 @interface YHImageBrowserCellData()
 @property (nonatomic, assign) BOOL isLoading;
 
-@property (nonatomic, strong) FLAnimatedImage *image;
+
+@property (nonatomic, strong) YHImage *image;
+
 @end
 
 
@@ -36,9 +42,15 @@
 
 
 - (void)loadData{
-    if (self.isLoading) {
+    
+    
+    if (self.image) {
         
-    } else {
+    } else if (self.localImageBlock) {
+        
+    } else if (self.URL) {
+        
+    } else if (self.thumbURL) {
         
     }
 }
@@ -52,6 +64,57 @@
     [YHImageBrowserWebImageManager queryCacheImageWithKey:self.URL completionBlock:^(UIImage * _Nullable image, NSData * _Nullable data) {
         
     }];
+    
+}
+
+- (void)loadLocalImage{
+    if (!self.image) {
+        return;
+    }
+    BOOL isNeedCompressImage = [self isNeedCompressImage];
+    if (isNeedCompressImage) {
+        if (self.compressImage) {
+            
+        } else {
+            [self compressedImage];
+        }
+    } else {
+        self.dataState = YHImageBrowserCellDataState_ImageReady;
+    }
+}
+
+
+- (void)decodeLocalImage{
+    if (!self.localImageBlock) {
+        return;
+    }
+    self.dataState = YHImageBrowserCellDataState_IsDecoding;
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        self.image = self.localImageBlock();
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.dataState = YHImageBrowserCellDataState_DecodeComplete;
+            if (self.image) {
+                [self loadLocalImage];
+            }
+        });
+    });
+}
+
+
+// 判断是否需要压缩图片
+- (BOOL)isNeedCompressImage{
+    if (!self.image) {
+        return NO;
+    }
+    if (kMaxImageSize.width * kMaxImageSize.height < (self.image.size.width * self.image.scale) * (self.image.size.height * self.image.scale)) {
+        return YES;
+    }
+    return NO;
+}
+
+// 压缩图片
+- (void)compressedImage{
     
 }
 
