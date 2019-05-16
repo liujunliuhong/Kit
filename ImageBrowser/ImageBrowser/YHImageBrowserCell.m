@@ -13,25 +13,28 @@
 #import "YHImageBrowserCellData.h"
 #import "YHImageBrowserCellData+Private.h"
 
-#import "YHImageBrowserLayoutDirectionManager.h"
-
 
 #import <FLAnimatedImage/FLAnimatedImage.h>
 
-@interface YHImageBrowserCell() <YHImageBrowserCellProtocol, UIScrollViewDelegate, UIGestureRecognizerDelegate>
+@interface YHImageBrowserCell() <YHImageBrowserCellProtocol, UIScrollViewDelegate, UIGestureRecognizerDelegate> {
+    YHImageBrowserLayoutDirection _layoutDirection;
+    CGSize _containerSize;
+}
+
 @property (nonatomic, strong) UIScrollView *mainScrollView;
 @property (nonatomic, strong) FLAnimatedImageView *mainImageView;
 
 @property (nonatomic, strong) YHImageBrowserCellData *cellData;
 
-
-@property (nonatomic, assign) YHImageBrowserLayoutDirection layoutDirection;
-@property (nonatomic, assign) CGSize containerSize;
-
 @end
 
 
 @implementation YHImageBrowserCell
+
+- (void)dealloc
+{
+    [self removeObserverForDataState];
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -45,17 +48,22 @@
     return self;
 }
 
+/**
+ * 重写系统的prepareForReuse方法
+ */
 - (void)prepareForReuse{
     // 复原
     self.mainScrollView.zoomScale = 1;
     self.mainImageView.image = nil;
-    
+    // 移除观察者
     [self removeObserverForDataState];
     
     [super prepareForReuse];
 }
 
-
+/**
+ * 为cell添加手势
+ */
 - (void)addGesture {
     UITapGestureRecognizer *tapSingle = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(respondsToTapSingle:)];
     tapSingle.numberOfTapsRequired = 1;
@@ -76,9 +84,11 @@
 
 
 
-// 更新ScrollView的Frame
+/**
+ * 更新scrolView约束
+ */
 - (void)updateContentScrollViewLayout{
-    self.mainScrollView.frame = CGRectMake(0, 0, self.containerSize.width, self.containerSize.height);
+    self.mainScrollView.frame = CGRectMake(0, 0, _containerSize.width, _containerSize.height);
 }
 
 // 更新mainImageView的Frame
@@ -99,18 +109,18 @@
     CGFloat x = 0;
     CGFloat y = 0;
     
-    width = self.containerSize.width; // 宽度抵满屏幕
+    width = _containerSize.width; // 宽度抵满屏幕
     height = width * (imageSize.height / imageSize.width); // 得到高度
     CGPoint offset = CGPointZero; // scrollView偏移量
     
-    if (imageSize.width / imageSize.height >= self.containerSize.width / self.containerSize.height) {
+    if (imageSize.width / imageSize.height >= _containerSize.width / _containerSize.height) {
         // 图片太宽
-        y = (self.containerSize.height - height) / 2.0;
+        y = (_containerSize.height - height) / 2.0;
         offset = CGPointZero;
-    } else if (imageSize.height / imageSize.width >= self.containerSize.height / self.containerSize.width) {
+    } else if (imageSize.height / imageSize.width >= _containerSize.height / _containerSize.width) {
         // 图片太高
         y = 0;
-        offset = CGPointMake(0, (height - self.containerSize.height) / 2.0);
+        offset = CGPointMake(0, (height - _containerSize.height) / 2.0);
     }
     
     self.mainImageView.frame = CGRectMake(x, y, width, height);
@@ -256,20 +266,27 @@
 
 #pragma mark ------------------ YHImageBrowserCellProtocol ------------------
 - (void)yh_browserSetInitialCellData:(id<YHImageBrowserCellDataProtocol>)data layoutDirection:(YHImageBrowserLayoutDirection)layoutDirection containerSize:(CGSize)containerSize{
-    self.containerSize = containerSize;
-    self.layoutDirection = layoutDirection;
+    
+    NSAssert([data isKindOfClass:[YHImageBrowserCellData class]], @"data必须是YHImageBrowserCellData类型");
+    
+    _containerSize = containerSize;
+    _layoutDirection = layoutDirection;
     
     self.cellData = data;
     
+    // 设置data的时候，添加观察者
     [self addObserverForDataState];
+    
+    // 获取数据
     [self.cellData loadData];
     
+    // 更新scrolView约束
     [self updateContentScrollViewLayout];
 }
 
 - (void)yh_browserLayoutDirectionChanged:(YHImageBrowserLayoutDirection)layoutDirection containerSize:(CGSize)containerSize{
-    self.containerSize = containerSize;
-    self.layoutDirection = layoutDirection;
+    _containerSize = containerSize;
+    _layoutDirection = layoutDirection;
     
     [self updateContentScrollViewLayout];
     [self updateContentViewLayout];

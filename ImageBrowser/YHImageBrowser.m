@@ -12,7 +12,7 @@
 #import "YHImageBrowserView.h"
 #import "YHImageBrowserLayoutDirectionManager.h"
 
-@interface YHImageBrowser() <YHImageBrowserViewDataSource>
+@interface YHImageBrowser() <YHImageBrowserViewDataSource, YHImageBrowserViewDelegate>
 @property (nonatomic, strong) YHImageBrowserView *browserView;
 
 @property (nonatomic, strong) YHImageBrowserLayoutDirectionManager *layoutDirectionManager;
@@ -66,6 +66,11 @@
     return self.dataSourceArray[index];
 }
 
+#pragma mark ------------------ YHImageBrowserViewDelegate ------------------
+- (void)yh_imageBrowserView:(YHImageBrowserView *)browserView pageIndexChanged:(NSUInteger)index{
+    NSLog(@"当前索引:%d", (int)index);
+}
+
 #pragma mark ------------------ Getter ------------------
 - (YHImageBrowserLayoutDirectionManager *)layoutDirectionManager{
     if (!_layoutDirectionManager) {
@@ -79,6 +84,7 @@
     if (!_browserView) {
         _browserView = [[YHImageBrowserView alloc] initWithFrame:CGRectZero];
         _browserView.yh_dataSource = self;
+        _browserView.yh_delegate = self;
     }
     return _browserView;
 }
