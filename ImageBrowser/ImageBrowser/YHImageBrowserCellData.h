@@ -9,12 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
-#import "YHImageBrowserDataProtocol.h"
+#import "YHImageBrowserCellDataProtocol.h"
 #import "YHImage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YHImageBrowserCellData : NSObject <YHImageBrowserDataProtocol>
+@interface YHImageBrowserCellData : NSObject <YHImageBrowserCellDataProtocol>
 
 @property (nonatomic, strong, nullable) NSURL *URL;
 
@@ -25,17 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) YHImage *(^localImageBlock)(void);
 
 
-
 @property (nonatomic, strong, readonly) YHImage *image;
-
-
-
-- (void)loadData;
-
-
-
-
-
 
 
 

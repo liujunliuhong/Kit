@@ -15,11 +15,16 @@
 
 #import "YHImageBrowserCellData+Private.h"
 
-static CGSize kMaxImageSize = (CGSize){4096, 4096};
+#import "YHImage+Private.h"
 
-@interface YHImageBrowserCellData()
+
+#define kMaxImageSize     CGSizeMake(4096.0, 4096.0)
+
+
+@interface YHImageBrowserCellData() {
+    __weak id _downloadToken;
+}
 @property (nonatomic, assign) BOOL isLoading;
-
 
 @property (nonatomic, strong) YHImage *image;
 
@@ -34,7 +39,7 @@ static CGSize kMaxImageSize = (CGSize){4096, 4096};
 {
     self = [super init];
     if (self) {
-        
+        self.isLoading = NO;
     }
     return self;
 }
@@ -42,97 +47,221 @@ static CGSize kMaxImageSize = (CGSize){4096, 4096};
 
 
 - (void)loadData{
-    
-    
-    if (self.image) {
-        
-    } else if (self.localImageBlock) {
-        
-    } else if (self.URL) {
-        
-    } else if (self.thumbURL) {
-        
-    }
-}
-
-
-- (void)loadNetworkImage{
-    if (!self.URL) {
+    if (self.isLoading) {
         return;
     }
     
-    [YHImageBrowserWebImageManager queryCacheImageWithKey:self.URL completionBlock:^(UIImage * _Nullable image, NSData * _Nullable data) {
-        
-    }];
-    
+    self.isLoading = YES;
+   
+    if (self.image) {
+        // 检查是否需要压缩
+        [self checkCompressWithCompletionBlock:^{
+            self.isLoading = NO;
+        }];
+        return;
+    } else if (self.localImageBlock) {
+        [self loadThumbImageWithCompletionBlock:^{
+            [self decodeLocalImageWithCompletionBlock:^{
+                [self checkCompressWithCompletionBlock:^{
+                    self.isLoading = NO;
+                }];
+            }];
+        }];
+        return;
+    } else if (self.URL) {
+        [self loadThumbImageWithCompletionBlock:^{
+            [self queryImageCacheWithCompletionBlock:^{
+                if (!self.image.image && !self.image.animatedImage) {
+                    [self downLoadImageWithCompletionBlock:^{
+                        [self checkCompressWithCompletionBlock:^{
+                            self.isLoading = NO;
+                        }];
+                    }];
+                } else {
+                    [self checkCompressWithCompletionBlock:^{
+                        self.isLoading = NO;
+                    }];
+                }
+            }];
+        }];
+        return;
+    } else {
+        // 什么都不存在
+        self.dataState = YHImageBrowserCellDataState_Invalid;
+        self.isLoading = NO;
+    }
 }
 
-- (void)loadLocalImage{
+// 检查图片是否需要压缩
+- (void)checkCompressWithCompletionBlock:(void(^)(void))completionBlock{
     if (!self.image) {
+        self.dataState = YHImageBrowserCellDataState_ImageReady;
+        if (completionBlock) {
+            completionBlock();
+        }
         return;
     }
     BOOL isNeedCompressImage = [self isNeedCompressImage];
     if (isNeedCompressImage) {
         if (self.compressImage) {
-            
+            self.dataState = YHImageBrowserCellDataState_CompressImageReady;
+            if (completionBlock) {
+                completionBlock();
+            }
         } else {
-            [self compressedImage];
+            [self compressedImageWithCompletionBlock:^{
+                if (completionBlock) {
+                    completionBlock();
+                }
+            }];
         }
     } else {
         self.dataState = YHImageBrowserCellDataState_ImageReady;
-        
+        if (completionBlock) {
+            completionBlock();
+        }
     }
 }
 
-
-- (void)decodeLocalImage{
-    if (!self.localImageBlock) {
+// 压缩图片
+- (void)compressedImageWithCompletionBlock:(void(^)(void))completionBlock{
+    if (!self.image || !self.image.image) {
+        if (completionBlock) {
+            completionBlock();
+        }
         return;
     }
-    self.dataState = YHImageBrowserCellDataState_IsDecoding;
+    self.dataState = YHImageBrowserCellDataState_IsCompressingImage;
     
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        self.image = self.localImageBlock();
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.dataState = YHImageBrowserCellDataState_DecodeComplete;
-            if (self.image) {
-                [self loadLocalImage];
+    YHImageBrowserAsync(dispatch_get_global_queue(0, 0), ^{
+        
+        // ... 压缩中
+        self.compressImage = self.image.image;
+        
+        YHImageBrowserAsync(dispatch_get_main_queue(), ^{
+            self.dataState = YHImageBrowserCellDataState_CompressImageComplete;
+            if (completionBlock) {
+                completionBlock();
             }
         });
     });
 }
 
-- (void)queryImageCache{
-    if (!self.URL) {
-        return;
+
+// 加载缩略图片
+- (void)loadThumbImageWithCompletionBlock:(void(^)(void))completionBlock{
+    if (self.thumbImage) {
+        self.dataState = YHImageBrowserCellDataState_ThumbImageReady;
+        if (completionBlock) {
+            completionBlock();
+        }
+    } else if (self.thumbURL) {
+        // 根据thumbURL查询缓存
+        [YHImageBrowserWebImageManager queryCacheImageWithKey:self.thumbURL completionBlock:^(UIImage * _Nullable image, NSData * _Nullable data) {
+            UIImage *tmpImage = [UIImage imageWithData:data];
+            self.thumbImage = tmpImage ? tmpImage : image;
+            self.dataState = YHImageBrowserCellDataState_ThumbImageReady;
+            if (completionBlock) {
+                completionBlock();
+            }
+        }];
+    } else {
+        if (completionBlock) {
+            completionBlock();
+        }
     }
-    
-    self.dataState = YHImageBrowserCellDataState_IsQueryingCache;
-    
-    [YHImageBrowserWebImageManager queryCacheImageWithKey:self.URL completionBlock:^(UIImage * _Nullable image, NSData * _Nullable data) {
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.dataState = YHImageBrowserCellDataState_QueryCacheComplete;
-                if (self.image) {
-                    [self loadLocalImage];
-                } else {
-                    [self downLoadImage];
-                }
-            });
-            
-        });
-    }];
-    
 }
 
-- (void)downLoadImage{
-    if (!self.URL) {
+// 解码本地图片
+- (void)decodeLocalImageWithCompletionBlock:(void(^)(void))completionBlock{
+    if (!self.localImageBlock) {
+        if (completionBlock) {
+            completionBlock();
+        }
         return;
     }
-    
-    
+    self.dataState = YHImageBrowserCellDataState_IsDecoding;
+    YHImageBrowserAsync(dispatch_get_global_queue(0, 0), ^{
+        self.image = self.localImageBlock();
+        YHImageBrowserAsync(dispatch_get_main_queue(), ^{
+            self.dataState = YHImageBrowserCellDataState_DecodeComplete;
+            if (completionBlock) {
+                completionBlock();
+            }
+        });
+    });
 }
+
+// 查询缓存图片
+- (void)queryImageCacheWithCompletionBlock:(void(^)(void))completionBlock{
+    if (!self.URL) {
+        if (completionBlock) {
+            completionBlock();
+        }
+        return;
+    }
+    self.dataState = YHImageBrowserCellDataState_IsQueryingCache;
+    [YHImageBrowserWebImageManager queryCacheImageWithKey:self.URL completionBlock:^(UIImage * _Nullable image, NSData * _Nullable data) {
+        YHImageBrowserAsync(dispatch_get_global_queue(0, 0), ^{
+            self.image = [[YHImage alloc] initDownloadWithImage:image imageData:data];
+            YHImageBrowserAsync(dispatch_get_main_queue(), ^{
+                self.dataState = YHImageBrowserCellDataState_QueryCacheComplete;
+                if (completionBlock) {
+                    completionBlock();
+                }
+            });
+        });
+    }];
+}
+
+
+// 下载图片
+- (void)downLoadImageWithCompletionBlock:(void(^)(void))completionBlock{
+    if (!self.URL) {
+        if (completionBlock) {
+            completionBlock();
+        }
+        return;
+    }
+    self.dataState = YHImageBrowserCellDataState_DownloadReady;
+    _downloadToken = [YHImageBrowserWebImageManager downloadImageWithURL:self.URL progressBlock:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
+        YHImageBrowserAsync(dispatch_get_main_queue(), ^{
+            self.dataState = YHImageBrowserCellDataState_IsDownloading;
+            CGFloat value = 0.0;
+            if (expectedSize > 0) {
+                value = receivedSize * 1.0 / expectedSize;
+            }
+            NSLog(@"☁️:%.2f", value);
+            self.downloadProgress = value;
+        });
+    } successBlock:^(UIImage * _Nullable image, NSData * _Nullable data, BOOL finished) {
+        if (!finished) {
+            return ;
+        }
+        YHImageBrowserAsync(dispatch_get_global_queue(0, 0), ^{
+            self.image = [[YHImage alloc] initDownloadWithImage:image imageData:data];
+            YHImageBrowserAsync(dispatch_get_main_queue(), ^{
+                [YHImageBrowserWebImageManager storeImage:image imageData:data forKey:self.URL toDisk:YES];
+                self.dataState = YHImageBrowserCellDataState_DownloadSuccess;
+                if (completionBlock) {
+                    completionBlock();
+                }
+            });
+        });
+        
+    } errorBlock:^(NSError * _Nullable error, BOOL finished) {
+        if (!finished) {
+            return ;
+        }
+        self.dataState = YHImageBrowserCellDataState_DownloadFailed;
+        if (completionBlock) {
+            completionBlock();
+        }
+    }];
+}
+
+
+
 
 
 // 判断是否需要压缩图片
@@ -140,33 +269,35 @@ static CGSize kMaxImageSize = (CGSize){4096, 4096};
     if (!self.image) {
         return NO;
     }
-    if (kMaxImageSize.width * kMaxImageSize.height < (self.image.size.width * self.image.scale) * (self.image.size.height * self.image.scale)) {
-        return YES;
+    if (self.image.animatedImage) {
+        // GIF暂时不需要压缩，后期再做GIF的压缩
+        return NO;
+    } else if (self.image.image) {
+        if (kMaxImageSize.width * kMaxImageSize.height < (self.image.image.size.width * self.image.image.scale) * (self.image.image.size.height * self.image.image.scale)) {
+            return YES;
+        } else {
+            return NO;
+        }
     }
     return NO;
 }
 
-// 压缩图片
-- (void)compressedImage{
-    if (!self.image) {
-        return;
-    }
-    self.dataState = YHImageBrowserCellDataState_IsCompressingImage;
-    
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-       
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-        });
-        
-    });
-}
 
 
-#pragma mark ------------------ YHImageBrowserDataProtocol ------------------
+
+#pragma mark ------------------ YHImageBrowserCellDataProtocol ------------------
 - (Class)yh_cellClass{
     return [YHImageBrowserCell class];
+    
 }
 
 
+
+static void YHImageBrowserAsync(dispatch_queue_t queue, dispatch_block_t block) {
+    if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(queue)) == 0) {
+        block();
+    } else {
+        dispatch_async(queue, block);
+    }
+}
 @end

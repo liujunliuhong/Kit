@@ -11,21 +11,28 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void(^QueryCacheCompletionBlock)(UIImage *_Nullable image, NSData *_Nullable data);
+typedef void(^DownloadProgressBlock)(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL);
+typedef void(^DownloadSuccessBlock)(UIImage * _Nullable image, NSData * _Nullable data, BOOL finished);
+typedef void(^DownloadErrorBlock)(NSError * _Nullable error, BOOL finished);
+
 @interface YHImageBrowserWebImageManager : NSObject
 
 
 + (void)queryCacheImageWithKey:(NSURL *)key
-               completionBlock:(void(^_Nullable)(UIImage *_Nullable image, NSData *_Nullable data))completionBlock;
+               completionBlock:(nullable QueryCacheCompletionBlock)completionBlock;
 
 
 + (id)downloadImageWithURL:(NSURL *)URL
-                                    progressBlock:(void(^_Nullable)(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL))progressBlock
-                                          successBlock:(void(^_Nullable)(UIImage * _Nullable image, NSData * _Nullable data, BOOL finished))successBlock
-                                           errorBlock:(void(^_Nullable)(NSError * _Nullable error, BOOL finished))errorBlock;
+             progressBlock:(nullable DownloadProgressBlock)progressBlock
+              successBlock:(nullable DownloadSuccessBlock)successBlock
+                errorBlock:(nullable DownloadErrorBlock)errorBlock;
 
 + (void)cancelDownloadWithDownloadToken:(id)token;
 
-+ (void)storeImage:(nullable UIImage *)image imageData:(nullable NSData *)data forKey:(NSURL *)key toDisk:(BOOL)toDisk;
++ (void)storeImage:(nullable UIImage *)image
+         imageData:(nullable NSData *)data
+            forKey:(NSURL *)key toDisk:(BOOL)toDisk;
 
 @end
 

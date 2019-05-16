@@ -1,5 +1,5 @@
 //
-//  YHImageBrowserDataProtocol.h
+//  YHImageBrowserCellDataProtocol.h
 //  HiFanSmooth
 //
 //  Created by apple on 2019/5/14.
@@ -13,9 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * cellData协议
  */
-@protocol YHImageBrowserDataProtocol <NSObject>
+@protocol YHImageBrowserCellDataProtocol <NSObject>
 
 @required;
+
 - (Class)yh_cellClass;
 
 

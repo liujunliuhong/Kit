@@ -13,7 +13,8 @@
 
 @implementation YHImageBrowserWebImageManager
 
-+ (void)queryCacheImageWithKey:(NSURL *)key completionBlock:(void (^)(UIImage * _Nullable, NSData * _Nullable))completionBlock{
++ (void)queryCacheImageWithKey:(NSURL *)key
+               completionBlock:(QueryCacheCompletionBlock)completionBlock{
     
     NSString *cacheKey = [[SDWebImageManager sharedManager] cacheKeyForURL:key];
     
@@ -32,10 +33,11 @@
 }
 
 
-+ (SDWebImageDownloadToken *)downloadImageWithURL:(NSURL *)URL
-                                    progressBlock:(void (^)(NSInteger, NSInteger, NSURL * _Nullable))progressBlock
-                                     successBlock:(void (^)(UIImage * _Nullable, NSData * _Nullable, BOOL))successBlock
-                                       errorBlock:(void (^)(NSError * _Nullable, BOOL))errorBlock{
++ (id)downloadImageWithURL:(NSURL *)URL
+             progressBlock:(DownloadProgressBlock)progressBlock
+              successBlock:(DownloadSuccessBlock)successBlock
+                errorBlock:(DownloadErrorBlock)errorBlock{
+    
     SDWebImageDownloadToken *token = [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:URL options:SDWebImageDownloaderLowPriority progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
         if (progressBlock) {
             progressBlock(receivedSize, expectedSize, targetURL);
@@ -46,9 +48,9 @@
                 errorBlock(error, finished);
                 return ;
             }
-            if (successBlock) {
-                successBlock(image, data, finished);
-            }
+        }
+        if (successBlock) {
+            successBlock(image, data, finished);
         }
     }];
     return token;
@@ -63,7 +65,10 @@
 }
 
 
-+ (void)storeImage:(UIImage *)image imageData:(NSData *)data forKey:(NSURL *)key toDisk:(BOOL)toDisk{
++ (void)storeImage:(UIImage *)image
+         imageData:(NSData *)data
+            forKey:(NSURL *)key
+            toDisk:(BOOL)toDisk{
     if (!key) {
         return;
     }

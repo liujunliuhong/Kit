@@ -7,13 +7,20 @@
 //
 
 #import <UIKit/UIKit.h>
+
 #import <FLAnimatedImage/FLAnimatedImage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface YHImage : UIImage
+@interface YHImage : NSObject
 
-@property (nonatomic, strong, nullable) NSData *animatedImageData;
+@property (nonatomic, strong, readonly, nullable) UIImage *image;
+@property (nonatomic, strong, readonly, nullable) FLAnimatedImage *animatedImage;
+
++ (YHImage *)imageNamed:(NSString *)name;
++ (YHImage *)imageWithImage:(UIImage *)image;
++ (YHImage *)imageWithData:(NSData *)data;
++ (YHImage *)imageWithContentsOfFile:(NSString *)path;
 
 @end
 

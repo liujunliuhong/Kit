@@ -7,7 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "YHImageBrowserDataProtocol.h"
+#import "YHImageBrowserCellDataProtocol.h"
+#import "YHImageBrowserLayoutDirectionManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,9 +19,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required;
 
-- (void)yh_setCellData:(id<YHImageBrowserDataProtocol>)data;
+// 设置cell初始data
+- (void)yh_browserSetInitialCellData:(id<YHImageBrowserCellDataProtocol>)data layoutDirection:(YHImageBrowserLayoutDirection)layoutDirection containerSize:(CGSize)containerSize;
 
-
+// 屏幕旋转
+- (void)yh_browserLayoutDirectionChanged:(YHImageBrowserLayoutDirection)layoutDirection containerSize:(CGSize)containerSize;
 
 
 
