@@ -31,6 +31,8 @@
     if (self) {
         self.backgroundColor = [UIColor orangeColor];
         
+        [self addGesture];
+        
         [self.layoutDirectionManager startObserve];
         
         __weak typeof(self) weakSelf = self;
@@ -48,13 +50,35 @@
     [self.browserView updateLayoutWithDirection:direction containerSize:containerSize];
 }
 
+- (void)addGesture {
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(respondsToLongPress:)];
+    [self addGestureRecognizer:longPress];
+}
+
 #pragma mark ------------------ Public Methods ------------------
 - (void)show{
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     [window addSubview:self];
+    self.window.windowLevel = UIWindowLevelAlert; // 隐藏状态栏(不用关心当前状态栏样式)
     [self addSubview:self.browserView];
     
     [self updateLayoutOfSubViewsWithLayoutDirection:[YHImageBrowserLayoutDirectionManager getCurrntLayoutDirection]];
+    
+    //[self.browserView scrollToPageIndex:1];
+}
+
+#pragma mark ------------------ Gesture Action ------------------
+- (void)respondsToLongPress:(UILongPressGestureRecognizer *)longPressGesture{
+    if (longPressGesture.state == UIGestureRecognizerStateBegan) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(imageBrowser:imageData:longGesture:)]) {
+            [self.delegate imageBrowser:self imageData:self.browserView.currentData longGesture:longPressGesture];
+            return;
+        }
+        
+        
+        
+        
+    }
 }
 
 #pragma mark ------------------ YHImageBrowserViewDataSource ------------------

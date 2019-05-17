@@ -25,8 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 // 屏幕旋转
 - (void)yh_browserLayoutDirectionChanged:(YHImageBrowserLayoutDirection)layoutDirection containerSize:(CGSize)containerSize;
 
-
-
 @end
 
 NS_ASSUME_NONNULL_END

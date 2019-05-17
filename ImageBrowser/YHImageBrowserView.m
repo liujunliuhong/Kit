@@ -14,13 +14,13 @@
 #define kPreloadCount         2
 #define kCacheCountLimit      8
 
-@interface YHImageBrowserView() <UICollectionViewDataSource, UICollectionViewDelegate>
-@property (nonatomic, assign) CGSize containerSize;
+@interface YHImageBrowserView() <UICollectionViewDataSource, UICollectionViewDelegate> {
+    BOOL _isDealingScreenRotation;                              // 屏幕旋转时，会触发didScroll方法，此时不能正确获取索引，故添加此变量进行标记判断
+    YHImageBrowserLayoutDirection _layoutDirection;             // 记录当前屏幕旋转方向
+    CGSize _containerSize;                                      // 记录当前容器尺寸
+}
 @property (nonatomic, strong) NSCache *dataCache;
-
 @property (nonatomic, assign) NSUInteger currentIndex;
-
-@property (nonatomic, assign) YHImageBrowserLayoutDirection layoutDirection;
 @property (nonatomic, strong) NSMutableSet *reuseIdentifierSet;
 
 @end
@@ -43,6 +43,7 @@
     if (self) {
         self.reuseIdentifierSet = [NSMutableSet set];
         self.currentIndex = -1;
+        _isDealingScreenRotation = NO;
         
         self.delegate = self;
         self.dataSource = self;
@@ -63,15 +64,16 @@
  * 根据屏幕旋转方向更新布局
  */
 - (void)updateLayoutWithDirection:(YHImageBrowserLayoutDirection)direction containerSize:(CGSize)containerSize{
-    self.containerSize = containerSize;
-    self.layoutDirection = direction;
+    _containerSize = containerSize;
+    _layoutDirection = direction;
+    _isDealingScreenRotation = YES;
     self.frame = CGRectMake(0, 0, containerSize.width, containerSize.height);
     
     if (self.superview) {
         NSArray<UICollectionViewCell<YHImageBrowserCellProtocol> *> *cells = [self visibleCells];
         [cells enumerateObjectsUsingBlock:^(UICollectionViewCell<YHImageBrowserCellProtocol> * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([obj respondsToSelector:@selector(yh_browserLayoutDirectionChanged:containerSize:)]) {
-                [obj yh_browserLayoutDirectionChanged:self.layoutDirection containerSize:self.containerSize];
+                [obj yh_browserLayoutDirectionChanged:self->_layoutDirection containerSize:self->_containerSize];
             }
         }];
         [self scrollToPageIndex:self.currentIndex];
@@ -79,14 +81,16 @@
     
     [self setNeedsLayout];
     [self layoutIfNeeded];
+    _isDealingScreenRotation = NO;
 }
 
 /**
  * 滑动到指定索引
  */
 - (void)scrollToPageIndex:(NSInteger)index{
-    if (index >= [self.yh_dataSource yh_numberOfCellForImageBrowserView:self]) {
-        self.currentIndex = [self.yh_dataSource yh_numberOfCellForImageBrowserView:self] - 1;
+    NSInteger count = [self.yh_dataSource yh_numberOfCellForImageBrowserView:self];
+    if (index >= count) {
+        self.currentIndex = count - 1;
         self.contentOffset = CGPointMake(self.bounds.size.width * self.currentIndex, 0);
     } else {
         CGPoint targetPoint = CGPointMake(self.bounds.size.width * index, 0);
@@ -147,7 +151,7 @@
     NSLog(@"😆%@", cell);
     
     
-    [cell yh_browserSetInitialCellData:data layoutDirection:self.layoutDirection containerSize:self.containerSize];
+    [cell yh_browserSetInitialCellData:data layoutDirection:_layoutDirection containerSize:_containerSize];
     
     
     return cell;
@@ -161,7 +165,7 @@
     if (index >= [self.yh_dataSource yh_numberOfCellForImageBrowserView:self] || index < 0) {
         return;
     }
-    if (self.currentIndex != index) {
+    if (self.currentIndex != index && !_isDealingScreenRotation) {
         self.currentIndex = index;
         
         if (self.yh_delegate && [self.yh_delegate respondsToSelector:@selector(yh_imageBrowserView:pageIndexChanged:)]) {

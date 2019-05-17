@@ -26,14 +26,17 @@
 }
 @property (nonatomic, assign) BOOL isLoading;
 
-@property (nonatomic, strong) YHImage *image;
-
 @end
 
 
 @implementation YHImageBrowserCellData
 
-
+- (void)dealloc
+{
+    if (_downloadToken) {
+        [YHImageBrowserWebImageManager cancelDownloadWithDownloadToken:_downloadToken];
+    }
+}
 
 - (instancetype)init
 {
@@ -48,6 +51,9 @@
 
 - (void)loadData{
     if (self.isLoading) {
+        // 目的是为了触发来回滑动时，触发KVO监听
+        YHImageBrowserCellDataState tmpState = self.dataState;
+        self.dataState = tmpState;
         return;
     }
     
@@ -68,7 +74,7 @@
             }];
         }];
         return;
-    } else if (self.URL) {
+    } else if (self.imageURL) {
         [self loadThumbImageWithCompletionBlock:^{
             [self queryImageCacheWithCompletionBlock:^{
                 if (!self.image.image && !self.image.animatedImage) {
@@ -194,14 +200,14 @@
 
 // 查询缓存图片
 - (void)queryImageCacheWithCompletionBlock:(void(^)(void))completionBlock{
-    if (!self.URL) {
+    if (!self.imageURL) {
         if (completionBlock) {
             completionBlock();
         }
         return;
     }
     self.dataState = YHImageBrowserCellDataState_IsQueryingCache;
-    [YHImageBrowserWebImageManager queryCacheImageWithKey:self.URL completionBlock:^(UIImage * _Nullable image, NSData * _Nullable data) {
+    [YHImageBrowserWebImageManager queryCacheImageWithKey:self.imageURL completionBlock:^(UIImage * _Nullable image, NSData * _Nullable data) {
         YHImageBrowserAsync(dispatch_get_global_queue(0, 0), ^{
             self.image = [[YHImage alloc] initDownloadWithImage:image imageData:data];
             YHImageBrowserAsync(dispatch_get_main_queue(), ^{
@@ -217,14 +223,14 @@
 
 // 下载图片
 - (void)downLoadImageWithCompletionBlock:(void(^)(void))completionBlock{
-    if (!self.URL) {
+    if (!self.imageURL) {
         if (completionBlock) {
             completionBlock();
         }
         return;
     }
     self.dataState = YHImageBrowserCellDataState_DownloadReady;
-    _downloadToken = [YHImageBrowserWebImageManager downloadImageWithURL:self.URL progressBlock:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
+    _downloadToken = [YHImageBrowserWebImageManager downloadImageWithURL:self.imageURL progressBlock:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
         YHImageBrowserAsync(dispatch_get_main_queue(), ^{
             self.dataState = YHImageBrowserCellDataState_IsDownloading;
             CGFloat value = 0.0;
@@ -241,7 +247,7 @@
         YHImageBrowserAsync(dispatch_get_global_queue(0, 0), ^{
             self.image = [[YHImage alloc] initDownloadWithImage:image imageData:data];
             YHImageBrowserAsync(dispatch_get_main_queue(), ^{
-                [YHImageBrowserWebImageManager storeImage:image imageData:data forKey:self.URL toDisk:YES];
+                [YHImageBrowserWebImageManager storeImage:image imageData:data forKey:self.imageURL toDisk:YES];
                 self.dataState = YHImageBrowserCellDataState_DownloadSuccess;
                 if (completionBlock) {
                     completionBlock();

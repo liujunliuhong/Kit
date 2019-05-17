@@ -103,6 +103,7 @@ static NSString *_NSStringByAppendingNameScale(NSString *string, CGFloat scale) 
         } else {
             UIImage *tmpImage = [UIImage imageWithData:imageData];
             self.image = tmpImage ? tmpImage : image;
+            self.animatedImage = nil;
         }
     }
     return self;

@@ -13,6 +13,7 @@
 #import "YHImageBrowserCellData.h"
 #import "YHImageBrowserCellData+Private.h"
 
+#import "UIView+YHImageBrowserProgressView.h"
 
 #import <FLAnimatedImage/FLAnimatedImage.h>
 
@@ -54,9 +55,12 @@
 - (void)prepareForReuse{
     // 复原
     self.mainScrollView.zoomScale = 1;
+    self.mainImageView.animatedImage = nil;
     self.mainImageView.image = nil;
     // 移除观察者
     [self removeObserverForDataState];
+    //
+    [self yh_hideProgressView];
     
     [super prepareForReuse];
 }
@@ -91,8 +95,15 @@
     self.mainScrollView.frame = CGRectMake(0, 0, _containerSize.width, _containerSize.height);
 }
 
-// 更新mainImageView的Frame
+
+/**
+ * 更新mainImageView的约束
+ */
 - (void)updateContentViewLayout{
+    self.mainScrollView.zoomScale = 1;
+    self.mainScrollView.minimumZoomScale = 1;
+    self.mainScrollView.maximumZoomScale = 1;
+    
     CGSize imageSize;
     if (self.cellData.image) {
         if (self.cellData.image.image) {
@@ -104,24 +115,35 @@
         return;
     }
     
-    CGFloat width = 0;
-    CGFloat height = 0;
-    CGFloat x = 0;
-    CGFloat y = 0;
-    
-    width = _containerSize.width; // 宽度抵满屏幕
-    height = width * (imageSize.height / imageSize.width); // 得到高度
+    CGFloat width = 0;     // mainImageView的宽
+    CGFloat height = 0;    // mainImageView的高
+    CGFloat x = 0;         // mainImageView的origin.x
+    CGFloat y = 0;         // mainImageView的origin.y
     CGPoint offset = CGPointZero; // scrollView偏移量
     
-    if (imageSize.width / imageSize.height >= _containerSize.width / _containerSize.height) {
-        // 图片太宽
-        y = (_containerSize.height - height) / 2.0;
-        offset = CGPointZero;
-    } else if (imageSize.height / imageSize.width >= _containerSize.height / _containerSize.width) {
-        // 图片太高
-        y = 0;
-        offset = CGPointMake(0, (height - _containerSize.height) / 2.0);
+    if (_layoutDirection == YHImageBrowserLayoutDirection_Vertical) {
+        width = _containerSize.width; // 宽度抵满屏幕
+        height = width * (imageSize.height / imageSize.width); // 得到高度
+        if ((imageSize.width / imageSize.height) / (_containerSize.width / _containerSize.height) >= 4.0) {
+            // 图片宽的不像话了
+            height = _containerSize.width;
+            width = height * (imageSize.width / imageSize.height);
+        }
+        
+        y = (_containerSize.height - height) / 2.0 >= 0 ? (_containerSize.height - height) / 2.0 : 0.0;
+        offset = CGPointMake((width - _containerSize.width) / 2.0 >= 0 ? (width - _containerSize.width) / 2.0 : 0.0, (height - _containerSize.height) / 2.0 >= 0 ? (height - _containerSize.height) / 2.0 : 0.0);
+    } else {
+        height = _containerSize.height; // 高度抵满屏幕
+        width = height * (imageSize.width / imageSize.height); // 得到宽度
+        if ((imageSize.height / imageSize.width) / (_containerSize.height / _containerSize.width) >= 4.0) {
+            // 图片高的不像话了
+            width = _containerSize.height;
+            height = width * (imageSize.height / imageSize.width);
+        }
+        x = (_containerSize.width - width) / 2.0 >= 0 ? (_containerSize.width - width) / 2.0 : 0.0;
+        offset = CGPointMake((width - _containerSize.width) / 2.0 >= 0 ? (width - _containerSize.width) / 2.0 : 0.0, (height - _containerSize.height) / 2.0 >= 0 ? (height - _containerSize.height) / 2.0 : 0.0);
     }
+    
     
     self.mainImageView.frame = CGRectMake(x, y, width, height);
     [self.mainScrollView setContentOffset:offset animated:NO];
@@ -170,31 +192,37 @@
         case YHImageBrowserCellDataState_IsCompressingImage:
         {
             // 正在压缩图片
+            [self yh_showLoading];
         }
             break;
         case YHImageBrowserCellDataState_CompressImageComplete:
         {
             // 压缩图片完成
+            [self yh_hideProgressView];
         }
             break;
         case YHImageBrowserCellDataState_IsDecoding:
         {
             // 正在Decode本地图片
+            [self yh_showLoading];
         }
             break;
         case YHImageBrowserCellDataState_DecodeComplete:
         {
             // 本地图片Decod完成
+            [self yh_hideProgressView];
         }
             break;
         case YHImageBrowserCellDataState_IsQueryingCache:
         {
             // 正在查询缓存图片
+            [self yh_showLoading];
         }
             break;
         case YHImageBrowserCellDataState_QueryCacheComplete:
         {
             // 缓存图片查询完成
+            [self yh_hideProgressView];
         }
             break;
         case YHImageBrowserCellDataState_DownloadReady:
@@ -206,16 +234,25 @@
         {
             // 图片下载中(此时有下载进度)
             NSLog(@"😋:下载进度:%.2f", data.downloadProgress);
+            CGFloat value = data.downloadProgress;
+            if (value <= 0.0) {
+                value = 0.0;
+            } else if (value >= 1.0) {
+                value = 1.0;
+            }
+            [self yh_showProgressViewWithValue:value];
         }
             break;
         case YHImageBrowserCellDataState_DownloadSuccess:
         {
             // 图片下载成功
+            [self yh_hideProgressView];
         }
             break;
         case YHImageBrowserCellDataState_DownloadFailed:
         {
             // 图片下载失败
+            [self yh_hideProgressView];
         }
             break;
         default:
@@ -251,7 +288,7 @@
 
 #pragma mark ------------------ KVO ------------------
 - (void)addObserverForDataState{
-    [self.cellData addObserver:self forKeyPath:@"dataState" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+    [self.cellData addObserver:self forKeyPath:@"dataState" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (void)removeObserverForDataState {
@@ -300,13 +337,13 @@
     NSLog(@"😆:%.2f", zoomScale);
     
     CGRect imageViewFrame = self.mainImageView.frame;
-
+    
     CGFloat width = imageViewFrame.size.width;
     CGFloat height = imageViewFrame.size.height;
     
     CGFloat sHeight = scrollView.bounds.size.height;
     CGFloat sWidth = scrollView.bounds.size.width;
-
+    
     if (height > sHeight) {
         imageViewFrame.origin.y = 0;
     } else {

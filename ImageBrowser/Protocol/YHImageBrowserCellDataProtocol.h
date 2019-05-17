@@ -19,12 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (Class)yh_cellClass;
 
-
-
-
-
-
-
 @end
 
 NS_ASSUME_NONNULL_END

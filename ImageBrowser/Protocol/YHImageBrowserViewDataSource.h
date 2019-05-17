@@ -11,7 +11,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @class YHImageBrowserView;
-
+/**
+ * YHImageBrowserView数据源
+ */
 @protocol YHImageBrowserViewDataSource <NSObject>
 
 @required;
