@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "YHImageBrowserCellDataProtocol.h"
 #import "YHImageBrowserCellData.h"
+#import "YHImageBrowserSheetView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @class YHImageBrowser;
@@ -17,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
  * YHImageBrowser长按.
  * 如果不实现该协议，长按时，框架内部使用默认的sheetView.
  */
-- (void)imageBrowser:(YHImageBrowser *)imageBrowser imageData:(YHImage *)imagedata longGesture:(UILongPressGestureRecognizer *)longGesture;
+- (void)imageBrowser:(YHImageBrowser *)imageBrowser longGesture:(UILongPressGestureRecognizer *)longGesture withCurrentImageData:(YHImage *)imagedata;
 
 
 
@@ -33,6 +34,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSArray<id<YHImageBrowserCellDataProtocol>> *dataSourceArray;
 
 @property (nonatomic, weak) id<YHImageBrowserDelegate> delegate;
+
+
+@property (nonatomic, strong, readonly) YHImageBrowserSheetView *defaultSheetView;
+
+
 
 - (void)show;
 

@@ -15,6 +15,8 @@
 @interface YHImageBrowser() <YHImageBrowserViewDataSource, YHImageBrowserViewDelegate>
 @property (nonatomic, strong) YHImageBrowserView *browserView;
 
+@property (nonatomic, strong) YHImageBrowserSheetView *defaultSheetView;
+
 @property (nonatomic, strong) YHImageBrowserLayoutDirectionManager *layoutDirectionManager;
 @end
 
@@ -70,8 +72,8 @@
 #pragma mark ------------------ Gesture Action ------------------
 - (void)respondsToLongPress:(UILongPressGestureRecognizer *)longPressGesture{
     if (longPressGesture.state == UIGestureRecognizerStateBegan) {
-        if (self.delegate && [self.delegate respondsToSelector:@selector(imageBrowser:imageData:longGesture:)]) {
-            [self.delegate imageBrowser:self imageData:self.browserView.currentData longGesture:longPressGesture];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(imageBrowser:longGesture:withCurrentImageData:)]) {
+            [self.delegate imageBrowser:self longGesture:longPressGesture withCurrentImageData:self.browserView.currentData];
             return;
         }
         
