@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * 根据屏幕旋转方向更新布局
  */
-- (void)updateLayoutWithDirection:(YHImageBrowserLayoutDirection)direction containerSize:(CGSize)containerSize;
+- (void)updateLayoutWithDirection:(YHImageBrowserLayoutDirection)direction containerFrame:(CGRect)containerFrame;
 
 /**
  * 滑动到指定索引

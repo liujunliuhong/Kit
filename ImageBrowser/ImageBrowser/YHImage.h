@@ -8,7 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import <FLAnimatedImage/FLAnimatedImage.h>
+#if __has_include(<FLAnimatedImage/FLAnimatedImage.h>)
+    #import <FLAnimatedImage/FLAnimatedImage.h>
+#elif __has_include("FLAnimatedImage.h")
+    #import "FLAnimatedImage.h"
+#endif
+
+
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -14,10 +14,10 @@
 #define kPreloadCount         2
 #define kCacheCountLimit      8
 
-@interface YHImageBrowserView() <UICollectionViewDataSource, UICollectionViewDelegate> {
+@interface YHImageBrowserView() <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout> {
     BOOL _isDealingScreenRotation;                              // 屏幕旋转时，会触发didScroll方法，此时不能正确获取索引，故添加此变量进行标记判断
     YHImageBrowserLayoutDirection _layoutDirection;             // 记录当前屏幕旋转方向
-    CGSize _containerSize;                                      // 记录当前容器尺寸
+    CGRect _containerFrame;                                     // 记录当前容器尺寸
 }
 @property (nonatomic, strong) NSCache *dataCache;
 @property (nonatomic, assign) NSUInteger currentIndex;
@@ -52,28 +52,33 @@
         self.showsHorizontalScrollIndicator = NO;
         self.showsVerticalScrollIndicator = NO;
         self.pagingEnabled = YES;
-        self.backgroundColor = [UIColor orangeColor];
-        if (@available(iOS 11.0, *)) {
-            self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        }
+        self.backgroundColor = [UIColor clearColor];
     }
     return self;
 }
 
+
+
 /**
  * 根据屏幕旋转方向更新布局
  */
-- (void)updateLayoutWithDirection:(YHImageBrowserLayoutDirection)direction containerSize:(CGSize)containerSize{
-    _containerSize = containerSize;
+- (void)updateLayoutWithDirection:(YHImageBrowserLayoutDirection)direction containerFrame:(CGRect)containerFrame{
+    _containerFrame = containerFrame;
     _layoutDirection = direction;
     _isDealingScreenRotation = YES;
-    self.frame = CGRectMake(0, 0, containerSize.width, containerSize.height);
+    
+    // 屏幕旋转时，设置一下itemSize，不然控制台会报itemSize的y约束警告
+    UICollectionViewFlowLayout *layout = (id) self.collectionViewLayout;
+    layout.itemSize = CGSizeMake(0.1, 0.1);
+    
+    self.frame = containerFrame;
+    
     
     if (self.superview) {
         NSArray<UICollectionViewCell<YHImageBrowserCellProtocol> *> *cells = [self visibleCells];
         [cells enumerateObjectsUsingBlock:^(UICollectionViewCell<YHImageBrowserCellProtocol> * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if ([obj respondsToSelector:@selector(yh_browserLayoutDirectionChanged:containerSize:)]) {
-                [obj yh_browserLayoutDirectionChanged:self->_layoutDirection containerSize:self->_containerSize];
+            if ([obj respondsToSelector:@selector(yh_browserLayoutDirectionChanged:containerFrmae:)]) {
+                [obj yh_browserLayoutDirectionChanged:self->_layoutDirection containerFrmae:self->_containerFrame];
             }
         }];
         [self scrollToPageIndex:self.currentIndex];
@@ -151,8 +156,44 @@
     NSLog(@"😆%@", cell);
     
     
-    [cell yh_browserSetInitialCellData:data layoutDirection:_layoutDirection containerSize:_containerSize];
+    [cell yh_browserSetInitialCellData:data layoutDirection:_layoutDirection containerFrame:_containerFrame];
     
+    __weak typeof(self) weakSelf = self;
+    if ([cell respondsToSelector:@selector(setYh_browserStartPanDownBlock:)]) {
+        [cell setYh_browserStartPanDownBlock:^{
+            weakSelf.scrollEnabled = NO;
+            if (weakSelf.yh_delegate && [weakSelf.yh_delegate respondsToSelector:@selector(yh_willStartPanDownWithImageBrowserView:)]) {
+                [weakSelf.yh_delegate yh_willStartPanDownWithImageBrowserView:weakSelf];
+            }
+        }];
+    }
+    if ([cell respondsToSelector:@selector(setYh_browserEndPanDownBlock:)]) {
+        [cell setYh_browserEndPanDownBlock:^{
+            weakSelf.scrollEnabled = YES;
+        }];
+    }
+    if ([cell respondsToSelector:@selector(setYh_browserChangePanDownBlock:)]) {
+        [cell setYh_browserChangePanDownBlock:^(CGFloat alpha) {
+            if (weakSelf.yh_delegate && [weakSelf.yh_delegate respondsToSelector:@selector(yh_imageBrowserView:didChangeAlpha:)]) {
+                [weakSelf.yh_delegate yh_imageBrowserView:weakSelf didChangeAlpha:alpha];
+            }
+        }];
+    }
+    if ([cell respondsToSelector:@selector(setYh_browserResetPanDownBlock:)]) {
+        [cell setYh_browserResetPanDownBlock:^(NSTimeInterval interval) {
+            if (weakSelf.yh_delegate && [weakSelf.yh_delegate respondsToSelector:@selector(yh_imageBrowserView:resetWithInterval:)]) {
+                [weakSelf.yh_delegate yh_imageBrowserView:weakSelf resetWithInterval:interval];
+            }
+        }];
+    }
+    
+    if ([cell respondsToSelector:@selector(setYh_browserDismissPanDownBlock:)]) {
+        [cell setYh_browserDismissPanDownBlock:^(NSTimeInterval interval) {
+            if (weakSelf.yh_delegate && [weakSelf.yh_delegate respondsToSelector:@selector(yh_imageBrowserView:dismissWithInterval:)]) {
+                [weakSelf.yh_delegate yh_imageBrowserView:weakSelf dismissWithInterval:interval];
+            }
+        }];
+    }
     
     return cell;
 }
@@ -183,6 +224,7 @@
     }
     return _dataCache;
 }
+
 
 - (id<YHImageBrowserCellDataProtocol>)currentData{
     return [self dataAtIndex:self.currentIndex];

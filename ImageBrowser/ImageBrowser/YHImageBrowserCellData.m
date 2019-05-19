@@ -8,14 +8,18 @@
 
 #import "YHImageBrowserCellData.h"
 
-#import <FLAnimatedImage/FLAnimatedImage.h>
+#if __has_include(<FLAnimatedImage/FLAnimatedImage.h>)
+    #import <FLAnimatedImage/FLAnimatedImage.h>
+#elif __has_include("FLAnimatedImage.h")
+    #import "FLAnimatedImage.h"
+#endif
 
+#import "YHImageBrowserDefine.h"
 #import "YHImageBrowserWebImageManager.h"
 #import "YHImageBrowserCell.h"
-
 #import "YHImageBrowserCellData+Private.h"
-
 #import "YHImage+Private.h"
+
 
 
 #define kMaxImageSize     CGSizeMake(4096.0, 4096.0)
@@ -24,7 +28,7 @@
 @interface YHImageBrowserCellData() {
     __weak id _downloadToken;
 }
-@property (nonatomic, assign) BOOL isLoading;
+
 
 @end
 
@@ -291,19 +295,15 @@
 
 
 
+
 #pragma mark ------------------ YHImageBrowserCellDataProtocol ------------------
 - (Class)yh_cellClass{
     return [YHImageBrowserCell class];
     
 }
 
-
-
-static void YHImageBrowserAsync(dispatch_queue_t queue, dispatch_block_t block) {
-    if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(queue)) == 0) {
-        block();
-    } else {
-        dispatch_async(queue, block);
-    }
+- (void)yh_saveToPhotoAlblum:(NSString *)photoAlblumName{
+    
 }
+
 @end

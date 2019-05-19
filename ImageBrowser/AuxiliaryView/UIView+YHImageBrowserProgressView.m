@@ -64,7 +64,7 @@ static char yh_imageBrowserView_associated_key;
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor orangeColor];
+        self.backgroundColor = [UIColor clearColor];
         self.userInteractionEnabled = NO;
         
         [self addSubview:self.textLabel];

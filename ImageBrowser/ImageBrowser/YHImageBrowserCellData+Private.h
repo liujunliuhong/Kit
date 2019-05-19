@@ -46,6 +46,7 @@ typedef NS_ENUM(NSUInteger, YHImageBrowserCellDataState) {
 
 @property (nonatomic, strong) YHImage *image;
 
+@property (nonatomic, assign) BOOL isLoading;
 
 - (void)loadData;
 

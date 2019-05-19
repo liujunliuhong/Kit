@@ -14,10 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
  * cellData协议
  */
 @protocol YHImageBrowserCellDataProtocol <NSObject>
-
 @required;
 
 - (Class)yh_cellClass;
+
+@optional;
+- (void)yh_saveToPhotoAlblum:(NSString *)photoAlblumName;
 
 @end
 
