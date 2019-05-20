@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @class PHAssetCollection;
@@ -22,7 +23,20 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (void)createAlbum:(NSString *)albumName completionBlock:(void(^)(BOOL isSuccess, PHAssetCollection *_Nullable assetCollection))completionBlock;
 
+/**
+ * 根据相册名字获取PHAssetCollection相册实例，如果没有给定相册名字的相册，则会新建
+ */
++ (void)getAlbumWithAlbum:(NSString *)albumName completionBlock:(void(^)(PHAssetCollection *_Nullable assetCollection))completionBlock;
 
+/**
+ * 把data存进相册，支持Image和GIF
+ */
++ (void)saveToPhotoAlbumWithAlbumName:(NSString *)albumName data:(NSData *)data completionBlock:(void(^_Nullable)(BOOL isSuccess, NSError *_Nullable error))completionBlock;
+
+/**
+ * 把Image存进相册
+ */
++ (void)saveToPhotoAlbumWithAlbumName:(NSString *)albumName image:(UIImage *)image completionBlock:(void(^_Nullable)(BOOL isSuccess, NSError *_Nullable error))completionBlock;
 
 @end
 

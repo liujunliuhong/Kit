@@ -20,7 +20,9 @@
 #import "YHImageBrowserCellData+Private.h"
 #import "YHImage+Private.h"
 
-
+#import "YHAuthorizetion.h"
+#import "YHPhotoManager.h"
+#import "YHMBHud.h"
 
 #define kMaxImageSize     CGSizeMake(4096.0, 4096.0)
 
@@ -29,6 +31,7 @@
     __weak id _downloadToken;
 }
 
+@property (nonatomic, strong) YHImage *image;
 
 @end
 
@@ -145,7 +148,7 @@
     
     YHImageBrowserAsync(dispatch_get_global_queue(0, 0), ^{
         
-        // ... 压缩中
+        // ... 压缩中(暂未完成)
         self.compressImage = self.image.image;
         
         YHImageBrowserAsync(dispatch_get_main_queue(), ^{
@@ -241,7 +244,7 @@
             if (expectedSize > 0) {
                 value = receivedSize * 1.0 / expectedSize;
             }
-            NSLog(@"☁️:%.2f", value);
+            //NSLog(@"☁️:%.2f", value);
             self.downloadProgress = value;
         });
     } successBlock:^(UIImage * _Nullable image, NSData * _Nullable data, BOOL finished) {
@@ -303,7 +306,31 @@
 }
 
 - (void)yh_saveToPhotoAlblum:(NSString *)photoAlblumName{
-    
+    [YHAuthorizetion requestAuthorizetionWithType:YHAuthorizetionType_Photos completion:^(BOOL granted, BOOL isFirst) {
+        if (granted) {
+            if (self.image.animatedImage) {
+                [YHPhotoManager saveToPhotoAlbumWithAlbumName:photoAlblumName data:self.image.animatedImage.data completionBlock:^(BOOL isSuccess, NSError * _Nullable error) {
+                    if (isSuccess) {
+                        YH_MB_HUD_Tip(@"保存成功");
+                    } else {
+                        YH_MB_HUD_Tip(@"保存失败");
+                    }
+                }];
+            } else if (self.image.image) {
+                [YHPhotoManager saveToPhotoAlbumWithAlbumName:photoAlblumName image:self.image.image completionBlock:^(BOOL isSuccess, NSError * _Nullable error) {
+                    if (isSuccess) {
+                        YH_MB_HUD_Tip(@"保存成功");
+                    } else {
+                        YH_MB_HUD_Tip(@"保存失败");
+                    }
+                }];
+            } else {
+                YH_MB_HUD_Tip(@"保存失败");
+            }
+        } else {
+            YH_MB_HUD_Tip(@"保存失败，请在\"设置\"中打开相册授权");
+        }
+    }];
 }
 
 @end

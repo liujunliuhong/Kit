@@ -32,6 +32,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, weak) id<YHImageBrowserDelegate> delegate;
 
+/**
+ * 图片保存到指定相册的名字
+ */
+@property (nonatomic, copy) NSString *saveAlbumName;
 
 /**
  * 当前索引所对应的data

@@ -7,6 +7,7 @@
 //
 
 #import "YHImageBrowserToolBar.h"
+#import "YHMacro.h"
 #import "YHImageBrowserDefine.h"
 
 @interface YHImageBrowserToolBar ()
@@ -30,8 +31,8 @@
     [super layoutSubviews];
     self.gradientLayer.frame = self.bounds;
     
-    if (YHImageBrowser_DeviceOrientation == UIInterfaceOrientationPortrait || YHImageBrowser_DeviceOrientation == UIInterfaceOrientationPortraitUpsideDown || YHImageBrowser_DeviceOrientation ==  UIInterfaceOrientationUnknown) {
-        if (YHImageBrowser_IS_IPHONE_X) {
+    if (YH_DeviceOrientation == UIInterfaceOrientationPortrait || YH_DeviceOrientation == UIInterfaceOrientationPortraitUpsideDown || YH_DeviceOrientation ==  UIInterfaceOrientationUnknown) {
+        if (YH_IS_IPHONE_X) {
             self.indexLabel.frame = CGRectMake(0, self.frame.size.height - 50, self.frame.size.width, 50);
         } else {
             self.indexLabel.frame = self.bounds;

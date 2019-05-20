@@ -52,6 +52,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (CGFloat)imageBrowser:(YHImageBrowser *)imageBrowser heightForBottomView:(CGFloat)heightForBottomView;
 
+/**
+ * 当使用框架内部的SheetView时，点击"保存"的回调.
+ */
+- (void)imageBrowserSaveAction:(YHImageBrowser *)imageBrowser;
+
 @end
 
 NS_ASSUME_NONNULL_END

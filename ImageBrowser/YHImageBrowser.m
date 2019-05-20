@@ -7,6 +7,7 @@
 //
 
 #import "YHImageBrowser.h"
+#import "YHMacro.h"
 #import "YHImageBrowserDefine.h"
 #import "YHImageBrowserCellData+Private.h"
 #import "YHImageBrowserView.h"
@@ -67,14 +68,14 @@ YHImageBrowserSheetViewDelegate> {
  * 根据屏幕旋转方向，更新约束
  */
 - (void)updateLayoutOfSubViewsWithLayoutDirection:(YHImageBrowserLayoutDirection)direction{
-    CGSize containerSize = CGSizeMake(YHImageBrowser_ScreenWidth, YHImageBrowser_ScreenHeight);
+    CGSize containerSize = CGSizeMake(YH_ScreenWidth, YH_ScreenHeight);
     self.frame = CGRectMake(0, 0, containerSize.width, containerSize.height);
     [self.browserView updateLayoutWithDirection:direction containerFrame:self.frame];
     
     //
     CGFloat toolHeight = 50.0;
     if (direction == YHImageBrowserLayoutDirection_Vertical) {
-        if (YHImageBrowser_IS_IPHONE_X) {
+        if (YH_IS_IPHONE_X) {
             toolHeight = 44.0 + 50.0;
         }
     }
@@ -138,6 +139,9 @@ YHImageBrowserSheetViewDelegate> {
     
     
     [self updateLayoutOfSubViewsWithLayoutDirection:[YHImageBrowserLayoutDirectionManager getCurrntLayoutDirection]];
+    
+    
+    
     [self.browserView scrollToPageIndex:self.currentIndex];
 }
 
@@ -250,10 +254,16 @@ YHImageBrowserSheetViewDelegate> {
     if (clickIndex == 0) {
         // 保存照片或者GIF  视频暂时不支持保存
         if ([self.currentData isKindOfClass:[YHImageBrowserCellData class]]) {
-            YHImageBrowserCellData *data = (YHImageBrowserCellData *)self.currentData;
-            if (data && [data respondsToSelector:@selector(yh_saveToPhotoAlblum:)]) {
-                [data yh_saveToPhotoAlblum:@""];
+            if (self.delegate && [self.delegate respondsToSelector:@selector(imageBrowserSaveAction:)]) {
+                [self.delegate imageBrowserSaveAction:self];
+            } else {
+                YHImageBrowserCellData *data = (YHImageBrowserCellData *)self.currentData;
+                if (data && [data respondsToSelector:@selector(yh_saveToPhotoAlblum:)]) {
+                    [data yh_saveToPhotoAlblum:self.saveAlbumName];
+                }
             }
+        } else {
+            // 如果要对视频操作，在此处完成......
         }
     }
 }

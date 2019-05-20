@@ -35,6 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) YHImage *(^localImageBlock)(void);
 
 
+/**
+ * 最终的YHImage对象
+ */
+@property (nonatomic, strong, readonly) YHImage *image;
+
 @end
 
 NS_ASSUME_NONNULL_END

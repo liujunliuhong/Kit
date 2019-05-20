@@ -7,7 +7,7 @@
 //
 
 #import "YHImageBrowserSheetView.h"
-#import "YHImageBrowserDefine.h"
+#import "YHMacro.h"
 
 #if __has_include(<Masonry/Masonry.h>)
     #import <Masonry/Masonry.h>
@@ -65,8 +65,8 @@
 }
 
 - (void)updateFrame{
-    self.backgroundView.frame = CGRectMake(0, 0, YHImageBrowser_ScreenWidth, YHImageBrowser_ScreenHeight);
-    self.maskView.frame = CGRectMake(0, 0, YHImageBrowser_ScreenWidth, YHImageBrowser_ScreenHeight);
+    self.backgroundView.frame = CGRectMake(0, 0, YH_ScreenWidth, YH_ScreenHeight);
+    self.maskView.frame = CGRectMake(0, 0, YH_ScreenWidth, YH_ScreenHeight);
     
     CGRect frame = self.effectView.frame;
     frame.origin.x = 0.0;
@@ -89,8 +89,8 @@
     
     [self addSubview:self.effectView];
     
-    self.backgroundView.frame = CGRectMake(0, 0, YHImageBrowser_ScreenWidth, YHImageBrowser_ScreenHeight);
-    self.maskView.frame = CGRectMake(0, 0, YHImageBrowser_ScreenWidth, YHImageBrowser_ScreenHeight);
+    self.backgroundView.frame = CGRectMake(0, 0, YH_ScreenWidth, YH_ScreenHeight);
+    self.maskView.frame = CGRectMake(0, 0, YH_ScreenWidth, YH_ScreenHeight);
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
     [self.backgroundView addGestureRecognizer:tap];
@@ -204,7 +204,7 @@
         }
     }
     
-    h += YHImageBrowser__Bottom_Height;
+    h += YH_Bottom_Height;
     
     
     _containerHeight = h;
