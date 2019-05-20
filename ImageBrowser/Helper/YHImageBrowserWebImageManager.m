@@ -8,10 +8,10 @@
 
 #import "YHImageBrowserWebImageManager.h"
 
-#if __has_include(<SDWebImage/SDWebImageManager.h>)
-    #import <SDWebImage/SDWebImageManager.h>
-#elif __has_include("SDWebImageManager.h")
-    #import "SDWebImageManager.h"
+#if __has_include(<SDWebImage/SDWebImage.h>)
+    #import <SDWebImage/SDWebImage.h>
+#elif __has_include("SDWebImage.h")
+    #import "SDWebImage.h"
 #endif
 
 @implementation YHImageBrowserWebImageManager

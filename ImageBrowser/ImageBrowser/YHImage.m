@@ -8,10 +8,10 @@
 
 #import "YHImage.h"
 
-#if __has_include(<SDWebImage/UIImage+MultiFormat.h>)
-    #import <SDWebImage/UIImage+MultiFormat.h>
-#elif __has_include("UIImage+MultiFormat.h")
-    #import "UIImage+MultiFormat.h"
+#if __has_include(<SDWebImage/SDWebImage.h>)
+    #import <SDWebImage/SDWebImage.h>
+#elif __has_include("SDWebImage.h")
+    #import "SDWebImage.h"
 #endif
 
 #import "YHImage+Private.h"

@@ -7,7 +7,7 @@
 //
 
 #import "YHPhotoManager.h"
-#import <Photos/Photos.h>
+
 
 @implementation YHPhotoManager
 + (void)checkAlbumIsExistWithAlbum:(NSString *)albumName completionBlock:(void (^)(BOOL))completionBlock{
