@@ -17,12 +17,18 @@
 @property (nonatomic, assign, readonly) CGFloat columnSpacing;
 @property (nonatomic, assign, readonly) UIEdgeInsets sectionInsets;
 @property (nonatomic, assign, readonly) CGFloat interItemSpacing;
+@property (nonatomic, assign, readonly) BOOL isHeaderWidthBaseSectionInsets;
+@property (nonatomic, assign, readonly) BOOL isFooterWidthBaseSectionInsets;
+@property (nonatomic, assign, readonly) CGFloat bottomOffset;
 
 
 - (instancetype)initWithNumberOfColumns:(NSInteger)numberOfColumns
                           columnSpacing:(CGFloat)columnSpacing
                        interItemSpacing:(CGFloat)interItemSpacing
-                          sectionInsets:(UIEdgeInsets)sectionInsets NS_DESIGNATED_INITIALIZER;
+                          sectionInsets:(UIEdgeInsets)sectionInsets
+         isHeaderWidthBaseSectionInsets:(BOOL)isHeaderWidthBaseSectionInsets
+         isFooterWidthBaseSectionInsets:(BOOL)isFooterWidthBaseSectionInsets
+                           bottomOffset:(CGFloat)bottomOffset NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -34,6 +40,9 @@
                           columnSpacing:(CGFloat)columnSpacing
                        interItemSpacing:(CGFloat)interItemSpacing
                           sectionInsets:(UIEdgeInsets)sectionInsets
+         isHeaderWidthBaseSectionInsets:(BOOL)isHeaderWidthBaseSectionInsets
+         isFooterWidthBaseSectionInsets:(BOOL)isFooterWidthBaseSectionInsets
+                           bottomOffset:(CGFloat)bottomOffset
 {
     self = [super init];
     if (self) {
@@ -41,6 +50,9 @@
         _columnSpacing = columnSpacing;
         _interItemSpacing = interItemSpacing;
         _sectionInsets = sectionInsets;
+        _isHeaderWidthBaseSectionInsets = isHeaderWidthBaseSectionInsets;
+        _isFooterWidthBaseSectionInsets = isFooterWidthBaseSectionInsets;
+        _bottomOffset = bottomOffset;
     }
     return self;
 }
@@ -53,7 +65,10 @@
     return _numberOfColumns == info.numberOfColumns
     && _columnSpacing == info.columnSpacing
     && UIEdgeInsetsEqualToEdgeInsets(_sectionInsets, info.sectionInsets)
-    && _interItemSpacing == info.interItemSpacing;
+    && _interItemSpacing == info.interItemSpacing
+    && _isHeaderWidthBaseSectionInsets == info.isHeaderWidthBaseSectionInsets
+    && _isFooterWidthBaseSectionInsets == info.isFooterWidthBaseSectionInsets
+    && _bottomOffset == info.bottomOffset;
 }
 
 - (BOOL)isEqual:(id)other{
@@ -72,11 +87,17 @@
         CGFloat columnSpacing;
         UIEdgeInsets sectionInsets;
         CGFloat interItemSpacing;
+        BOOL isHeaderWidthBaseSectionInsets;
+        BOOL isFooterWidthBaseSectionInsets;
+        CGFloat bottomOffset;
     } data = {
         _numberOfColumns,
         _columnSpacing,
         _sectionInsets,
         _interItemSpacing,
+        _isHeaderWidthBaseSectionInsets,
+        _isFooterWidthBaseSectionInsets,
+        _bottomOffset,
     };
     return ASHashBytes(&data, sizeof(data));
 }
@@ -103,10 +124,22 @@
                           sectionInsets:(UIEdgeInsets)sectionInsets
                         scrollDirection:(ASScrollDirection)scrollDirection
 {
+    return [self initWithNumberOfColumns:numberOfColumns columnSpacing:columnSpacing interItemSpacing:interItemSpacing sectionInsets:sectionInsets isHeaderWidthBaseSectionInsets:NO isFooterWidthBaseSectionInsets:NO bottomOffset:0 scrollDirection:scrollDirection];
+}
+
+- (instancetype)initWithNumberOfColumns:(NSInteger)numberOfColumns
+                          columnSpacing:(CGFloat)columnSpacing
+                       interItemSpacing:(CGFloat)interItemSpacing
+                          sectionInsets:(UIEdgeInsets)sectionInsets
+         isHeaderWidthBaseSectionInsets:(BOOL)isHeaderWidthBaseSectionInsets
+         isFooterWidthBaseSectionInsets:(BOOL)isFooterWidthBaseSectionInsets
+                           bottomOffset:(CGFloat)bottomOffset
+                        scrollDirection:(ASScrollDirection)scrollDirection
+{
     self = [super init];
     if (self) {
         _scrollDirection = scrollDirection;
-        _info = [[YHASCollectionLayoutInfo alloc] initWithNumberOfColumns:numberOfColumns columnSpacing:columnSpacing interItemSpacing:interItemSpacing sectionInsets:sectionInsets];
+        _info = [[YHASCollectionLayoutInfo alloc] initWithNumberOfColumns:numberOfColumns columnSpacing:columnSpacing interItemSpacing:interItemSpacing sectionInsets:sectionInsets isHeaderWidthBaseSectionInsets:isHeaderWidthBaseSectionInsets isFooterWidthBaseSectionInsets:isFooterWidthBaseSectionInsets bottomOffset:bottomOffset];
     }
     return self;
 }
@@ -160,10 +193,18 @@
         // header.
         ASCollectionElement *headerElement = [elements supplementaryElementOfKind:UICollectionElementKindSectionHeader atIndexPath:indexPath];
         if (headerElement) {
-            UICollectionViewLayoutAttributes *attrs = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-                                                                                                                     withIndexPath:indexPath];
-            CGSize size = [headerElement.node layoutThatFits:ASSizeRangeUnconstrained].size;
-            CGRect frame = CGRectMake(info.sectionInsets.left, top, size.width, size.height);
+            UICollectionViewLayoutAttributes *attrs = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader                                                                                                                     withIndexPath:indexPath];
+            
+            CGSize size = CGSizeZero;
+            CGRect frame = CGRectZero;
+            if (!info.isHeaderWidthBaseSectionInsets) {
+                size = [headerElement.node layoutThatFits:ASSizeRangeMake(CGSizeZero, CGSizeMake(layoutWidth, CGFLOAT_MAX))].size;
+                frame = CGRectMake(0, top, size.width, size.height);
+            } else {
+                size = [headerElement.node layoutThatFits:ASSizeRangeMake(CGSizeZero, CGSizeMake(layoutWidth - info.sectionInsets.left - info.sectionInsets.right, CGFLOAT_MAX))].size;
+                frame = CGRectMake(info.sectionInsets.left, top, size.width, size.height);
+            }
+            
             attrs.frame = frame;
             [attrsMap setObject:attrs forKey:headerElement];
             top = CGRectGetMaxY(frame);
@@ -205,8 +246,18 @@
         ASCollectionElement *footerElement = [elements supplementaryElementOfKind:UICollectionElementKindSectionFooter atIndexPath:indexPath];
         if (footerElement) {
             UICollectionViewLayoutAttributes *attrs = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionFooter withIndexPath:indexPath];
-            CGSize size = [footerElement.node layoutThatFits:ASSizeRangeUnconstrained].size;
-            CGRect frame = CGRectMake(info.sectionInsets.left, top, size.width, size.height);
+            
+            
+            CGSize size = CGSizeZero;
+            CGRect frame = CGRectZero;
+            if (!info.isFooterWidthBaseSectionInsets) {
+                size = [footerElement.node layoutThatFits:ASSizeRangeMake(CGSizeZero, CGSizeMake(layoutWidth, CGFLOAT_MAX))].size;
+                frame = CGRectMake(0, top, size.width, size.height);
+            } else {
+                size = [footerElement.node layoutThatFits:ASSizeRangeMake(CGSizeZero, CGSizeMake(layoutWidth - info.sectionInsets.left - info.sectionInsets.right, CGFLOAT_MAX))].size;
+                frame = CGRectMake(info.sectionInsets.left, top, size.width, size.height);
+            }
+            
             attrs.frame = frame;
             [attrsMap setObject:attrs forKey:footerElement];
             top = CGRectGetMaxY(frame);
@@ -219,6 +270,10 @@
     }
     
     CGFloat contentHeight = [[[columnHeights lastObject] firstObject] floatValue];
+    
+    // bottomOffSet
+    contentHeight += info.bottomOffset;
+    
     CGSize contentSize = CGSizeMake(layoutWidth, contentHeight);
     return [[ASCollectionLayoutState alloc] initWithContext:context contentSize:contentSize elementToLayoutAttributesTable:attrsMap];
 }
