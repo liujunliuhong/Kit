@@ -121,6 +121,9 @@
     
     CGSize imageSize;
     if (self.cellData.image) {
+        if (!self.cellData.image.image && !self.cellData.image.animatedImage) {
+            return;
+        }
         if (self.cellData.image.image) {
             imageSize = self.cellData.image.image.size;
         }
