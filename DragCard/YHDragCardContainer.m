@@ -12,26 +12,15 @@
 #import "YHMacro.h"
 #import "UIView+YHFrame.h"
 
-static char pan_gesture;
 
 static const CGFloat kBoundaryRatio   = 0.8f;
-static const CGFloat kSecondCardScale = 0.95f;
-static const CGFloat kTherdCardScale  = 0.9f;
 
 static const CGFloat kCardEdage        = 25.0f;
-static const CGFloat kContainerEdage   = 0.0;
-static const CGFloat kNavigationHeight = 64.0f;
-
-static const CGFloat kVisibleCount     = 4;
 
 
 static const CGFloat kMinScale         = 0.9;
 
-@interface YHDragCardContainer() {
-    CGFloat _adjoinScale;                                                          // 相邻两个card之间的scale差值
-    NSMutableArray<NSValue *> *_transforms;
-    NSMutableArray<NSValue *> *_frames;
-}
+@interface YHDragCardContainer()
 
 @property (nonatomic, assign) CGRect initialFirstCardFrame;                        // 初始化时，顶部第一个卡片的位置
 @property (nonatomic, assign) CGRect initialLastCardFrame;                         // 初始化时，底部最后一个卡片的位置
@@ -41,7 +30,13 @@ static const CGFloat kMinScale         = 0.9;
 @property (nonatomic, assign) BOOL isMoving;                                       // 是否正在手势拖动中
 @property (nonatomic, strong) NSMutableArray<UIView *> *currentCards;              // 当前可见的卡片数量
 
+@property (nonatomic, strong) NSMutableArray<UIView *> *activeCards;
+
+@property (nonatomic, strong) NSMutableArray<NSArray<NSValue *> *> *values;
+
 @property (nonatomic, strong) YHDragCardConfig *config;                            // 配置
+
+@property (nonatomic, assign) YHDragCardDirection direction;
 
 @end
 
@@ -62,6 +57,8 @@ static const CGFloat kMinScale         = 0.9;
         self.loadedIndex = 0;
         self.isMoving = NO;
         self.currentCards = [NSMutableArray array];
+        self.activeCards = [NSMutableArray array];
+        self.values = [NSMutableArray array];
     }
     return self;
 }
@@ -69,10 +66,6 @@ static const CGFloat kMinScale         = 0.9;
 
 - (void)reloadData{
     [self installInitialCards];
-    
-    [self originalLayout];
-    
-    _adjoinScale = (1.0 - kMinScale) / (self.currentCards.count - 1);
 }
 
 - (void)installInitialCards{
@@ -87,27 +80,47 @@ static const CGFloat kMinScale         = 0.9;
     for (int i = 0; i < visibleCount; i ++) {
         UIView *cardView = [[UIView alloc] init];
         cardView.backgroundColor = YH_RandomColor;
-        cardView.frame = [self defaultCardViewFrame];
+        cardView.layer.anchorPoint = CGPointMake(0.5, 1);
+        cardView.frame = CGRectMake(0, 0, CGRectGetWidth(self.frame), CGRectGetHeight(self.frame) - (self.config.visibleCount-1) * kCardEdage);
         [self addSubview:cardView];
         [self sendSubviewToBack:cardView];
         [self.currentCards addObject:cardView];
+        [self.activeCards addObject:cardView];
+        self.loadedIndex ++;
+        [self addPanGestureForCarView:cardView];
+    }
+    
+    
+    if (self.currentCards.count == 1) {
+        return;
+    }
+    
+    
+    CGFloat unitScale = (1.0 - kMinScale) / (self.currentCards.count - 1);
+    
+    for (int i = 0; i < self.currentCards.count; i++) {
+        UIView *cardView = [self.currentCards objectAtIndex:i];
+        cardView.transform = CGAffineTransformIdentity;
+        CGRect frame = cardView.frame;
+        frame.origin.y += kCardEdage * i;
+        cardView.frame = frame;
+        cardView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1 - (unitScale * i), (1 - unitScale * i));
         if (i == 0) {
             self.initialFirstCardFrame = cardView.frame;
             self.initialFirstCardCenter = cardView.center;
+        } else if (i == self.currentCards.count - 1) {
+            self.initialLastCardTransform = cardView.transform;
+            self.initialLastCardFrame = cardView.frame;
         }
-        self.loadedIndex ++;
-        
-        [self addPanGestureForCarView:cardView];
+        CGAffineTransform tmpTransform = cardView.transform;
+        NSValue *value1 = [NSValue value:&tmpTransform withObjCType:@encode(CGAffineTransform)];
+        NSValue *value2 = [NSValue valueWithCGRect:cardView.frame];
+        [self.values addObject:@[value1, value2]]; // 数组最后一个在界面的最下面
     }
 }
 
 
 - (void)installNext{
-    if (self.isMoving) {
-        return;
-    }
-    self.isMoving = YES;
-    
     NSInteger count = [self.dataSource numberOfCardWithCardContainer:self];
     if (self.loadedIndex >= count) {
         return;
@@ -117,25 +130,16 @@ static const CGFloat kMinScale         = 0.9;
     cardView.backgroundColor = YH_RandomColor;
     cardView.layer.anchorPoint = CGPointMake(0.5, 1);
     cardView.frame = self.initialLastCardFrame;
-    //cardView.transform = self.initialLastCardTransform;
-    
+    //cardView.transform = self.initialLastCardTransform; // 不需要再设置transform了，因为新添加的元素不需要做缩放
     [self addSubview:cardView];
     [self sendSubviewToBack:cardView];
     
     [self.currentCards addObject:cardView];
+    [self.activeCards addObject:cardView];
     
     self.loadedIndex ++;
     
     [self addPanGestureForCarView:cardView];
-    
-    _transforms = [NSMutableArray array];
-    _frames = [NSMutableArray array];
-    [self.currentCards enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        CGAffineTransform transform = obj.transform;
-        NSValue *value = [NSValue value:&transform withObjCType:@encode(CGAffineTransform)];
-        [_transforms addObject:value];
-        [_frames addObject:[NSValue valueWithCGPoint:obj.frame.origin]];
-    }];
 }
 
 
@@ -160,83 +164,81 @@ static const CGFloat kMinScale         = 0.9;
     }
 }
 
-
-- (CGRect)defaultCardViewFrame{
-    CGFloat s_width  = CGRectGetWidth(self.frame);
-    CGFloat s_height = CGRectGetHeight(self.frame);
-    CGFloat c_height = s_height - kContainerEdage * 2 - kCardEdage * 2;
-    return CGRectMake(kContainerEdage,
-                      kContainerEdage,
-                      s_width  - kContainerEdage * 2,
-                      c_height);
-}
-
-
 - (void)panGestureAction:(UIPanGestureRecognizer *)gesture{
     CGPoint point = [gesture translationInView:self];
+    UIView *cardView = gesture.view;
+    // x轴位移比例
+    CGFloat widthRatio = 0.0;
+    if (self.initialFirstCardCenter.x > 0.001) {
+        widthRatio = (gesture.view.center.x - self.initialFirstCardCenter.x) / (self.initialFirstCardCenter.x / 2.0);
+    }
+    // y轴位移比例
+    CGFloat heightRatio = 0.0;
+    if (self.initialFirstCardCenter.y > 0.001) {
+        heightRatio = (gesture.view.center.y - self.initialFirstCardCenter.y) / (self.initialFirstCardCenter.y / 2.0);
+    }
+    
     if (gesture.state == UIGestureRecognizerStateBegan) {
+        // 添加下一个Card
+        [self installNext];
+        self.direction = YHDragCardDirection_Default;
+        
+        // 每次在滑动开始的时候，重置
+        //[self resetCardsLayout];
         
     } else if (gesture.state == UIGestureRecognizerStateChanged) {
-        UIView *cardView = gesture.view;
+        
+        if ([self.activeCards containsObject:cardView]) {
+            [self.activeCards removeObject:cardView];
+        }
+        
         CGPoint movedPoint = CGPointMake(gesture.view.center.x + point.x, gesture.view.center.y + point.y);
         cardView.center = movedPoint;
         cardView.transform = CGAffineTransformRotate(CGAffineTransformIdentity, (gesture.view.center.x - self.initialFirstCardCenter.x) / self.initialFirstCardCenter.x * (M_PI_4 / 12));
         [gesture setTranslation:CGPointZero inView:self];
         
-        
-        CGFloat widthRatio = 0.0;
-        if (self.initialFirstCardCenter.x >= 0.01) {
-            widthRatio = (gesture.view.center.x - self.initialFirstCardCenter.x) / self.initialFirstCardCenter.x;
+        if (widthRatio >= 0.001) {
+            // 右滑
+            self.direction = YHDragCardDirection_Right;
+        } else if (widthRatio <= -0.001) {
+            // 左滑
+            self.direction = YHDragCardDirection_Left;
+        } else {
+            // 默认
+            self.direction = YHDragCardDirection_Default;
         }
         
-        widthRatio = widthRatio <= 0 ? 0.0 : widthRatio;
-        
-        CGFloat heightRatio = 0.0;
-        if (self.initialFirstCardCenter.y <= 0.01) {
-            heightRatio = (gesture.view.center.y - self.initialFirstCardCenter.y) / self.initialFirstCardCenter.y;
+        if (heightRatio > 0.001) {
+            // 下滑
+        } else if (widthRatio < -0.001) {
+            // 上滑
+        } else {
+            // 默认
         }
-        
-        // 添加下一个Card
-        [self installNext];
+        CGFloat tmpHeightRatio = ABS(heightRatio);
+        CGFloat tmpWidthRatio = ABS(widthRatio);
         
         // 改变所有Card的位置
-        [self panForChangeVisableCardsWithRatio:widthRatio];
+        [self panForChangeVisableCardsWithRatio:sqrt(pow(tmpWidthRatio, 2) + pow(tmpHeightRatio, 2))];
         
-        
-        if (widthRatio > 0.0) {
-            // 右滑
-        } else if (widthRatio < 0.0) {
-            // 左滑
-        } else {
-            // 默认
-        }
-        
-        if (heightRatio > 0.0) {
-            // 上滑
-        } else if (widthRatio < 0.0) {
-            // 下滑
-        } else {
-            // 默认
-        }
-        
-        //
         
     } else if (gesture.state == UIGestureRecognizerStateEnded || gesture.state == UIGestureRecognizerStateCancelled || gesture.state == UIGestureRecognizerStateFailed) {
-        CGFloat widthRatio = (gesture.view.center.x - self.initialFirstCardCenter.x) / self.initialFirstCardCenter.x;
         CGFloat moveWidth  = (gesture.view.center.x  - self.initialFirstCardCenter.x);
-        CGFloat moveHeight = ABS(gesture.view.center.y - self.initialFirstCardCenter.y);
+        CGFloat moveHeight = (gesture.view.center.y - self.initialFirstCardCenter.y);
         
         moveHeight = moveHeight <= 0.01 ? 0.0 : moveHeight;
         
         CGFloat scale = moveWidth / moveHeight;
         
-        BOOL isDisappear = widthRatio >= kBoundaryRatio;
+        BOOL isDisappear = ABS(widthRatio) >= kBoundaryRatio;
         
         if (isDisappear) {
             // 消失
-            [self panForRemoveCurrentCardView:gesture.view withScale:scale withDirection:0];
+            NSLog(@"111");
+            [self panForRemoveCurrentCardView:gesture.view withScale:scale withDirection:self.direction];
         } else {
             // 复原
+            NSLog(@"222");
             [self panForResetVisableCards];
         }
     }
@@ -246,45 +248,64 @@ static const CGFloat kMinScale         = 0.9;
     if (ratio >= 1) {
         ratio = 1;
     }
-//    CGFloat scale = fabs(ratio) >= kBoundaryRatio ? kBoundaryRatio : fabs(ratio);
-//    CGFloat sPoor = _adjoinScale; // 相邻两个CardScale差值
-//
-//    CGFloat tPoor = sPoor / (kBoundaryRatio / scale); // transform x值
-//    CGFloat yPoor = kCardEdage / (kBoundaryRatio / scale); // frame y差值
     
-    
-    CGFloat offset = (self.yh_height - self.initialFirstCardFrame.size.height) / (self.currentCards.count-1);
-    
-    
-    NSLog(@"%f", ratio);
-    
-    for (int i = 1; i < self.currentCards.count - 1; i++) {
-        UIView *cardView = [self.currentCards objectAtIndex:i];
-        
-        CGAffineTransform tmpTransform;
-        CGAffineTransform tmpTransform1;
-        [_transforms[i] getValue:&tmpTransform];
-        [_transforms[i+1] getValue:&tmpTransform1];
-        
-        
-        
-        CGPoint point = [_frames[i] CGPointValue];
-        CGPoint point1 = [_frames[i+1] CGPointValue];
-        
-//        NSLog(@"%f       %f",tmpTransform.a, (tmpTransform1.a - tmpTransform.a));
-        
-//        CGAffineTransform scale = CGAffineTransformScale(CGAffineTransformIdentity, tmpTransform.a + (tmpTransform1.a - tmpTransform.a) * ratio, tmpTransform.d + (tmpTransform1.d - tmpTransform.d) * ratio);
-//        CGAffineTransform translate = CGAffineTransformTranslate(scale, 0, tmpTransform.ty + (tmpTransform1.ty - tmpTransform.ty) * ratio);
-//        cardView.transform = translate;
-//
-        
-        
-        cardView.transform = CGAffineTransformScale(CGAffineTransformIdentity, tmpTransform.a + (tmpTransform.a - tmpTransform1.a) * ratio, tmpTransform.d + (tmpTransform.d - tmpTransform1.d) * ratio);
-        
-        CGRect ff = cardView.frame;
-        ff.origin.y = point.y + (point.y - point1.y) * ratio;
-        cardView.frame = ff;
+    NSArray<UIView *> *activeCards = [NSArray arrayWithArray:self.activeCards];
+    if (self.activeCards.count > self.config.visibleCount) {
+        activeCards = [self.activeCards subarrayWithRange:NSMakeRange(0, self.config.visibleCount)];
     }
+    
+    if (activeCards.count == self.config.visibleCount) {
+        for (int i = 1; i < activeCards.count; i++) {
+            UIView *cardView = [activeCards objectAtIndex:i];
+            CGAffineTransform tmpTransform;
+            CGAffineTransform tmpTransform1;
+            [self.values[i][0] getValue:&tmpTransform];
+            [self.values[i-1][0] getValue:&tmpTransform1];
+            
+            CGRect rect = [self.values[i][1] CGRectValue];
+            CGRect rect1 = [self.values[i-1][1] CGRectValue];
+            
+            cardView.transform = CGAffineTransformScale(CGAffineTransformIdentity, tmpTransform.a + (tmpTransform1.a - tmpTransform.a) * ratio, tmpTransform.d + (tmpTransform1.d - tmpTransform.d) * ratio);
+            
+            CGRect frame = cardView.frame;
+            frame.origin.y = rect.origin.y + (rect1.origin.y - rect.origin.y) * ratio;
+            cardView.frame = frame;
+        }
+    } else {
+        for (int i = 1; i < activeCards.count; i++) {
+            UIView *cardView = [activeCards objectAtIndex:i];
+            CGAffineTransform tmpTransform;
+            CGAffineTransform tmpTransform1;
+            [self.values[i+(self.config.visibleCount-activeCards.count)][0] getValue:&tmpTransform];
+            [self.values[i+(self.config.visibleCount-activeCards.count)-1][0] getValue:&tmpTransform1];
+            
+            CGRect rect = [self.values[i+(self.config.visibleCount-activeCards.count)][1] CGRectValue];
+            CGRect rect1 = [self.values[i+(self.config.visibleCount-activeCards.count)-1][1] CGRectValue];
+            
+            cardView.transform = CGAffineTransformScale(CGAffineTransformIdentity, tmpTransform.a + (tmpTransform1.a - tmpTransform.a) * ratio, tmpTransform.d + (tmpTransform1.d - tmpTransform.d) * ratio);
+            
+            CGRect frame = cardView.frame;
+            frame.origin.y = rect.origin.y + (rect1.origin.y - rect.origin.y) * ratio;
+            cardView.frame = frame;
+        }
+    }
+//    for (int i = 1; i < self.config.visibleCount; i++) {
+//        UIView *cardView = [self.currentCards objectAtIndex:i >= self.currentCards.count ? self.currentCards.count - 1 : i];
+//        NSLog(@"😄%d", i);
+//        CGAffineTransform tmpTransform;
+//        CGAffineTransform tmpTransform1;
+//        [self.values[i][0] getValue:&tmpTransform];
+//        [self.values[i-1][0] getValue:&tmpTransform1];
+//
+//        CGRect rect = [self.values[i][1] CGRectValue];
+//        CGRect rect1 = [self.values[i-1][1] CGRectValue];
+//
+//        cardView.transform = CGAffineTransformScale(CGAffineTransformIdentity, tmpTransform.a + (tmpTransform1.a - tmpTransform.a) * ratio, tmpTransform.d + (tmpTransform1.d - tmpTransform.d) * ratio);
+//
+//        CGRect frame = cardView.frame;
+//        frame.origin.y = rect.origin.y + (rect1.origin.y - rect.origin.y) * ratio;
+//        cardView.frame = frame;
+//    }
 }
 
 - (void)panForRemoveCurrentCardView:(UIView *)cardView withScale:(CGFloat)scale withDirection:(YHDragCardDirection)direction{
@@ -292,11 +313,10 @@ static const CGFloat kMinScale         = 0.9;
     [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
         cardView.center = CGPointMake(YH_ScreenWidth * flag, YH_ScreenWidth * flag / scale + self.initialFirstCardCenter.y);
     } completion:^(BOOL finished) {
-        self.isMoving = NO;
-        [self.currentCards removeObject:cardView];
         [cardView removeFromSuperview];
-        [self originalLayout];
     }];
+    [self.currentCards removeObject:cardView];
+    [self resetCardsLayout];
     
 }
 
@@ -305,41 +325,56 @@ static const CGFloat kMinScale         = 0.9;
     [lastView removeFromSuperview];
     [self.currentCards removeLastObject];
     self.loadedIndex --;
-    self.isMoving = NO;
-    [self originalLayout];
+    [self resetCardsLayout];
 }
 
 
 
 
 
-- (void)originalLayout{
-    if (self.currentCards.count == 1) {
-        return;
+- (void)resetCardsLayout{
+    NSArray<UIView *> *activeCards = [NSArray arrayWithArray:self.activeCards];
+    if (self.activeCards.count >= self.config.visibleCount+1) {
+        activeCards = [self.activeCards subarrayWithRange:NSMakeRange(0, self.config.visibleCount+1)];
     }
     
-    CGFloat offset = (self.yh_height - self.initialFirstCardFrame.size.height) / (self.currentCards.count - 1);
-    
-    CGFloat ss = (1 - kMinScale) / (self.currentCards.count - 1);
-    
-    for (int i = 0; i < self.currentCards.count; i++) {
-        
-        UIView *cardView = [self.currentCards objectAtIndex:i];
-        cardView.layer.anchorPoint = CGPointMake(0.5, 1);
-        cardView.transform = CGAffineTransformIdentity;
-        CGRect frame = self.initialFirstCardFrame;
-        
-        frame.origin.y += offset * i;
-        
-        cardView.frame = frame;
-        
-        cardView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1 - ss * i, 1 - ss * i);
-        
-        if (i == self.currentCards.count - 1) {
-            self.initialLastCardTransform = cardView.transform;
-            self.initialLastCardFrame = cardView.frame;
+    if (activeCards.count == self.config.visibleCount + 1) {
+        for (int i = 1; i < activeCards.count; i++) {
+            CGAffineTransform tmpTransform;
+            [self.values[i-1][0] getValue:&tmpTransform];
+            CGRect rect = [self.values[i-1][1] CGRectValue];
+            
+            UIView *cardView = [activeCards objectAtIndex:i];
+            cardView.transform = tmpTransform;
+            cardView.frame = rect;
+        }
+    } else {
+        for (int i = 0; i < activeCards.count; i++) {
+            
+            CGAffineTransform tmpTransform;
+            [self.values[i+(self.config.visibleCount-activeCards.count)][0] getValue:&tmpTransform];
+            CGRect rect = [self.values[i+(self.config.visibleCount-activeCards.count)][1] CGRectValue];
+            
+            UIView *cardView = [activeCards objectAtIndex:i];
+            cardView.transform = tmpTransform;
+            cardView.frame = rect;
         }
     }
+    
+    
+    
+//    // 在非常快速滑动的情况下，当前的currentCards的数量可能会比visibleCount多很多个，因此要做个判断
+//    for (int i = 0; i < self.currentCards.count; i++) {
+//        if (i < self.config.visibleCount) {
+//            CGAffineTransform tmpTransform;
+//            [self.values[i][0] getValue:&tmpTransform];
+//            CGRect rect = [self.values[i][1] CGRectValue];
+//
+//            UIView *cardView = [self.currentCards objectAtIndex:i];
+//            cardView.transform = tmpTransform;
+//            cardView.frame = rect;
+//        }
+//    }
 }
 
 
