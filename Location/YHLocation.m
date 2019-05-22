@@ -8,7 +8,7 @@
 
 #import "YHLocation.h"
 #import <objc/message.h>
-
+#import "YHMacro.h"
 
 static char yh_location_associated_key;
 static char yh_location_completion_key;
@@ -97,6 +97,24 @@ static char yh_location_request_status_completion_key;
                 block(nil, [NSError errorWithDomain:@"com.yhkit.location" code:-1 userInfo:@{NSLocalizedDescriptionKey:@"No Place"}]);
             } else {
                 CLPlacemark *placemark = placemarks[0];
+                NSString *name = placemark.name;
+                NSString *thoroughfare = placemark.thoroughfare;
+                NSString *subThoroughfare = placemark.subThoroughfare;
+                NSString *locality = placemark.locality;
+                NSString *subLocality = placemark.subLocality;
+                NSString *administrativeArea = placemark.administrativeArea;
+                NSString *subAdministrativeArea = placemark.subAdministrativeArea;
+                NSString *postalCode = placemark.postalCode;
+                NSString *ISOcountryCode = placemark.ISOcountryCode;
+                NSString *country = placemark.country;
+                NSString *inlandWater = placemark.inlandWater;
+                NSString *ocean = placemark.ocean;
+                NSArray *areasOfInterest = placemark.areasOfInterest;
+                
+                NSString *des = [NSString stringWithFormat:@"\n(纬度)latitude:%f\n(经度)longitude:%f\nname:%@\nthoroughfare:%@\nsubThoroughfare:%@\nlocality:%@\nsubLocality:%@\nadministrativeArea:%@\nsubAdministrativeArea:%@\npostalCode:%@\nISOcountryCode:%@\ncountry:%@\ninlandWater:%@\nocean:%@\nareasOfInterest:%@", placemark.location.coordinate.latitude, placemark.location.coordinate.longitude, name, thoroughfare, subThoroughfare, locality, subLocality, administrativeArea, subAdministrativeArea, postalCode, ISOcountryCode, country, inlandWater, ocean, areasOfInterest];
+                
+                YHDebugLog(@"\n\n==========================================================%@\n==========================================================\n\n", des);
+                
                 block(placemark, nil);
             }
         }

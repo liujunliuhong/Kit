@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
  * 有Header或者Footer的配置方法
  * isHeaderWidthBaseSectionInsets:Header的宽度是否根据SctionInsets来动态调整，默认NO
  * isFooterWidthBaseSectionInsets:Footer的宽度是否根据SctionInsets来动态调整，默认NO
- * bottomSpace:CollectionNode底部偏移量，默认大于0，如果小于0，框架内部自动设置为0
+ * bottomOffset:CollectionNode底部偏移量，默认大于0，如果小于0，框架内部自动设置为0
  */
 - (instancetype)initWithNumberOfColumns:(NSInteger)numberOfColumns
                           columnSpacing:(CGFloat)columnSpacing

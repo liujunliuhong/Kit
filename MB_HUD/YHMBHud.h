@@ -32,13 +32,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if __has_include(<MBProgressHUD/MBProgressHUD.h>) || __has_include("MBProgressHUD.h")
 
-/** 菊花旋转，提示信息可为空，view可为空 */
+/**
+ * 菊花旋转，提示信息可为空，view可为空
+ * 请确保在主线程调用
+ */
 + (MBProgressHUD *)hudWithMessage:(NSString * _Nullable)message inView:(UIView * _Nullable)view;
 
-/** 仅仅只有一段提示信息，一段时间后消失 */
+/**
+ * 仅仅只有一段提示信息，一段时间后消失(默认1.5s消失)
+ */
 + (void)hudOnlyMessage:(NSString *)message inView:(UIView * _Nullable)view dismissBlock:(void(^ _Nullable)(void))dismissBlock;
 
-// 在主线程隐藏hud
+/**
+ * 仅仅只有一段提示信息，一段时间后消失
+ */
++ (void)hudOnlyMessage:(NSString *)message inView:(UIView * _Nullable)view dismissTime:(NSTimeInterval)dismissTime dismissBlock:(void(^ _Nullable)(void))dismissBlock;
+
+
+/**
+ * 在主线程隐藏hud
+ */
 + (void)hideHud:(MBProgressHUD *)hud;
 
 #endif

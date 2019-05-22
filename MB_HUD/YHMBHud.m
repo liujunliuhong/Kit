@@ -10,8 +10,6 @@
 
 //HUD的背景颜色，默认黑色
 #define YHMBHUD_COLOR             [UIColor blackColor]
-//HUD消失的时间
-#define YHMBHUD_DISMISSTIME       2
 
 @implementation YHMBHud
 
@@ -39,6 +37,10 @@
 }
 /** 仅仅只有一段提示信息，一段时间后消失 */
 + (void)hudOnlyMessage:(NSString *)message inView:(UIView *)view dismissBlock:(void (^)(void))dismissBlock{
+    [YHMBHud hudOnlyMessage:message inView:view dismissTime:1.5 dismissBlock:dismissBlock];
+}
+
++ (void)hudOnlyMessage:(NSString *)message inView:(UIView *)view dismissTime:(NSTimeInterval)dismissTime dismissBlock:(void (^)(void))dismissBlock{
     dispatch_async(dispatch_get_main_queue(), ^{
         if (!message || message.length == 0) {
             return;
@@ -57,7 +59,7 @@
         hud.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
         hud.bezelView.color = [YHMBHUD_COLOR colorWithAlphaComponent:0.7];
         hud.removeFromSuperViewOnHide = YES;
-        [hud hideAnimated:YES afterDelay:YHMBHUD_DISMISSTIME];//必须在主线程，源码规定
+        [hud hideAnimated:YES afterDelay:dismissTime];//必须在主线程，源码规定
         hud.completionBlock = dismissBlock;
     });
 }
