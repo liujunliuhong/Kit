@@ -18,7 +18,9 @@
 {
     self = [super init];
     if (self) {
-        self.visibleCount = 4;
+        self.visibleCount = 3;
+        self.cardEdge = 10.0;
+        self.minScale = 0.8;
     }
     return self;
 }

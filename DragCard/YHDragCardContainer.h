@@ -20,9 +20,43 @@ typedef NS_ENUM(NSUInteger, YHDragCardDirection) {
 @class YHDragCardContainer;
 @protocol YHDragCardContainerDataSource <NSObject>
 @required;
-- (NSInteger)numberOfCardWithCardContainer:(YHDragCardContainer *)cardContainer;
+/**
+ * 卡片总共有多少个
+ */
+- (int)numberOfCardWithCardContainer:(YHDragCardContainer *)cardContainer;
+
+/**
+ * 某个索引对应的View
+ */
+- (UIView *)cardContainer:(YHDragCardContainer *)cardContainer viewForIndex:(int)index;
 @end
 
+
+
+@protocol YHDragCardContainerDelegate <NSObject>
+@optional;
+/**
+ * 点击某一个卡片的回调
+ */
+- (void)cardContainer:(YHDragCardContainer *)cardContainer didSelectedIndex:(int)index;
+
+/**
+ * 滑动到某一个索引的回调
+ */
+- (void)cardContainer:(YHDragCardContainer *)cardContainer didScrollToIndex:(int)index;
+
+/**
+ * 最后一个卡片滑完的回调
+ */
+- (void)cardContainerDidFinishDragLastCard:(YHDragCardContainer *)cardContainer;
+
+/**
+ * 卡片滑动过程中的回调(框架内部已包含动画，请不要再在外部设置动画)
+ * widthRatio:  >0 右滑      <0 左滑
+ * heightRatio: >0 下滑      <0 上滑
+ */
+- (void)cardContainer:(YHDragCardContainer *)cardContainer dragDirection:(YHDragCardDirection)dragDirection widthRatio:(CGFloat)widthRatio heightRatio:(CGFloat)heightRatio;
+@end
 
 
 /**
@@ -33,8 +67,21 @@ typedef NS_ENUM(NSUInteger, YHDragCardDirection) {
 
 @property (nonatomic, weak) id<YHDragCardContainerDataSource> dataSource;
 
-- (instancetype)initWithFrame:(CGRect)frame config:(YHDragCardConfig *)config;
+@property (nonatomic, weak) id<YHDragCardContainerDelegate> delegate;
 
+- (instancetype)initWithFrame:(CGRect)frame config:(YHDragCardConfig *)config;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
+/**
+ * 手动使卡牌滑到指定方向
+ */
+- (void)scrollToDirection:(YHDragCardDirection)direction;
+
+/**
+ * 重新加载数据
+ */
 - (void)reloadData;
 
 @end
