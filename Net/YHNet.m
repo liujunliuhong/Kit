@@ -9,6 +9,7 @@
 #import "YHNet.h"
 #import "NSString+YHExtension.h"
 #import <pthread/pthread.h>
+#import "YHMacro.h"
 
 #define kYHNetTimeOutInterval        60
 
@@ -371,6 +372,7 @@
     AFNetworkReachabilityManager *reachabilityManager = [AFNetworkReachabilityManager sharedManager];
     [reachabilityManager startMonitoring];
     [reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        YHDebugLog(@"%@", AFStringFromNetworkReachabilityStatus(status));
         if (status == AFNetworkReachabilityStatusNotReachable){
             weakSelf.networkStatus = YHNetworkStatus_NotReachable;
         } else if (status == AFNetworkReachabilityStatusUnknown){
