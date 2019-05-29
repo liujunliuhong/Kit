@@ -8,10 +8,45 @@
 
 #import "UIDevice+YHExtension.h"
 #import <sys/utsname.h>
+#import "YHMacro.h"
 
 @implementation UIDevice (YHExtension)
++ (void)load{
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    NSString *sysname = [NSString stringWithCString:systemInfo.sysname encoding:NSUTF8StringEncoding];
+    NSString *nodename = [NSString stringWithCString:systemInfo.nodename encoding:NSUTF8StringEncoding];
+    NSString *release = [NSString stringWithCString:systemInfo.release encoding:NSUTF8StringEncoding];
+    NSString *version = [NSString stringWithCString:systemInfo.version encoding:NSUTF8StringEncoding];
+    NSString *machine = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+    YHDebugLog(@"\n\n\n\n*****************************************************************************************************************\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n*****************************************************************************************************************\nsysname:     %@\nnodename:    %@\nrelease:     %@\nversion:     %@\nmachine:     %@（%@）\n*****************************************************************************************************************\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n*****************************************************************************************************************\n\n\n\n", sysname, nodename, release, version, machine, [[UIDevice currentDevice] __formatMachine:machine]);
+}
+
+
+
+/**
+ * 是否是iPhone X系列手机(刘海屏手机)
+ * 备用判断方法，要跟着Apple每年发布新版手机的变化而调整
+ */
++ (BOOL)yh_isIphoneX{
+    NSString *machineName = [[UIDevice currentDevice] __machineName];
+    BOOL res = NO;
+    if ([machineName isEqualToString:@"iPhone11,8"] ||
+        [machineName isEqualToString:@"iPhone11,6"] ||
+        [machineName isEqualToString:@"iPhone11,4"] ||
+        [machineName isEqualToString:@"iPhone11,2"] ||
+        [machineName isEqualToString:@"iPhone10,6"]) {
+        res = YES;
+    }
+    return res;
+}
 
 - (NSString *)yh_deviceName{
+    NSString *machineName = [self __machineName];
+    return [self __formatMachine:machineName];
+}
+
+- (NSString *)__machineName{
     struct utsname systemInfo;
     uname(&systemInfo);
     NSString *hardwareString = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
@@ -19,13 +54,21 @@
     if (!deviceName) {
         deviceName = [UIDevice currentDevice].systemVersion;
     }
+    return deviceName;
+}
+
+- (NSString *)__formatMachine:(NSString *)machine{
+    NSString *deviceName = machine;
     
     // iPhone
+    // 刘海屏手机
     if ([deviceName isEqualToString:@"iPhone11,8"])   {deviceName = @"iPhone XR";}
     else if ([deviceName isEqualToString:@"iPhone11,6"])   {deviceName = @"iPhone XS Max";}
     else if ([deviceName isEqualToString:@"iPhone11,4"])   {deviceName = @"iPhone XS Max";}
     else if ([deviceName isEqualToString:@"iPhone11,2"])   {deviceName = @"iPhone XS";}
     else if ([deviceName isEqualToString:@"iPhone10,6"])   {deviceName = @"iPhone X";}
+    
+    // 非刘海屏手机
     else if ([deviceName isEqualToString:@"iPhone10,5"])   {deviceName = @"iPhone 8 Plus";}
     else if ([deviceName isEqualToString:@"iPhone10,4"])   {deviceName = @"iPhone 8";}
     else if ([deviceName isEqualToString:@"iPhone10,3"])   {deviceName = @"iPhone X";}
@@ -141,5 +184,6 @@
     
     return deviceName;
 }
+
 
 @end

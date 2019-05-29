@@ -16,5 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, readonly) NSString *yh_deviceName;
 
 
+/**
+ * 是否是iPhone X系列手机(刘海屏手机)
+ * 备用判断方法，要跟着Apple每年发布新版手机的变化而调整
+ */
++ (BOOL)yh_isIphoneX;
+
 @end
 NS_ASSUME_NONNULL_END
