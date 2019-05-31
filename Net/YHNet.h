@@ -60,6 +60,7 @@ typedef NS_ENUM(NSUInteger, YHNetworkStatus) {
 
 // 当前网络状态，会根据实际网络状态实时变化
 @property (nonatomic, assign, readonly) YHNetworkStatus networkStatus;
+@property (nonatomic, assign, readonly) BOOL isReachable;
 
 // HTTP请求
 - (nullable NSURLSessionDataTask *)httpRequestWithMethod:(YHHttpMethod)httpMethod

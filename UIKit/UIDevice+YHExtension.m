@@ -19,7 +19,8 @@
     NSString *release = [NSString stringWithCString:systemInfo.release encoding:NSUTF8StringEncoding];
     NSString *version = [NSString stringWithCString:systemInfo.version encoding:NSUTF8StringEncoding];
     NSString *machine = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
-    YHDebugLog(@"\n\n\n\n*****************************************************************************************************************\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n*****************************************************************************************************************\nsysname:     %@\nnodename:    %@\nrelease:     %@\nversion:     %@\nmachine:     %@（%@）\n*****************************************************************************************************************\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n*****************************************************************************************************************\n\n\n\n", sysname, nodename, release, version, machine, [[UIDevice currentDevice] __formatMachine:machine]);
+    
+    YHDebugLog(@"\n\n\n\n*****************************************************************************************************************\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n*****************************************************************************************************************\nsysname:          %@\nnodename:         %@\nrelease:          %@\nversion:          %@\nmachine:          %@（%@）\nsystemVersion:    %@\n*****************************************************************************************************************\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n*****************************************************************************************************************\n\n\n\n", sysname, nodename, release, version, machine, [[UIDevice currentDevice] __formatMachine:machine], [UIDevice currentDevice].systemVersion);
 }
 
 
@@ -35,7 +36,8 @@
         [machineName isEqualToString:@"iPhone11,6"] ||
         [machineName isEqualToString:@"iPhone11,4"] ||
         [machineName isEqualToString:@"iPhone11,2"] ||
-        [machineName isEqualToString:@"iPhone10,6"]) {
+        [machineName isEqualToString:@"iPhone10,6"] ||
+        [machineName isEqualToString:@"iPhone10,3"]) {
         res = YES;
     }
     return res;
@@ -67,11 +69,11 @@
     else if ([deviceName isEqualToString:@"iPhone11,4"])   {deviceName = @"iPhone XS Max";}
     else if ([deviceName isEqualToString:@"iPhone11,2"])   {deviceName = @"iPhone XS";}
     else if ([deviceName isEqualToString:@"iPhone10,6"])   {deviceName = @"iPhone X";}
+    else if ([deviceName isEqualToString:@"iPhone10,3"])   {deviceName = @"iPhone X";}
     
     // 非刘海屏手机
     else if ([deviceName isEqualToString:@"iPhone10,5"])   {deviceName = @"iPhone 8 Plus";}
     else if ([deviceName isEqualToString:@"iPhone10,4"])   {deviceName = @"iPhone 8";}
-    else if ([deviceName isEqualToString:@"iPhone10,3"])   {deviceName = @"iPhone X";}
     else if ([deviceName isEqualToString:@"iPhone10,2"])   {deviceName = @"iPhone 8 Plus";}
     else if ([deviceName isEqualToString:@"iPhone10,1"])   {deviceName = @"iPhone 8";}
     else if ([deviceName isEqualToString:@"iPhone9,4"])    {deviceName = @"iPhone 7 Plus";}

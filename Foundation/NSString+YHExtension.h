@@ -48,12 +48,16 @@ static NSString *const k_YH_Chinese_Regex = @"[\\u4e00-\\u9fa5\\w\\-]+";
 // yyyy-MM-dd HH:mm:ss
 - (nullable NSString *)yh_timeStampToTimeStringWithFormat:(NSString *)format;
 
+// timeString -> timeStmp.
+// yyyy-MM-dd HH:mm:ss
+- (nullable NSString *)yh_timeStringToTimeStampWithFormat:(NSString *)format;
+
 // timeString -> NSDate.
 // yyyy-MM-dd HH:mm:ss
 - (nullable NSDate *)yh_timeStringToDateWithWithFormat:(NSString *)format;
 
 // timeStamp -> NSDate.
-// 时间戳可以是10位或者13位.
+// 时间戳可以是13位.
 // yyyy-MM-dd HH:mm:ss
 - (nullable NSDate *)yh_timeStampToDateWithFormat:(NSString *)format;
 

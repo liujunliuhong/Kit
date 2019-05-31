@@ -141,6 +141,15 @@
     return timeString;
 }
 
+- (NSString *)yh_timeStringToTimeStampWithFormat:(NSString *)format{
+    NSDate *date = [self yh_timeStringToDateWithWithFormat:format];
+    if (date) {
+        return date.yh_timeStamp;
+    } else {
+        return nil;
+    }
+}
+
 // timeString -> NSDate.
 // yyyy-MM-dd HH:mm:ss
 - (NSDate *)yh_timeStringToDateWithWithFormat:(NSString *)format{
@@ -154,21 +163,20 @@
 }
 
 // timeStamp -> NSDate.
-// 时间戳可以是10位或者13位.
+// 时间戳可以是13位.
 // yyyy-MM-dd HH:mm:ss
 - (NSDate *)yh_timeStampToDateWithFormat:(NSString *)format{
     NSDate *date = nil;
     if (self.yh_isInt) {
-        if (self.length == 10) {
-            // if length is 10.
-            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-            formatter.dateFormat = format;
-            date = [NSDate dateWithTimeIntervalSince1970:[self integerValue]];
-        } else if (self.length == 13) {
+        if (self.length == 13) {
             // if length is 13.
             NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
             formatter.dateFormat = format;
             date = [NSDate dateWithTimeIntervalSince1970:[self integerValue] / 1000];
+        } else {
+            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+            formatter.dateFormat = format;
+            date = [NSDate dateWithTimeIntervalSince1970:[self integerValue]];
         }
     }
     return date;

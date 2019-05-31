@@ -21,6 +21,7 @@
 @property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
 @property (nonatomic, strong) NSMutableArray<NSURLSessionTask *> *tasks;
 @property (nonatomic, assign) YHNetworkStatus networkStatus;
+@property (nonatomic, assign) BOOL isReachable;
 #endif
 @end
 
@@ -375,12 +376,16 @@
         YHDebugLog(@"%@", AFStringFromNetworkReachabilityStatus(status));
         if (status == AFNetworkReachabilityStatusNotReachable){
             weakSelf.networkStatus = YHNetworkStatus_NotReachable;
+            weakSelf.isReachable = NO;
         } else if (status == AFNetworkReachabilityStatusUnknown){
             weakSelf.networkStatus = YHNetworkStatus_Unkonwn;
+            weakSelf.isReachable = NO;
         } else if (status == AFNetworkReachabilityStatusReachableViaWWAN){
             weakSelf.networkStatus = YHNetworkStatus_ViaWWAN;
+            weakSelf.isReachable = YES;
         } else if (status == AFNetworkReachabilityStatusReachableViaWiFi){
             weakSelf.networkStatus = YHNetworkStatus_ViaWiFi;
+            weakSelf.isReachable = YES;
         }
     }];
 }
