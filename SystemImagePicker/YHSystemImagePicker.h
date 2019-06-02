@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, YHSystemImagePickerState) {
 
 
 /**
- 系统UIImagePickerController封装.
+ 系统UIImagePickerController封装.(内部已实现授权)
 
  @param showVC present UIAlertController的控制器
  @param title UIAlertController的标题
