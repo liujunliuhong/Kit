@@ -64,16 +64,15 @@
 #pragma mark - Methods
 
 - (void)updateSubViewsConstraint{
-    __weak typeof(self) weakSelf = self;
     [self.bottomContentView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.left.and.right.bottom.equalTo(weakSelf);
-        make.height.mas_equalTo(weakSelf.currentBottomViewHeight);
+        make.left.and.right.bottom.equalTo(self);
+        make.height.mas_equalTo(self.currentBottomViewHeight);
     }];
     
     
     [self.barContentView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.left.and.right.equalTo(weakSelf);
-        make.bottom.equalTo(weakSelf.bottomContentView.mas_top);
+        make.left.and.right.equalTo(self);
+        make.bottom.equalTo(self.bottomContentView.mas_top);
         make.height.mas_equalTo([YHCustomNavigationBar barHeight]);
     }];
     
@@ -83,14 +82,14 @@
         [self.leftViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [obj mas_remakeConstraints:^(MASConstraintMaker *make) {
                 if (!leftView) {
-                    make.left.equalTo(weakSelf.barContentView).mas_offset([self isPortrait] ? 0.0 : (YH_IS_IPHONE_X ? weakSelf.leftHorizontalEdgeInset : 0.0));
-                    make.bottom.equalTo(weakSelf.barContentView);
-                    make.top.equalTo(weakSelf.barContentView);
+                    make.left.equalTo(self.barContentView).mas_offset([self isPortrait] ? 0.0 : (YH_IS_IPHONE_X ? self.leftHorizontalEdgeInset : 0.0));
+                    make.bottom.equalTo(self.barContentView);
+                    make.top.equalTo(self.barContentView);
                     make.width.mas_equalTo(obj.frame.size.width > 0 ? obj.frame.size.width : [YHCustomNavigationBar itemBaseWidth]);
                 } else {
                     make.left.equalTo(leftView.mas_right);
-                    make.bottom.equalTo(weakSelf.barContentView);
-                    make.top.equalTo(weakSelf.barContentView);
+                    make.bottom.equalTo(self.barContentView);
+                    make.top.equalTo(self.barContentView);
                     make.width.mas_equalTo(obj.frame.size.width > 0 ? obj.frame.size.width : [YHCustomNavigationBar itemBaseWidth]);
                 }
             }];
@@ -103,14 +102,14 @@
         [self.rightViews enumerateObjectsUsingBlock:^(UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [obj mas_remakeConstraints:^(MASConstraintMaker *make) {
                 if (!rightView) {
-                    make.right.equalTo(weakSelf.barContentView).mas_offset([self isPortrait] ? 0.0 : (YH_IS_IPHONE_X ? -weakSelf.rightHorizontalEdgeInset : 0.0));
-                    make.bottom.equalTo(weakSelf.barContentView);
-                    make.top.equalTo(weakSelf.barContentView);
+                    make.right.equalTo(self.barContentView).mas_offset([self isPortrait] ? 0.0 : (YH_IS_IPHONE_X ? -self.rightHorizontalEdgeInset : 0.0));
+                    make.bottom.equalTo(self.barContentView);
+                    make.top.equalTo(self.barContentView);
                     make.width.mas_equalTo(obj.frame.size.width > 0 ? obj.frame.size.width : [YHCustomNavigationBar itemBaseWidth]);
                 } else {
                     make.right.equalTo(rightView.mas_left);
-                    make.bottom.equalTo(weakSelf.barContentView);
-                    make.top.equalTo(weakSelf.barContentView);
+                    make.bottom.equalTo(self.barContentView);
+                    make.top.equalTo(self.barContentView);
                     make.width.mas_equalTo(obj.frame.size.width > 0 ? obj.frame.size.width : [YHCustomNavigationBar itemBaseWidth]);
                 }
             }];
@@ -119,7 +118,7 @@
     }
     
     [self.line mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.left.and.right.and.bottom.equalTo(weakSelf);
+        make.left.and.right.and.bottom.equalTo(self);
         make.height.mas_equalTo(1.0);
     }];
     
@@ -139,9 +138,9 @@
     }
     
     [self.titleView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.equalTo(weakSelf.barContentView);
-        make.top.equalTo(weakSelf.barContentView);
-        make.centerX.equalTo(weakSelf.barContentView);
+        make.bottom.equalTo(self.barContentView);
+        make.top.equalTo(self.barContentView);
+        make.centerX.equalTo(self.barContentView);
         make.width.mas_equalTo(titleViewWidth < 0 ? 0 : titleViewWidth);
     }];
     
