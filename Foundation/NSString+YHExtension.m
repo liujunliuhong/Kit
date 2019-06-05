@@ -120,7 +120,11 @@
         return transcodingString;
     }
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_9_0
-    transcodingString = [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSString * kCharactersGeneralDelimitersToEncode = @":#[]@";
+    NSString * kCharactersSubDelimitersToEncode = @"!$&'()*+,;=";
+    NSMutableCharacterSet *allowedCharacterSet = (NSMutableCharacterSet *)[NSMutableCharacterSet URLQueryAllowedCharacterSet];
+    [allowedCharacterSet removeCharactersInString:[kCharactersGeneralDelimitersToEncode stringByAppendingString:kCharactersSubDelimitersToEncode]];
+    transcodingString = [self stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacterSet];
 #else
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
