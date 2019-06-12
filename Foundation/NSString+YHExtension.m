@@ -171,17 +171,15 @@
 // yyyy-MM-dd HH:mm:ss
 - (NSDate *)yh_timeStampToDateWithFormat:(NSString *)format{
     NSDate *date = nil;
-    if (self.yh_isInt) {
-        if (self.length == 13) {
-            // if length is 13.
-            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-            formatter.dateFormat = format;
-            date = [NSDate dateWithTimeIntervalSince1970:[self integerValue] / 1000];
-        } else {
-            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-            formatter.dateFormat = format;
-            date = [NSDate dateWithTimeIntervalSince1970:[self integerValue]];
-        }
+    if (self.length == 13) {
+        // if length is 13.
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        formatter.dateFormat = format;
+        date = [NSDate dateWithTimeIntervalSince1970:[self integerValue] / 1000];
+    } else {
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        formatter.dateFormat = format;
+        date = [NSDate dateWithTimeIntervalSince1970:[self integerValue]];
     }
     return date;
 }
