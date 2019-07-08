@@ -176,6 +176,7 @@
             progressBlock(progress);
         }
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [AFNetworkActivityIndicatorManager sharedManager].enabled = NO;
         id result = responseObject;
         if (responseSerializerType == YHHttpResponseSerializerTypeHTTP) {
             result = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
@@ -189,7 +190,7 @@
             successBlock(result);
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        
+        [AFNetworkActivityIndicatorManager sharedManager].enabled = NO;
         if ([self.tasks containsObject:task]) {
             [self.tasks removeObject:task];
         }
@@ -213,6 +214,7 @@
             progressBlock(progress);
         }
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [AFNetworkActivityIndicatorManager sharedManager].enabled = NO;
         id result = responseObject;
         if (responseSerializerType == YHHttpResponseSerializerTypeHTTP) {
             result = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
@@ -226,7 +228,7 @@
             successBlock(result);
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        
+        [AFNetworkActivityIndicatorManager sharedManager].enabled = NO;
         if ([self.tasks containsObject:task]) {
             [self.tasks removeObject:task];
         }
