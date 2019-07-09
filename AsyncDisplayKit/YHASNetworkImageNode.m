@@ -108,8 +108,9 @@
     UIImage *image = [[SDImageCache sharedImageCache] imageFromCacheForKey:_URL];
     if (image) {
         self.imageNode.image = image;
-        self.netImageNode.image = image;
+        self.netImageNode.image = nil;
     } else {
+        self.netImageNode.image = nil;
         self.netImageNode.URL = [NSURL URLWithString:_URL];
     }
 }
