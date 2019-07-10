@@ -27,7 +27,7 @@
     hud.mode = MBProgressHUDModeIndeterminate;
     hud.contentColor = [UIColor whiteColor];
     hud.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
-    hud.bezelView.color = [YHMBHUD_COLOR colorWithAlphaComponent:0.7];
+    hud.bezelView.color = [YHMBHUD_COLOR colorWithAlphaComponent:1];
     hud.removeFromSuperViewOnHide = YES;
     if (message.length > 0) {
         hud.label.text = message;
@@ -57,7 +57,7 @@
         hud.label.text = message;
         hud.label.numberOfLines = 0;
         hud.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
-        hud.bezelView.color = [YHMBHUD_COLOR colorWithAlphaComponent:0.7];
+        hud.bezelView.color = [YHMBHUD_COLOR colorWithAlphaComponent:1];
         hud.removeFromSuperViewOnHide = YES;
         [hud hideAnimated:YES afterDelay:dismissTime];//必须在主线程，源码规定
         hud.completionBlock = dismissBlock;
