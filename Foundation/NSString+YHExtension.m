@@ -26,6 +26,20 @@
     return [scan scanInt:&val] && [scan isAtEnd];
 }
 
+// Determine whether a string is an float.
+- (BOOL)yh_isFloat{
+    // Avoid objects that are not string types.
+    NSString *tmp = [NSString stringWithFormat:@"%@",self];
+    NSScanner *scan = [NSScanner scannerWithString:tmp];
+    float val;
+    return [scan scanFloat:&val] && [scan isAtEnd];
+}
+
+// Determine whether a string is an number.
+- (BOOL)yh_isNumber{
+    return self.yh_isInt || self.yh_isFloat;
+}
+
 // Determine whether a string is empty.
 - (BOOL)yh_isEmpty{
     return !self || self.length == 0 || [self isEqualToString:@""] || [self isEqual:[NSNull null]] || self == nil || [self isEqualToString:@"null"] || [self isEqualToString:@"NSNull"] || [self isEqualToString:@"<null>"];

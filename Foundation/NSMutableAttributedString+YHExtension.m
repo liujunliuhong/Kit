@@ -20,6 +20,7 @@
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
     paragraphStyle.lineSpacing = lineSpacing;
     paragraphStyle.alignment = alignment;
+    paragraphStyle.lineBreakMode = NSLineBreakByCharWrapping;
     
     [attr addAttributes:@{NSForegroundColorAttributeName : color,
                           NSFontAttributeName : font,
