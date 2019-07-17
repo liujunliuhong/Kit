@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * 点击了CanelButton
+ * 当实现了此协议，如果需要隐藏sheetView，请自行调用hide方法
  */
 - (void)sheetViewDicClickCancel:(YHImageBrowserSheetView *)sheetView;
 

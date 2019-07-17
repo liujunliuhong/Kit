@@ -122,7 +122,9 @@
     CGSize imageSize;
     if (self.cellData.image) {
         if (!self.cellData.image.image && !self.cellData.image.animatedImage) {
-            return;
+            //return;
+            CGFloat h = MIN(_containerFrame.size.width, _containerFrame.size.height);
+            imageSize = CGSizeMake(h, h);
         }
         if (self.cellData.image.image) {
             imageSize = self.cellData.image.image.size;
@@ -513,6 +515,7 @@
 - (FLAnimatedImageView *)mainImageView{
     if (!_mainImageView) {
         _mainImageView = [[FLAnimatedImageView alloc] init];
+        _mainImageView.backgroundColor = [[UIColor grayColor] colorWithAlphaComponent:0.5];
     }
     return _mainImageView;
 }

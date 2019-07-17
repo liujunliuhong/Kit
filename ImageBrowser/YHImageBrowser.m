@@ -162,11 +162,16 @@ YHImageBrowserSheetViewDelegate> {
             if (imageCellData.isLoading) {
                 return;
             }
-            YHImageBrowserSheetView *sheetView = [[YHImageBrowserSheetView alloc] init];
-            sheetView.delegate = self;
-            sheetView.dataSource = self;
-            [sheetView show];
-            self.defaultSheetView = sheetView;
+            if (!self.sheetView) {
+                YHImageBrowserSheetView *sheetView = [[YHImageBrowserSheetView alloc] init];
+                sheetView.delegate = self;
+                sheetView.dataSource = self;
+                [sheetView show];
+                self.defaultSheetView = sheetView;
+            } else {
+                [self.sheetView show];
+                self.defaultSheetView = self.sheetView;
+            }
         }
     }
 }
@@ -251,7 +256,7 @@ YHImageBrowserSheetViewDelegate> {
 }
 
 - (void)sheetView:(YHImageBrowserSheetView *)sheetView didClickIndex:(int)clickIndex{
-    if (clickIndex == 0) {
+    if (clickIndex == 0 && !self.sheetView) {
         // 保存照片或者GIF  视频暂时不支持保存
         if ([self.currentData isKindOfClass:[YHImageBrowserCellData class]]) {
             if (self.delegate && [self.delegate respondsToSelector:@selector(imageBrowserSaveAction:)]) {
@@ -268,9 +273,9 @@ YHImageBrowserSheetViewDelegate> {
     }
 }
 
-- (void)sheetViewDicClickCancel:(YHImageBrowserSheetView *)sheetView{
-    //
-}
+//- (void)sheetViewDicClickCancel:(YHImageBrowserSheetView *)sheetView{
+//    //
+//}
 
 - (void)sheetViewDidHide:(YHImageBrowserSheetView *)sheetView{
     //

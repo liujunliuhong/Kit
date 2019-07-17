@@ -101,6 +101,10 @@
         shouldHideCancel = [self.delegate shouldHideCancelForSheetView:self];
     }
     
+    [self.effectView.contentView.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj removeFromSuperview];
+    }];
+    
     NSArray<NSString *> *titles = [self.dataSource titlesForSheetView:self];
     
     __block CGFloat h = 0.0;
@@ -277,7 +281,11 @@
 }
 
 - (void)cancelAction:(UIButton *)sender{
-    [self hide];
+    if (_delegate && [_delegate respondsToSelector:@selector(sheetViewDicClickCancel:)]) {
+        [_delegate sheetViewDicClickCancel:self];
+    } else {
+        [self hide];
+    }
 }
 
 #pragma mark ------------------ Gesture Action ------------------

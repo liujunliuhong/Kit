@@ -110,7 +110,7 @@
         self.imageNode.image = image;
         self.netImageNode.image = nil;
     } else {
-        self.netImageNode.image = nil;
+        self.imageNode.image = nil;
         self.netImageNode.URL = [NSURL URLWithString:_URL];
     }
 }

@@ -11,6 +11,7 @@
 #import "YHImageBrowserCellData.h"
 #import "YHImageBrowserDelegate.h"
 #import "YHImageBrowserDataSource.h"
+#import "YHImageBrowserSheetView.h"
 #import "YHImage.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -47,6 +48,11 @@ NS_ASSUME_NONNULL_BEGIN
  * setter、getter
  */
 @property (nonatomic, assign) int currentIndex;
+
+/**
+ * sheetView
+ */
+@property (nonatomic, strong) YHImageBrowserSheetView *sheetView;
 
 
 - (instancetype)init;
