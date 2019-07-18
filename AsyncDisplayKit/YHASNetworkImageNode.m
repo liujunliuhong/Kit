@@ -90,11 +90,8 @@
 }
 
 - (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize{
-    if (!self.netImageNode.URL) {
-        return [ASInsetLayoutSpec insetLayoutSpecWithInsets:UIEdgeInsetsZero child:self.imageNode];
-    } else {
-        return [ASInsetLayoutSpec insetLayoutSpecWithInsets:UIEdgeInsetsZero child:self.netImageNode];
-    }
+    ASOverlayLayoutSpec *spec = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:self.netImageNode overlay:self.imageNode];
+    return [ASWrapperLayoutSpec wrapperWithLayoutElement:spec];
 }
 
 #pragma mark ------------------ ASNetworkImageNodeDelegate ------------------
@@ -107,9 +104,13 @@
     _URL = URL;
     UIImage *image = [[SDImageCache sharedImageCache] imageFromCacheForKey:_URL];
     if (image) {
+        self.imageNode.hidden = NO;
+        self.netImageNode.hidden = YES;
         self.imageNode.image = image;
         self.netImageNode.image = nil;
     } else {
+        self.imageNode.hidden = YES;
+        self.netImageNode.hidden = NO;
         self.imageNode.image = nil;
         self.netImageNode.URL = [NSURL URLWithString:_URL];
     }
