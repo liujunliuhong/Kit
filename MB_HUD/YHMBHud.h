@@ -18,8 +18,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
-#define YH_MB_HUD_Tip(__tip__)    [YHMBHud hudOnlyMessage:__tip__ inView:nil dismissBlock:nil];
-
+#if __has_include(<MBProgressHUD/MBProgressHUD.h>) || __has_include("MBProgressHUD.h")
+    #define YH_MB_HUD_Tip(__tip__)          [YHMBHud hudOnlyMessage:__tip__ inView:nil dismissBlock:nil];
+    #define YH_MB_White_HUD_Tip(__tip__)    [YHMBHud hudOnlyMessage:__tip__ hudColor:[UIColor whiteColor] messageColor:[UIColor grayColor] inView:nil dismissBlock:nil];
+#endif
 
 /**
  此类是对MBProgressHUD的封装，要使用此类，请选择按照方法1或者方法2的方式引入
@@ -37,11 +39,16 @@ NS_ASSUME_NONNULL_BEGIN
  * 请确保在主线程调用
  */
 + (MBProgressHUD *)hudWithMessage:(NSString * _Nullable)message inView:(UIView * _Nullable)view;
++ (MBProgressHUD *)hudWithMessage:(NSString * _Nullable)message hudColor:(UIColor *)hudColor messageColor:(UIColor *)messageColor inView:(UIView * _Nullable)view;
+
+
+
 
 /**
  * 仅仅只有一段提示信息，一段时间后消失(默认1.5s消失)
  */
 + (void)hudOnlyMessage:(NSString *)message inView:(UIView * _Nullable)view dismissBlock:(void(^ _Nullable)(void))dismissBlock;
++ (void)hudOnlyMessage:(NSString *)message hudColor:(UIColor *)hudColor messageColor:(UIColor *)messageColor inView:(UIView * _Nullable)view dismissBlock:(void(^ _Nullable)(void))dismissBlock;
 
 /**
  * 仅仅只有一段提示信息，一段时间后消失
