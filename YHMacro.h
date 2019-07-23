@@ -87,6 +87,17 @@
 // 当前屏幕的旋转方向，与状态栏是否隐藏无关
 #define YH_DeviceOrientation    [UIApplication sharedApplication].statusBarOrientation
 
+
+#define YH_IsPortrait \
+({ \
+BOOL isPortrait = NO; \
+if (YH_DeviceOrientation == UIInterfaceOrientationPortrait || \
+YH_DeviceOrientation == UIInterfaceOrientationPortraitUpsideDown) { \
+isPortrait = YES; \
+} \
+(isPortrait); \
+})
+
 /**
  * 是否是iPhone X（iPhone X系列）
  * iPhone X/XS      :375 * 812 (Portrait)

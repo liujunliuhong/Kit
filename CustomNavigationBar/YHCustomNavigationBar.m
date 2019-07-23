@@ -126,13 +126,13 @@
     [self layoutIfNeeded];// 获取自定义导航栏子View的frame
     [self.barContentView layoutIfNeeded];// 获取barContentView子View的frame
     
-    CGFloat left_origin_x = leftView ? leftView.frame.origin.x + leftView.frame.size.width : self.leftHorizontalEdgeInset;
-    CGFloat right_origin_x = rightView ? self.frame.size.width - rightView.frame.origin.x : self.rightHorizontalEdgeInset;
+    CGFloat left_origin_x = leftView ? leftView.frame.origin.x + leftView.frame.size.width : (YH_IsPortrait ? 0.0 : self.leftHorizontalEdgeInset);
+    CGFloat right_origin_x = rightView ? self.frame.size.width - rightView.frame.origin.x : (YH_IsPortrait ? 0.0 : self.rightHorizontalEdgeInset);
     
     CGFloat max_margin = MAX(left_origin_x, right_origin_x);
     CGFloat titleViewWidth = self.frame.size.width - max_margin * 2;
     
-    // 如果titleView有自己的宽度m，就取自己的宽度
+    // 如果titleView有自己的宽度，就取自己的宽度
     if (self.titleView.frame.size.width > 0 && self.titleView.frame.size.width <= titleViewWidth) {
         titleViewWidth = self.titleView.frame.size.width;
     }
