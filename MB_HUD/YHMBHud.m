@@ -95,6 +95,9 @@
 
 // 在主线程隐藏hud
 + (void)hideHud:(MBProgressHUD *)hud{
+    if (!hud) {
+        return;
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
         [hud hideAnimated:YES];
     });
