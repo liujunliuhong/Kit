@@ -56,6 +56,8 @@
 // UIAlertController.
 #import "YHAlertViewController.h"
 
+// PhotoManager
+#import "YHPhotoManager.h"
 
 // View Chain.
 #import "YHButtonChainModel.h"

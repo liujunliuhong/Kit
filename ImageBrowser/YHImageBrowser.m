@@ -166,12 +166,15 @@ YHImageBrowserSheetViewDelegate> {
                 YHImageBrowserSheetView *sheetView = [[YHImageBrowserSheetView alloc] init];
                 sheetView.delegate = self;
                 sheetView.dataSource = self;
+                sheetView.associatedBrowser = self;
                 [sheetView show];
                 self.defaultSheetView = sheetView;
             } else {
+                self.sheetView.associatedBrowser = self;
                 [self.sheetView show];
                 self.defaultSheetView = self.sheetView;
             }
+            
         }
     }
 }

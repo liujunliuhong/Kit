@@ -96,6 +96,7 @@
     [self.backgroundView addGestureRecognizer:tap];
     
     
+    
     BOOL shouldHideCancel = NO;
     if (self.delegate && [self.delegate respondsToSelector:@selector(shouldHideCancelForSheetView:)]) {
         shouldHideCancel = [self.delegate shouldHideCancelForSheetView:self];

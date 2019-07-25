@@ -38,6 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (void)saveToPhotoAlbumWithAlbumName:(NSString *)albumName image:(UIImage *)image completionBlock:(void(^_Nullable)(BOOL isSuccess, NSError *_Nullable error))completionBlock;
 
+
+// 把图片压缩到指定尺寸
++ (UIImage *)compressImage:(UIImage *)image toByte:(NSUInteger)maxLength;
+
+
 @end
 
 NS_ASSUME_NONNULL_END

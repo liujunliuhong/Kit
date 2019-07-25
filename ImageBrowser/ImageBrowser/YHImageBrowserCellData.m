@@ -306,6 +306,9 @@
 }
 
 - (void)yh_saveToPhotoAlblum:(NSString *)photoAlblumName{
+    if (!photoAlblumName || photoAlblumName.length <= 0) {
+        photoAlblumName = @"YHImageBrowser";
+    }
     [YHAuthorizetion requestAuthorizetionWithType:YHAuthorizetionType_Photos completion:^(BOOL granted, BOOL isFirst) {
         if (granted) {
             if (self.image.animatedImage) {

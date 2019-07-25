@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class YHImageBrowserSheetView;
+@class YHImageBrowser;
 @protocol YHImageBrowserSheetViewDataSource <NSObject>
 @required;
 /**
@@ -63,6 +64,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id<YHImageBrowserSheetViewDataSource> dataSource;
 
 @property (nonatomic, weak) id<YHImageBrowserSheetViewDelegate> delegate;
+
+// sheetView关联的ImageBrowser
+@property (nonatomic, weak) YHImageBrowser *associatedBrowser;
 
 /**
  * 显示SheetView
