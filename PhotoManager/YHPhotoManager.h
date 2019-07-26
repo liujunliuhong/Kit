@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 // 把图片压缩到指定尺寸
 + (UIImage *)compressImage:(UIImage *)image toByte:(NSUInteger)maxLength;
 
++ (NSData *)compressImageToData:(UIImage *)image toByte:(NSUInteger)maxLength;
+
 
 @end
 

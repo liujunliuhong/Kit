@@ -17,7 +17,7 @@
 
 #define kDividHeight        7.0
 #define kRowHeight          50.0
-#define kLineHeight         0.35
+#define kLineHeight         0.45
 #define kColor(_ratio_)     [[UIColor blackColor] colorWithAlphaComponent:_ratio_]
 #define kBaseTag            23412
 

@@ -94,6 +94,10 @@
 // APP在前台获取到通知
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler API_AVAILABLE(ios(10.0)){
     YHDebugLog(@"iOS 10，前台获取到推送:%@", notification.request.content.userInfo);
+    NSDictionary *info = notification.request.content.userInfo;
+    if ([notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
+        self.yh_handleNotiInfoBlock ? self.yh_handleNotiInfoBlock(info) : nil;
+    }
     //completionHandler(UNNotificationPresentationOptionAlert);//在前台收到通知时，提醒用户，如果注释掉，在前台时，不提醒
 }
 
@@ -102,8 +106,10 @@
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler API_AVAILABLE(ios(10.0)){
     NSDictionary *info = response.notification.request.content.userInfo;
     YHDebugLog(@"iOS 10，点击推送，进入APP:%@", info);
-    self.yh_remoteNotiInfoBlock ? self.yh_remoteNotiInfoBlock(info) : nil;
-    self.yh_handleNotiInfoBlock ? self.yh_handleNotiInfoBlock(info) : nil;
+    if ([response.notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
+        self.yh_remoteNotiInfoBlock ? self.yh_remoteNotiInfoBlock(info) : nil;
+        self.yh_handleNotiInfoBlock ? self.yh_handleNotiInfoBlock(info) : nil;
+    }
     completionHandler();
 }
 

@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) void(^yh_localNotiInfoBlock)(NSDictionary *_Nullable localNotiInfo);
 
 // 处理通知的回调，主要适用于第三方
-@property (nonatomic, copy) void(^yh_handleNotiInfoBlock)(NSDictionary *_Nullable localNotiInfo);
+@property (nonatomic, copy) void(^yh_handleNotiInfoBlock)(NSDictionary *_Nullable notiInfo);
 
 // 成功注册通知，收到deviceToken的回调
 @property (nonatomic, copy) void(^yh_deviceTokenBlock)(NSString *deviceToken, NSData *deviceTokenData);
