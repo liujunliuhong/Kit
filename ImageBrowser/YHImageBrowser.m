@@ -27,6 +27,8 @@ YHImageBrowserSheetViewDelegate> {
 @property (nonatomic, strong) UIView *toolBar;
 @property (nonatomic, strong) UIView *bottomView;
 @property (nonatomic, strong) YHImageBrowserLayoutDirectionManager *layoutDirectionManager;
+
+@property (nonatomic, strong) UIWindow *browserWindow;
 @end
 
 @implementation YHImageBrowser
@@ -113,16 +115,25 @@ YHImageBrowserSheetViewDelegate> {
         if (self.delegate && [self.delegate respondsToSelector:@selector(imageBrowserDidDismiss:)]) {
             [self.delegate imageBrowserDidDismiss:self];
         }
+        self.browserWindow.hidden = YES;
+        self.browserWindow = nil;
         [self removeFromSuperview];
     }];
 }
 
 #pragma mark ------------------ Public Methods ------------------
 - (void)show{
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    [window addSubview:self];
+    self.browserWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.browserWindow.backgroundColor = [UIColor clearColor];
+    self.browserWindow.windowLevel = UIWindowLevelStatusBar;
+    self.browserWindow.hidden = NO;
+    [self.browserWindow makeKeyAndVisible];
     
-    self.window.windowLevel = UIWindowLevelAlert; // 隐藏状态栏(不用关心当前状态栏样式)
+    [self.browserWindow addSubview:self];
+    
+//    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+//    [window addSubview:self];
+//    self.window.windowLevel = UIWindowLevelAlert; // 隐藏状态栏(不用关心当前状态栏样式)
     
     [self addSubview:self.browserView];
     if (self.delegate && [self.delegate respondsToSelector:@selector(viewForToolBarWithImageBrowser:)]) {
