@@ -29,6 +29,7 @@ static char yh_send_sms_associated_key;
         controller.recipients = phones;
         controller.body = smsContent;
         controller.messageComposeDelegate = sms;
+        controller.modalPresentationStyle = UIModalPresentationFullScreen;
         [showVC presentViewController:controller animated:YES completion:nil];
         objc_setAssociatedObject(sms, &yh_send_sms_completion_key, completionBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);
         objc_setAssociatedObject(showVC, &yh_send_sms_associated_key, sms, OBJC_ASSOCIATION_RETAIN_NONATOMIC);

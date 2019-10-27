@@ -53,6 +53,7 @@ completionBlock:(void (^)(UIImage * _Nullable, NSDictionary<UIImagePickerControl
                 alnlumPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary | UIImagePickerControllerSourceTypeSavedPhotosAlbum;
                 alnlumPicker.allowsEditing = YES;
                 alnlumPicker.delegate = picker;
+                alnlumPicker.modalPresentationStyle = UIModalPresentationFullScreen;
                 [showVC presentViewController:alnlumPicker animated:YES completion:nil];
             } else {
                 if (completionBlock) {
@@ -79,6 +80,7 @@ completionBlock:(void (^)(UIImage * _Nullable, NSDictionary<UIImagePickerControl
                 cameraPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
                 cameraPicker.allowsEditing = YES;
                 cameraPicker.delegate = picker;
+                cameraPicker.modalPresentationStyle = UIModalPresentationFullScreen;
                 [showVC presentViewController:cameraPicker animated:YES completion:nil];
             } else {
                 if (completionBlock) {
