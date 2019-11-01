@@ -5,10 +5,13 @@
 //  Created by apple on 2019/1/31.
 //  Copyright © 2019 yinhe. All rights reserved.
 //
+NS_ASSUME_NONNULL_BEGIN
+
+#if __has_include(<AppDelegate/AppDelegate.h>)
 
 #import "AppDelegate.h"
 
-NS_ASSUME_NONNULL_BEGIN
+
 
 @interface AppDelegate (YHNotiExtension)
 
@@ -29,5 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) void(^yh_deviceTokenBlock)(NSString *deviceToken, NSData *deviceTokenData);
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END

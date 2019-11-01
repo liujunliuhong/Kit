@@ -11,6 +11,8 @@
 #import <UserNotifications/UserNotifications.h>
 #import "YHMacro.h"
 
+#if __has_include(<AppDelegate/AppDelegate.h>)
+
 @interface AppDelegate() <UNUserNotificationCenterDelegate>
 
 @end
@@ -158,3 +160,6 @@
 
 
 @end
+
+
+#endif
