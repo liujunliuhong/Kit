@@ -21,7 +21,7 @@ static char yh_system_image_picker_compleetion_associated_key;
 @implementation YHSystemImagePicker
 
 - (void)dealloc{
-    YHDebugLog(@"%@ dealloc",NSStringFromClass([self class]));
+    YHLog(@"%@ dealloc",NSStringFromClass([self class]));
 }
 
 + (void)showIn:(UIViewController *)showVC

@@ -12,15 +12,15 @@
 
 @implementation UIDevice (YHExtension)
 + (void)load{
-    struct utsname systemInfo;
-    uname(&systemInfo);
-    NSString *sysname = [NSString stringWithCString:systemInfo.sysname encoding:NSUTF8StringEncoding];
-    NSString *nodename = [NSString stringWithCString:systemInfo.nodename encoding:NSUTF8StringEncoding];
-    NSString *release = [NSString stringWithCString:systemInfo.release encoding:NSUTF8StringEncoding];
-    NSString *version = [NSString stringWithCString:systemInfo.version encoding:NSUTF8StringEncoding];
-    NSString *machine = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
-    
-    YHDebugLog(@"\n\n\n\n*****************************************************************************************************************\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n*****************************************************************************************************************\nsysname:          %@\nnodename:         %@\nrelease:          %@\nversion:          %@\nmachine:          %@（%@）\nsystemVersion:    %@\n*****************************************************************************************************************\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n*****************************************************************************************************************\n\n\n\n", sysname, nodename, release, version, machine, [[UIDevice currentDevice] __formatMachine:machine], [UIDevice currentDevice].systemVersion);
+//    struct utsname systemInfo;
+//    uname(&systemInfo);
+//    NSString *sysname = [NSString stringWithCString:systemInfo.sysname encoding:NSUTF8StringEncoding];
+//    NSString *nodename = [NSString stringWithCString:systemInfo.nodename encoding:NSUTF8StringEncoding];
+//    NSString *release = [NSString stringWithCString:systemInfo.release encoding:NSUTF8StringEncoding];
+//    NSString *version = [NSString stringWithCString:systemInfo.version encoding:NSUTF8StringEncoding];
+//    NSString *machine = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+//
+//    YHDebugLog(@"\n\n\n\n*****************************************************************************************************************\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n*****************************************************************************************************************\nsysname:          %@\nnodename:         %@\nrelease:          %@\nversion:          %@\nmachine:          %@（%@）\nsystemVersion:    %@\n*****************************************************************************************************************\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n*****************************************************************************************************************\n", sysname, nodename, release, version, machine, [[UIDevice currentDevice] __formatMachine:machine], [UIDevice currentDevice].systemVersion);
 }
 
 

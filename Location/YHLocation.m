@@ -113,7 +113,7 @@ static char yh_location_request_status_completion_key;
                 
                 NSString *des = [NSString stringWithFormat:@"\n(纬度)latitude:%f\n(经度)longitude:%f\nname:%@\nthoroughfare:%@\nsubThoroughfare:%@\nlocality:%@\nsubLocality:%@\nadministrativeArea:%@\nsubAdministrativeArea:%@\npostalCode:%@\nISOcountryCode:%@\ncountry:%@\ninlandWater:%@\nocean:%@\nareasOfInterest:%@", placemark.location.coordinate.latitude, placemark.location.coordinate.longitude, name, thoroughfare, subThoroughfare, locality, subLocality, administrativeArea, subAdministrativeArea, postalCode, ISOcountryCode, country, inlandWater, ocean, areasOfInterest];
                 
-                YHDebugLog(@"\n\n==========================================================%@\n==========================================================\n\n", des);
+                YHLog(@"\n\n==========================================================%@\n==========================================================\n\n", des);
                 
                 block(placemark, nil);
             }

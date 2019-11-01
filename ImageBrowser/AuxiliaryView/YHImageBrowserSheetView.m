@@ -65,8 +65,8 @@
 }
 
 - (void)updateFrame{
-    self.backgroundView.frame = CGRectMake(0, 0, YH_ScreenWidth, YH_ScreenHeight);
-    self.maskView.frame = CGRectMake(0, 0, YH_ScreenWidth, YH_ScreenHeight);
+    self.backgroundView.frame = CGRectMake(0, 0, YH__ScreenWidth, YH__ScreenHeight);
+    self.maskView.frame = CGRectMake(0, 0, YH__ScreenWidth, YH__ScreenHeight);
     
     CGRect frame = self.effectView.frame;
     frame.origin.x = 0.0;
@@ -89,8 +89,8 @@
     
     [self addSubview:self.effectView];
     
-    self.backgroundView.frame = CGRectMake(0, 0, YH_ScreenWidth, YH_ScreenHeight);
-    self.maskView.frame = CGRectMake(0, 0, YH_ScreenWidth, YH_ScreenHeight);
+    self.backgroundView.frame = CGRectMake(0, 0, YH__ScreenWidth, YH__ScreenHeight);
+    self.maskView.frame = CGRectMake(0, 0, YH__ScreenWidth, YH__ScreenHeight);
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
     [self.backgroundView addGestureRecognizer:tap];
@@ -209,7 +209,7 @@
         }
     }
     
-    h += YH_Bottom_Height;
+    h += YH__Bottom_Height;
     
     
     _containerHeight = h;

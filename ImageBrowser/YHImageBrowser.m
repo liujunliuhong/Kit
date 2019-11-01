@@ -70,14 +70,14 @@ YHImageBrowserSheetViewDelegate> {
  * 根据屏幕旋转方向，更新约束
  */
 - (void)updateLayoutOfSubViewsWithLayoutDirection:(YHImageBrowserLayoutDirection)direction{
-    CGSize containerSize = CGSizeMake(YH_ScreenWidth, YH_ScreenHeight);
+    CGSize containerSize = CGSizeMake(YH__ScreenWidth, YH__ScreenHeight);
     self.frame = CGRectMake(0, 0, containerSize.width, containerSize.height);
     [self.browserView updateLayoutWithDirection:direction containerFrame:self.frame];
     
     //
     CGFloat toolHeight = 50.0;
     if (direction == YHImageBrowserLayoutDirection_Vertical) {
-        if (YH_IS_IPHONE_X) {
+        if (YH__IS_IPHONE_X) {
             toolHeight = 44.0 + 50.0;
         }
     }

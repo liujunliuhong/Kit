@@ -31,9 +31,9 @@
 
 + (void)load{
     // 延迟0秒开启网络监控
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [[YHNet sharedInstance] startMonitoringNetwork];
-    });
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        [[YHNet sharedInstance] startMonitoringNetwork];
+//    });
 }
 
 + (YHNet *)sharedInstance{
@@ -375,7 +375,7 @@
     AFNetworkReachabilityManager *reachabilityManager = [AFNetworkReachabilityManager sharedManager];
     [reachabilityManager startMonitoring];
     [reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-        YHDebugLog(@"%@", AFStringFromNetworkReachabilityStatus(status));
+        YHLog(@"当前网络:%@", AFStringFromNetworkReachabilityStatus(status));
         if (status == AFNetworkReachabilityStatusNotReachable){
             weakSelf.networkStatus = YHNetworkStatus_NotReachable;
             weakSelf.isReachable = NO;
@@ -390,6 +390,10 @@
             weakSelf.isReachable = YES;
         }
     }];
+}
+
+- (void)stopMonitoringNetwork{
+    [[AFNetworkReachabilityManager sharedManager] stopMonitoring];
 }
 
 

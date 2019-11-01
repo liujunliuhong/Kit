@@ -24,7 +24,7 @@
             UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
             center.delegate = self;
             [center requestAuthorizationWithOptions:(UNAuthorizationOptionBadge | UNAuthorizationOptionSound | UNAuthorizationOptionAlert) completionHandler:^(BOOL granted, NSError * _Nullable error) {
-                YHDebugLog(@"推送设置状态:granted:%d,error:%@", granted, error);
+                YHLog(@"推送设置状态:granted:%d,error:%@", granted, error);
             }];
         }
     } else {
@@ -41,47 +41,47 @@
         NSDictionary *localInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
         if (remoteInfo) {
             self.yh_remoteNotiInfoBlock ? self.yh_remoteNotiInfoBlock(remoteInfo) : nil;
-            YHDebugLog(@"进入应用，获取到远程推送:%@", remoteInfo);
+            YHLog(@"进入应用，获取到远程推送:%@", remoteInfo);
         }
         if (localInfo) {
             self.yh_localNotiInfoBlock ? self.yh_localNotiInfoBlock(localInfo) : nil;
-            YHDebugLog(@"进入应用，获取到本地推送:%@", remoteInfo);
+            YHLog(@"进入应用，获取到本地推送:%@", remoteInfo);
         }
     }
 }
 
 #pragma mark ------------------------------------
 - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings{
-    YHDebugLog(@"推送设置成功");
+    YHLog(@"推送设置成功");
 }
 
 #pragma mark ------------------------------------
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
-    YHDebugLog(@"注册推送失败:%@", error);
+    YHLog(@"注册推送失败:%@", error);
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{
     NSString *deviceTokenString = [[[[deviceToken description] stringByReplacingOccurrencesOfString:@"<" withString:@""] stringByReplacingOccurrencesOfString:@">" withString:@""] stringByReplacingOccurrencesOfString:@" " withString: @""];
     self.yh_deviceTokenBlock ? self.yh_deviceTokenBlock(deviceTokenString, deviceToken) : nil;
-    YHDebugLog(@"注册推送成功:%@", deviceToken);
+    YHLog(@"注册推送成功:%@", deviceToken);
 }
 
 #pragma mark ------------------------------------
 // 收到本地通知
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
-    YHDebugLog(@"收到本地推送\n:%s\n%@", __func__, notification.userInfo);
+    YHLog(@"收到本地推送\n:%s\n%@", __func__, notification.userInfo);
     self.yh_localNotiInfoBlock ? self.yh_localNotiInfoBlock(notification.userInfo) : nil;
 }
 
 // 收到远程通知
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
-    YHDebugLog(@"收到远程推送\n:%s\n%@", __func__, userInfo);
+    YHLog(@"收到远程推送\n:%s\n%@", __func__, userInfo);
     self.yh_remoteNotiInfoBlock ? self.yh_remoteNotiInfoBlock(userInfo) : nil;
     self.yh_handleNotiInfoBlock ? self.yh_handleNotiInfoBlock(userInfo) : nil;
     completionHandler(UIBackgroundFetchResultNewData);
 }
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
-    YHDebugLog(@"收到远程推送\n:%s\n%@", __func__, userInfo);
+    YHLog(@"收到远程推送\n:%s\n%@", __func__, userInfo);
     self.yh_remoteNotiInfoBlock ? self.yh_remoteNotiInfoBlock(userInfo) : nil;
     self.yh_handleNotiInfoBlock ? self.yh_handleNotiInfoBlock(userInfo) : nil;
 }
@@ -93,7 +93,7 @@
 // iOS 10
 // APP在前台获取到通知
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler API_AVAILABLE(ios(10.0)){
-    YHDebugLog(@"iOS 10，前台获取到推送:%@", notification.request.content.userInfo);
+    YHLog(@"iOS 10，前台获取到推送:%@", notification.request.content.userInfo);
     NSDictionary *info = notification.request.content.userInfo;
     if ([notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
         self.yh_handleNotiInfoBlock ? self.yh_handleNotiInfoBlock(info) : nil;
@@ -105,7 +105,7 @@
 // 点击通知，进入APP
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler API_AVAILABLE(ios(10.0)){
     NSDictionary *info = response.notification.request.content.userInfo;
-    YHDebugLog(@"iOS 10，点击推送，进入APP:%@", info);
+    YHLog(@"iOS 10，点击推送，进入APP:%@", info);
     if ([response.notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
         self.yh_remoteNotiInfoBlock ? self.yh_remoteNotiInfoBlock(info) : nil;
         self.yh_handleNotiInfoBlock ? self.yh_handleNotiInfoBlock(info) : nil;

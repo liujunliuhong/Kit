@@ -31,8 +31,8 @@
     [super layoutSubviews];
     self.gradientLayer.frame = self.bounds;
     
-    if (YH_DeviceOrientation == UIInterfaceOrientationPortrait || YH_DeviceOrientation == UIInterfaceOrientationPortraitUpsideDown || YH_DeviceOrientation ==  UIInterfaceOrientationUnknown) {
-        if (YH_IS_IPHONE_X) {
+    if (YH__DeviceOrientation == UIInterfaceOrientationPortrait || YH__DeviceOrientation == UIInterfaceOrientationPortraitUpsideDown || YH__DeviceOrientation ==  UIInterfaceOrientationUnknown) {
+        if (YH__IS_IPHONE_X) {
             self.indexLabel.frame = CGRectMake(0, self.frame.size.height - 50, self.frame.size.width, 50);
         } else {
             self.indexLabel.frame = self.bounds;

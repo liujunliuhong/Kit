@@ -16,32 +16,32 @@
 // __LINE__:宏在预编译时会替换成当前的行号.
 // __FUNCTION__:宏在预编译时会替换成当前的函数名称
 #ifdef DEBUG
-    #define YHDebugLog(format, ...)  printf("👉👉👉👉👉✅✅✅✅✅[YHDebugLog] [%s] [%d] %s\n" ,[[[NSString stringWithUTF8String:__FILE__] lastPathComponent] UTF8String], __LINE__, [[NSString stringWithFormat:format, ##__VA_ARGS__] UTF8String])
+    #define YHLog(format, ...)  printf("👉 [YHLog] [%s] [%d] %s\n" ,[[[NSString stringWithUTF8String:__FILE__] lastPathComponent] UTF8String], __LINE__, [[NSString stringWithFormat:format, ##__VA_ARGS__] UTF8String])
 #else
-    #define YHDebugLog(format, ...)
+    #define YHLog(format, ...)
 #endif
 
 
 #pragma mark - APP
 /** APP version */
-#define YH_AppVersion             [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]
+#define YH__AppVersion             [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]
 /** APP build */
-#define YH_AppBuild               [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]
+#define YH__AppBuild               [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]
 /** APP bundleID */
-#define YH_AppBundleID            [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"]
+#define YH__AppBundleID            [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"]
 /** APP Name */
-#define YH_AppName                [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"]
+#define YH__AppName                [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"]
 /** APP Default StatusBarStyle **/
-#define YH_DefaultStatusBarStyle  [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UIStatusBarStyle"] // NSString
+#define YH__DefaultStatusBarStyle  [[[NSBundle mainBundle] infoDictionary] objectForKey:@"UIStatusBarStyle"] // NSString
 
 
 
 
 #pragma mark - UIKit
-#define YH_RandomColor            [UIColor colorWithRed:arc4random_uniform(255)/255.0 green:arc4random_uniform(255)/255.0 blue:arc4random_uniform(255)/255.0 alpha:1]
-#define YH_RGB(R,G,B)             [UIColor colorWithRed:R/255.0 green:G/255.0 blue:B/255.0 alpha:1]
-#define YH_RGBA(R,G,B,A)          [UIColor colorWithRed:R/255.0 green:G/255.0 blue:B/255.0 alpha:A]
-#define YH_HexColor(hex)          [UIColor colorWithRed:((float)((hex & 0xFF0000) >> 16))/255.0 green:((float)((hex & 0xFF00) >> 8))/255.0 blue:((float)(hex & 0xFF))/255.0 alpha:1.0]
+#define YH__RandomColor            [UIColor colorWithRed:arc4random_uniform(255)/255.0 green:arc4random_uniform(255)/255.0 blue:arc4random_uniform(255)/255.0 alpha:1]
+#define YH__RGB(R,G,B)             [UIColor colorWithRed:R/255.0 green:G/255.0 blue:B/255.0 alpha:1]
+#define YH__RGBA(R,G,B,A)          [UIColor colorWithRed:R/255.0 green:G/255.0 blue:B/255.0 alpha:A]
+#define YH__HexColor(hex)          [UIColor colorWithRed:((float)((hex & 0xFF0000) >> 16))/255.0 green:((float)((hex & 0xFF00) >> 8))/255.0 blue:((float)(hex & 0xFF))/255.0 alpha:1.0]
 
 
 
@@ -50,12 +50,12 @@
 
 #pragma mark - Foundation
 /** 弧度转角度 */
-#define YH_RADIANS_TO_DEGREES(radians)              ((radians) * (180.0 / M_PI))
+#define YH__RADIANS_TO_DEGREES(radians)              ((radians) * (180.0 / M_PI))
 /** 角度转弧度 */
-#define YH_DEGREES_TO_RADIANS(angle)                ((angle) / 180.0 * M_PI)
+#define YH__DEGREES_TO_RADIANS(angle)                ((angle) / 180.0 * M_PI)
 
-#define YH_WeakSelf(__weakName__)                   __weak typeof(self) __weakName__ = self
-#define YH_Weak(__name__,__weakName__)              __weak typeof(__name__) __weakName__ = __name__
+#define YH__WeakSelf(__weakName__)                   __weak typeof(self) __weakName__ = self
+#define YH__Weak(__name__,__weakName__)              __weak typeof(__name__) __weakName__ = __name__
 
 
 /*
@@ -81,14 +81,14 @@
  IPhone 5s:           320 x 568             2x
  */
 
-#define YH_ScreenWidth          [UIScreen mainScreen].bounds.size.width
-#define YH_ScreenHeight         [UIScreen mainScreen].bounds.size.height
+#define YH__ScreenWidth          [UIScreen mainScreen].bounds.size.width
+#define YH__ScreenHeight         [UIScreen mainScreen].bounds.size.height
 
 // 当前屏幕的旋转方向，与状态栏是否隐藏无关
-#define YH_DeviceOrientation    [UIApplication sharedApplication].statusBarOrientation
+#define YH__DeviceOrientation    [UIApplication sharedApplication].statusBarOrientation
 
 
-#define YH_IsPortrait \
+#define YH__IsPortrait \
 ({ \
 BOOL isPortrait = NO; \
 if (YH_DeviceOrientation == UIInterfaceOrientationPortrait || \
@@ -104,16 +104,16 @@ isPortrait = YES; \
  * iPhone XS Max    :414 * 896 (Portrait)
  * iPhone XR        :414 * 896 (Portrait)
  */
-#define YH_IS_IPHONE_X \
+#define YH__IS_IPHONE_X \
 ({ \
 BOOL isIphoneX = NO; \
-if (YH_DeviceOrientation == UIInterfaceOrientationPortrait || \
-    YH_DeviceOrientation == UIInterfaceOrientationPortraitUpsideDown) { \
-    if ((YH_ScreenWidth == 375.f && YH_ScreenHeight == 812.f) || (YH_ScreenWidth == 414.f && YH_ScreenHeight == 896.f)) { \
+if (YH__DeviceOrientation == UIInterfaceOrientationPortrait || \
+    YH__DeviceOrientation == UIInterfaceOrientationPortraitUpsideDown) { \
+    if ((YH__ScreenWidth == 375.f && YH__ScreenHeight == 812.f) || (YH__ScreenWidth == 414.f && YH__ScreenHeight == 896.f)) { \
         isIphoneX = YES; \
     } \
 } else { \
-    if ((YH_ScreenWidth == 812.f && YH_ScreenHeight == 375.f) || (YH_ScreenWidth == 896.f && YH_ScreenHeight == 414.f)) { \
+    if ((YH__ScreenWidth == 812.f && YH__ScreenHeight == 375.f) || (YH__ScreenWidth == 896.f && YH__ScreenHeight == 414.f)) { \
         isIphoneX = YES; \
     } \
 } \
@@ -126,14 +126,14 @@ if (YH_DeviceOrientation == UIInterfaceOrientationPortrait || \
  * 在iPhone X以前的手机上，底部高度为0，iPhone X及以后的手机，底部高度要根据手机的旋转方向做判断
  * 在iPhone X系列手机上，竖屏情况下是34pt，横屏是21pt
  */
-#define YH_Bottom_Height \
+#define YH__Bottom_Height \
 ({ \
 CGFloat bottomHeight = 0.0; \
-if (YH_IS_IPHONE_X) { \
-    if (YH_DeviceOrientation == UIDeviceOrientationPortrait || \
-        YH_DeviceOrientation == UIDeviceOrientationPortraitUpsideDown || \
-        YH_DeviceOrientation == UIDeviceOrientationFaceUp || \
-        YH_DeviceOrientation == UIDeviceOrientationFaceDown) { \
+if (YH__IS_IPHONE_X) { \
+    if (YH__DeviceOrientation == UIDeviceOrientationPortrait || \
+        YH__DeviceOrientation == UIDeviceOrientationPortraitUpsideDown || \
+        YH__DeviceOrientation == UIDeviceOrientationFaceUp || \
+        YH__DeviceOrientation == UIDeviceOrientationFaceDown) { \
         bottomHeight = 34.f; \
     } else { \
         bottomHeight = 21.f; \
@@ -143,10 +143,10 @@ if (YH_IS_IPHONE_X) { \
 })
 
 // 导航栏高度，不管在什么机型上，都是44pt
-#define YH_NaviBar_Height       44.f
+#define YH__NaviBar_Height       44.f
 
 // 当开启个人热点时，状态栏高度是40(在刘海屏手机上，状态栏高度不会发生变化)
-#define YH_PersonalHotspotStatusBarHeight        40.0
+#define YH__PersonalHotspotStatusBarHeight        40.0
 
 
 /** 状态栏Frame
@@ -155,7 +155,7 @@ if (YH_IS_IPHONE_X) { \
  3、当开启个人热点时，状态栏高度变为40pt，页面会整体下移20pt。特别是TabBar，下移20pt之后，严重影响用户体验。当状态栏高度发生变化时，会走UIApplicationWillChangeStatusBarFrameNotification通知
  4、当设备是iPhone X系列时，开启个人热点和没有开启个人热点时一样的，状态栏尺寸不会发生变化
  */
-#define YH_StatusBarFrame       [[UIApplication sharedApplication] statusBarFrame]
+#define YH__StatusBarFrame       [[UIApplication sharedApplication] statusBarFrame]
 
 
 //只有当设备是5系列时，才对宽度做处理，其他情况用实际宽度    基于6s
@@ -171,7 +171,7 @@ if (YH_IS_IPHONE_X) { \
 
 
 // 不同机型的适配(已6s为基准)
-#define YH_Base_6S_AutoFit(__vale__) \
+#define YH__Base_6S_AutoFit(__vale__) \
 ({ \
 CGFloat tmp = __vale__; \
 CGFloat min = MIN([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height); \

@@ -62,6 +62,13 @@ typedef NS_ENUM(NSUInteger, YHNetworkStatus) {
 @property (nonatomic, assign, readonly) YHNetworkStatus networkStatus;
 @property (nonatomic, assign, readonly) BOOL isReachable;
 
+
+/// 开启网络监控
+- (void)startMonitoringNetwork;
+
+/// 关闭网络监控
+- (void)stopMonitoringNetwork;
+
 // HTTP请求
 - (nullable NSURLSessionDataTask *)httpRequestWithMethod:(YHHttpMethod)httpMethod
                                                      url:(NSString *)url
