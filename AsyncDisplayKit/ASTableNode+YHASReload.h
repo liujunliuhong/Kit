@@ -6,7 +6,7 @@
 //  Copyright © 2019 yinhe. All rights reserved.
 //
 
-#import <Texture/AsyncDisplayKit/AsyncDisplayKit.h>
+#import <AsyncDisplayKit/AsyncDisplayKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

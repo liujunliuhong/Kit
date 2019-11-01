@@ -7,7 +7,7 @@
 //
 
 #import "YHASCollectionLayoutDelegate.h"
-#import <Texture/AsyncDisplayKit/ASCollectionElement.h>
+#import <AsyncDisplayKit/ASCollectionElement.h>
 
 
 @interface YHASCollectionLayoutInfo : NSObject
