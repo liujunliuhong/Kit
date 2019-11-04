@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #if __has_include(<MBProgressHUD/MBProgressHUD.h>) || __has_include("MBProgressHUD.h")
-    #define YH_MB_HUD_Tip(__tip__)          [YHMBHud hudOnlyMessage:__tip__ inView:nil dismissBlock:nil];
+    #define YH_MB_HUD_Tip(__tip__)          [YHMBHud hudOnlyMessage:__tip__ inView:nil dismissBlock:nil]; // 黑
     #define YH_MB_White_HUD_Tip(__tip__)    [YHMBHud hudOnlyMessage:__tip__ hudColor:[UIColor whiteColor] messageColor:[UIColor grayColor] inView:nil dismissBlock:nil];
 #endif
 

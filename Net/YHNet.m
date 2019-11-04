@@ -29,13 +29,6 @@
     pthread_mutex_t _lock;
 }
 
-+ (void)load{
-    // 延迟0秒开启网络监控
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//        [[YHNet sharedInstance] startMonitoringNetwork];
-//    });
-}
-
 + (YHNet *)sharedInstance{
     static id sharedInstance = nil;
     static dispatch_once_t onceToken;
@@ -73,7 +66,7 @@
     
     NSURLSessionDataTask *task = nil;
     
-    NSString *newURL = url.yh_urlTranscoding;
+    NSString *newURL = url.yh_urlTranscoding; // url encode.
     
     if (requestSerializerType == YHHttpRequestSerializerTypeHTTP) {
         self.sessionManager.requestSerializer = [YHNet requestSerializerForHTTP];
@@ -171,10 +164,12 @@
                           successBlock:(YHHttpRequestSuccessBlock)successBlock
                             errorBlock:(YHHttpRequestErrorBlock)errorBlock{
     NSURLSessionDataTask *task = [self.sessionManager POST:url parameters:param progress:^(NSProgress * _Nonnull uploadProgress) {
-        CGFloat progress = 1.0 * uploadProgress.completedUnitCount / uploadProgress.totalUnitCount;
-        if (progressBlock) {
-            progressBlock(progress);
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            CGFloat progress = 1.0 * uploadProgress.completedUnitCount / uploadProgress.totalUnitCount;
+            if (progressBlock) {
+                progressBlock(progress);
+            }
+        });
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [AFNetworkActivityIndicatorManager sharedManager].enabled = NO;
         id result = responseObject;
@@ -187,32 +182,37 @@
         }
         
         if (successBlock) {
-            successBlock(result);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                successBlock(result);
+            });
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [AFNetworkActivityIndicatorManager sharedManager].enabled = NO;
         if ([self.tasks containsObject:task]) {
             [self.tasks removeObject:task];
         }
-        
         if (errorBlock) {
-            errorBlock(error);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                errorBlock(error);
+            });
         }
     }];
     return task;
 }
 
 - (NSURLSessionDataTask *)GET_WithURL:(NSString *)url
-                                 param:(id)param
-                responseSerializerType:(YHHttpResponseSerializerType)responseSerializerType
-                         progressBlock:(YHHttpRequestProgressBlock)progressBlock
-                          successBlock:(YHHttpRequestSuccessBlock)successBlock
-                            errorBlock:(YHHttpRequestErrorBlock)errorBlock{
+                                param:(id)param
+               responseSerializerType:(YHHttpResponseSerializerType)responseSerializerType
+                        progressBlock:(YHHttpRequestProgressBlock)progressBlock
+                         successBlock:(YHHttpRequestSuccessBlock)successBlock
+                           errorBlock:(YHHttpRequestErrorBlock)errorBlock{
     NSURLSessionDataTask *task = [self.sessionManager GET:url parameters:param progress:^(NSProgress * _Nonnull uploadProgress) {
-        CGFloat progress = 1.0 * uploadProgress.completedUnitCount / uploadProgress.totalUnitCount;
-        if (progressBlock) {
-            progressBlock(progress);
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            CGFloat progress = 1.0 * uploadProgress.completedUnitCount / uploadProgress.totalUnitCount;
+            if (progressBlock) {
+                progressBlock(progress);
+            }
+        });
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [AFNetworkActivityIndicatorManager sharedManager].enabled = NO;
         id result = responseObject;
@@ -225,7 +225,9 @@
         }
         
         if (successBlock) {
-            successBlock(result);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                successBlock(result);
+            });
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [AFNetworkActivityIndicatorManager sharedManager].enabled = NO;
@@ -234,7 +236,9 @@
         }
         
         if (errorBlock) {
-            errorBlock(error);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                errorBlock(error);
+            });
         }
     }];
     return task;
@@ -280,10 +284,12 @@
         }];
         
     } progress:^(NSProgress * _Nonnull uploadProgress) {
-        CGFloat progress = 1.0 * uploadProgress.completedUnitCount / uploadProgress.totalUnitCount;
-        if (progressBlock) {
-            progressBlock(progress);
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            CGFloat progress = 1.0 * uploadProgress.completedUnitCount / uploadProgress.totalUnitCount;
+            if (progressBlock) {
+                progressBlock(progress);
+            }
+        });
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
         if ([self.tasks containsObject:task]) {
@@ -291,7 +297,9 @@
         }
         
         if (successBlock) {
-            successBlock(responseObject);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                successBlock(responseObject);
+            });
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         
@@ -300,7 +308,9 @@
         }
         
         if (errorBlock) {
-            errorBlock(error);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                errorBlock(error);
+            });
         }
     }];
     
