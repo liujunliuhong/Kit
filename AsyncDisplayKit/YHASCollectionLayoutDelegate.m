@@ -272,7 +272,7 @@
     CGFloat contentHeight = [[[columnHeights lastObject] firstObject] floatValue];
     
     // bottomOffSet
-    contentHeight += info.bottomOffset;
+    contentHeight += (info.bottomOffset < 0 ? 0 : info.bottomOffset);
     
     CGSize contentSize = CGSizeMake(layoutWidth, contentHeight);
     return [[ASCollectionLayoutState alloc] initWithContext:context contentSize:contentSize elementToLayoutAttributesTable:attrsMap];
