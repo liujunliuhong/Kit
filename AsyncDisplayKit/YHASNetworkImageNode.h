@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * 解决ASNetworkImageNode闪烁的问题
  */
-@interface YHASNetworkImageNode : ASDisplayNode
+@interface YHASNetworkImageNode : ASControlNode
 
 @property (nonatomic, strong, readonly) ASNetworkImageNode *netImageNode;
 @property (nonatomic, strong, readonly) ASImageNode *imageNode;
