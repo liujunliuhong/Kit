@@ -357,7 +357,7 @@
         return;
     }
     [self.tasks enumerateObjectsUsingBlock:^(NSURLSessionTask * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj.currentRequest.URL.absoluteString hasSuffix:url]) {
+        if ([obj.currentRequest.URL.absoluteString hasPrefix:url]) {
             [obj cancel];
             [self.tasks removeObject:obj];
             *stop = YES;
@@ -385,7 +385,7 @@
     AFNetworkReachabilityManager *reachabilityManager = [AFNetworkReachabilityManager sharedManager];
     [reachabilityManager startMonitoring];
     [reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-        YHLog(@"当前网络:%@", AFStringFromNetworkReachabilityStatus(status));
+        YHLog(@"===========>当前网络:%@", AFStringFromNetworkReachabilityStatus(status));
         if (status == AFNetworkReachabilityStatusNotReachable){
             weakSelf.networkStatus = YHNetworkStatus_NotReachable;
             weakSelf.isReachable = NO;
