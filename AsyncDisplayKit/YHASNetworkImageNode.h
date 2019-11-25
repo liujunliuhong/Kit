@@ -7,7 +7,7 @@
 //
 
 #import <AsyncDisplayKit/AsyncDisplayKit.h>
-#import <SDWebImage/UIImageView+WebCache.h>
+#import <SDWebImage/SDWebImage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,13 +15,14 @@ NS_ASSUME_NONNULL_BEGIN
  * 解决ASNetworkImageNode闪烁的问题
  */
 @interface YHASNetworkImageNode : ASControlNode
+@property (nonatomic, strong, readonly) SDAnimatedImageView *animatedImageView;
 
-@property (nonatomic, strong, readonly) ASNetworkImageNode *netImageNode;
-@property (nonatomic, strong, readonly) ASImageNode *imageNode;
-
+@property (nonatomic, strong, nullable) UIImage *placeholdeImage; // 请在设置URL之前设置placeholdeImage
 @property (nonatomic, copy) NSString *URL;
 @property (nonatomic, assign) UIViewContentMode contentMode;
-@property (nonatomic, copy) asimagenode_modification_block_t imageModificationBlock;
+- (void)setURL:(NSString *)URL placeholdeImage:(nullable UIImage *)placeholdeImage contentMode:(UIViewContentMode)contentMode;
+
+
 @end
 
 NS_ASSUME_NONNULL_END

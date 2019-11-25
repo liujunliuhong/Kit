@@ -7,9 +7,97 @@
 //
 
 #import "YHASNetworkImageNode.h"
-#import <PINCache/PINCache.h>
-#import <PINRemoteImage/PINRemoteImage.h>
-#import <SDWebImage/SDImageCache.h>
+
+@interface YHASNetworkImageNode()
+@property (nonatomic, strong) ASDisplayNode *imageURLNode;
+@property (nonatomic, strong) SDAnimatedImageView *animatedImageView;
+@property (nonatomic, strong) ASButtonNode *gifTagNode;
+@end
+
+@implementation YHASNetworkImageNode
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        __weak typeof(self) weakSelf = self;
+        self.imageURLNode = [[ASImageNode alloc] initWithViewBlock:^UIView * _Nonnull{
+            return weakSelf.animatedImageView;
+        }];
+        [self addSubnode:self.imageURLNode];
+        
+        
+        self.gifTagNode = [[ASButtonNode alloc] init];
+        [self.gifTagNode setTitle:@"GIF" withFont:[UIFont systemFontOfSize:8] withColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        self.gifTagNode.style.preferredSize = CGSizeMake(25, 12);
+        self.gifTagNode.backgroundColor = [UIColor grayColor];
+        self.gifTagNode.hidden = YES;
+        [self addSubnode:self.gifTagNode];
+    }
+    return self;
+}
+
+- (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize{
+    ASRelativeLayoutSpec *gifTagSpec = [ASRelativeLayoutSpec relativePositionLayoutSpecWithHorizontalPosition:ASRelativeLayoutSpecPositionEnd verticalPosition:ASRelativeLayoutSpecPositionStart sizingOption:ASRelativeLayoutSpecSizingOptionDefault child:self.gifTagNode];
+    ASOverlayLayoutSpec *spec = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:self.imageURLNode overlay:gifTagSpec];
+    return [ASWrapperLayoutSpec wrapperWithLayoutElement:spec];
+}
+
+
+- (void)setURL:(NSString *)URL placeholdeImage:(UIImage *)placeholdeImage contentMode:(UIViewContentMode)contentMode{
+    __weak typeof(self) weakSelf = self;
+    self.gifTagNode.hidden = ![URL hasSuffix:@"gif"];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        weakSelf.animatedImageView.contentMode = contentMode;
+        [weakSelf.animatedImageView sd_setImageWithURL:[NSURL URLWithString:URL] placeholderImage:placeholdeImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+            [weakSelf.animatedImageView setNeedsLayout];
+        }];
+    });
+}
+#pragma mark ------------------ Setter ------------------
+- (void)setURL:(NSString *)URL{
+    _URL = URL;
+    self.gifTagNode.hidden = ![URL hasSuffix:@"gif"];
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf.animatedImageView sd_setImageWithURL:[NSURL URLWithString:self->_URL] placeholderImage:weakSelf.placeholdeImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+            [weakSelf.animatedImageView layoutIfNeeded];
+            [weakSelf.animatedImageView setNeedsLayout];
+        }];
+    });
+}
+
+- (void)setContentMode:(UIViewContentMode)contentMode{
+    _contentMode = contentMode;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.animatedImageView.contentMode = self->_contentMode;
+    });
+}
+
+#pragma mark Getter
+- (SDAnimatedImageView *)animatedImageView{
+    if (!_animatedImageView) {
+        _animatedImageView = [[SDAnimatedImageView alloc] init];
+        _animatedImageView.shouldCustomLoopCount = YES;
+        _animatedImageView.animationRepeatCount = 200;
+        _animatedImageView.contentMode = UIViewContentModeScaleAspectFill;
+        _animatedImageView.clipsToBounds = YES;
+    }
+    return _animatedImageView;
+}
+@end
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //@interface SDWebImageDownloader (YHASCustomDownloadImage) <ASImageCacheProtocol, ASImageDownloaderProtocol>
 //
@@ -67,78 +155,3 @@
 //@end
 //
 
-
-@interface YHASNetworkImageNode() <ASNetworkImageNodeDelegate>
-@property (nonatomic, strong) ASNetworkImageNode *netImageNode;
-@property (nonatomic, strong) ASImageNode *imageNode;
-@end
-
-@implementation YHASNetworkImageNode
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        self.netImageNode = [[ASNetworkImageNode alloc] init];
-        self.netImageNode.delegate = self;
-        self.netImageNode.shouldCacheImage = NO;
-        [self addSubnode:self.netImageNode];
-
-        self.imageNode = [[ASImageNode alloc] init];
-        [self addSubnode:self.imageNode];
-    }
-    return self;
-}
-
-- (ASLayoutSpec *)layoutSpecThatFits:(ASSizeRange)constrainedSize{
-    ASOverlayLayoutSpec *spec = [ASOverlayLayoutSpec overlayLayoutSpecWithChild:self.netImageNode overlay:self.imageNode];
-    return [ASWrapperLayoutSpec wrapperWithLayoutElement:spec];
-}
-
-#pragma mark ------------------ ASNetworkImageNodeDelegate ------------------
-- (void)imageNode:(ASNetworkImageNode *)imageNode didLoadImage:(UIImage *)image{
-    [[SDImageCache sharedImageCache] storeImage:image forKey:imageNode.URL.absoluteString completion:nil];
-}
-
-#pragma mark ------------------ Setter ------------------
-- (void)setURL:(NSString *)URL{
-    _URL = URL;
-    UIImage *image = [[SDImageCache sharedImageCache] imageFromCacheForKey:_URL];
-    if (image) {
-        self.imageNode.hidden = NO;
-        self.netImageNode.hidden = YES;
-        self.imageNode.image = image;
-        self.netImageNode.image = nil;
-    } else {
-        self.imageNode.hidden = YES;
-        self.netImageNode.hidden = NO;
-        self.imageNode.image = nil;
-        self.netImageNode.URL = [NSURL URLWithString:_URL];
-    }
-}
-
-- (void)setContentMode:(UIViewContentMode)contentMode{
-    _contentMode = contentMode;
-    self.netImageNode.contentMode = _contentMode;
-    self.imageNode.contentMode = _contentMode;
-}
-
-- (void)setImageModificationBlock:(asimagenode_modification_block_t)imageModificationBlock{
-    _imageModificationBlock = imageModificationBlock;
-    self.imageNode.imageModificationBlock = _imageModificationBlock;
-    self.netImageNode.imageModificationBlock = _imageModificationBlock;
-}
-
-
-//        self.imageNode.imageModificationBlock = ^UIImage * _Nullable(UIImage * _Nonnull image) {
-//            YHDebugLog(@"image:%@", image);
-//            UIImage *modifiedImage;
-//            CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
-//            UIGraphicsBeginImageContextWithOptions(image.size, false, [[UIScreen mainScreen] scale]);
-//            [image drawInRect:rect];
-//            modifiedImage = UIGraphicsGetImageFromCurrentImageContext();
-//            UIGraphicsEndImageContext();
-//            YHDebugLog(@"modifiedImage:%@", modifiedImage);
-//            return modifiedImage;
-//        };
-
-@end
