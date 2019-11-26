@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *URL;
 @property (nonatomic, assign) UIViewContentMode contentMode;
 - (void)setURL:(NSString *)URL placeholdeImage:(nullable UIImage *)placeholdeImage contentMode:(UIViewContentMode)contentMode;
+- (void)setImage:(nullable UIImage *)image contentMode:(UIViewContentMode)contentMode;
 
 
 @end

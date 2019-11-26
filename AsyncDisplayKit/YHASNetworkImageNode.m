@@ -44,32 +44,48 @@
 
 
 - (void)setURL:(NSString *)URL placeholdeImage:(UIImage *)placeholdeImage contentMode:(UIViewContentMode)contentMode{
-    __weak typeof(self) weakSelf = self;
+    ASDisplayNode *tmpNode = self.imageURLNode;
     self.gifTagNode.hidden = ![URL hasSuffix:@"gif"];
     dispatch_async(dispatch_get_main_queue(), ^{
-        weakSelf.animatedImageView.contentMode = contentMode;
-        [weakSelf.animatedImageView sd_setImageWithURL:[NSURL URLWithString:URL] placeholderImage:placeholdeImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-            [weakSelf.animatedImageView setNeedsLayout];
+        SDAnimatedImageView *animatedImageView = (SDAnimatedImageView *)tmpNode.view;
+        animatedImageView.contentMode = contentMode;
+        [animatedImageView sd_setImageWithURL:[NSURL URLWithString:URL] placeholderImage:placeholdeImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+            [animatedImageView setNeedsLayout];
         }];
+    });
+}
+- (void)setImage:(UIImage *)image contentMode:(UIViewContentMode)contentMode{
+    ASDisplayNode *tmpNode = self.imageURLNode;
+    self.gifTagNode.hidden = true;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        SDAnimatedImageView *animatedImageView = (SDAnimatedImageView *)tmpNode.view;
+        if (image) {
+            animatedImageView.image = image;
+            animatedImageView.contentMode = contentMode;
+        }
     });
 }
 #pragma mark ------------------ Setter ------------------
 - (void)setURL:(NSString *)URL{
     _URL = URL;
+    ASDisplayNode *tmpNode = self.imageURLNode;
     self.gifTagNode.hidden = ![URL hasSuffix:@"gif"];
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf.animatedImageView sd_setImageWithURL:[NSURL URLWithString:self->_URL] placeholderImage:weakSelf.placeholdeImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-            [weakSelf.animatedImageView layoutIfNeeded];
-            [weakSelf.animatedImageView setNeedsLayout];
+        SDAnimatedImageView *animatedImageView = (SDAnimatedImageView *)tmpNode.view;
+        [animatedImageView sd_setImageWithURL:[NSURL URLWithString:self->_URL] placeholderImage:weakSelf.placeholdeImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+            [animatedImageView layoutIfNeeded];
+            [animatedImageView setNeedsLayout];
         }];
     });
 }
 
 - (void)setContentMode:(UIViewContentMode)contentMode{
     _contentMode = contentMode;
+    ASDisplayNode *tmpNode = self.imageURLNode;
     dispatch_async(dispatch_get_main_queue(), ^{
-        self.animatedImageView.contentMode = self->_contentMode;
+        SDAnimatedImageView *animatedImageView = (SDAnimatedImageView *)tmpNode.view;
+        animatedImageView.contentMode = self->_contentMode;
     });
 }
 
@@ -78,8 +94,7 @@
     if (!_animatedImageView) {
         _animatedImageView = [[SDAnimatedImageView alloc] init];
         _animatedImageView.shouldCustomLoopCount = YES;
-        _animatedImageView.animationRepeatCount = 200;
-        _animatedImageView.contentMode = UIViewContentModeScaleAspectFill;
+        _animatedImageView.animationRepeatCount = NSIntegerMax;
         _animatedImageView.clipsToBounds = YES;
     }
     return _animatedImageView;
