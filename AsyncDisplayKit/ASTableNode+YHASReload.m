@@ -31,10 +31,11 @@ const char _yh_reload_path_key;
 }
 
 - (void)yh_nodeBlockForRowWithCellNode:(ASCellNode *)cellNode indexPath:(NSIndexPath *)indexPath{
+    __weak typeof(cellNode) weakCellNode = cellNode;
     if ([self.yh_reloadPaths containsObject:indexPath]) {
         cellNode.neverShowPlaceholders = YES;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            cellNode.neverShowPlaceholders = NO;
+            weakCellNode.neverShowPlaceholders = NO;
         });
     }
     else {
