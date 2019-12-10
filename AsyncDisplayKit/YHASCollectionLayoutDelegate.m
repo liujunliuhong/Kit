@@ -146,11 +146,11 @@
 
 #pragma mark ------------------ ASCollectionViewLayoutInspecting ------------------
 - (ASSizeRange)collectionView:(ASCollectionView *)collectionView constrainedSizeForNodeAtIndexPath:(NSIndexPath *)indexPath{
-    return ASSizeRangeZero;
+    return ASSizeRangeMake(CGSizeMake(collectionView.bounds.size.width, 0.0), CGSizeMake(collectionView.bounds.size.width, CGFLOAT_MAX));
 }
 
 - (ASSizeRange)collectionView:(ASCollectionView *)collectionView constrainedSizeForSupplementaryNodeOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{
-    return ASSizeRangeZero;
+    return ASSizeRangeMake(CGSizeMake(collectionView.bounds.size.width, 0.0), CGSizeMake(collectionView.bounds.size.width, CGFLOAT_MAX));
 }
 
 - (NSUInteger)collectionView:(ASCollectionView *)collectionView supplementaryNodesOfKind:(NSString *)kind inSection:(NSUInteger)section{
@@ -198,10 +198,10 @@
             CGSize size = CGSizeZero;
             CGRect frame = CGRectZero;
             if (!info.isHeaderWidthBaseSectionInsets) {
-                size = [headerElement.node layoutThatFits:ASSizeRangeMake(CGSizeZero, CGSizeMake(layoutWidth, CGFLOAT_MAX))].size;
+                size = [headerElement.node layoutThatFits:ASSizeRangeMake(CGSizeMake(layoutWidth, 0.0), CGSizeMake(layoutWidth, CGFLOAT_MAX))].size;
                 frame = CGRectMake(0, top, size.width, size.height);
             } else {
-                size = [headerElement.node layoutThatFits:ASSizeRangeMake(CGSizeZero, CGSizeMake(layoutWidth - info.sectionInsets.left - info.sectionInsets.right, CGFLOAT_MAX))].size;
+                size = [headerElement.node layoutThatFits:ASSizeRangeMake(CGSizeMake(layoutWidth, 0.0), CGSizeMake(layoutWidth - info.sectionInsets.left - info.sectionInsets.right, CGFLOAT_MAX))].size;
                 frame = CGRectMake(info.sectionInsets.left, top, size.width, size.height);
             }
             
