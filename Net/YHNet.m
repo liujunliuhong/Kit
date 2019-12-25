@@ -7,6 +7,7 @@
 //
 
 #import "YHNet.h"
+@import AFNetworking;
 #import "NSString+YHExtension.h"
 #import <pthread/pthread.h>
 #import "YHMacro.h"
@@ -17,12 +18,10 @@
 #define kUnLock   pthread_mutex_unlock(&self->_lock);
 
 @interface YHNet()
-#if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 @property (nonatomic, strong) AFHTTPSessionManager *sessionManager;
 @property (nonatomic, strong) NSMutableArray<NSURLSessionTask *> *tasks;
 @property (nonatomic, assign) YHNetworkStatus networkStatus;
 @property (nonatomic, assign) BOOL isReachable;
-#endif
 @end
 
 @implementation YHNet {
@@ -37,8 +36,6 @@
     });
     return sharedInstance;
 }
-
-#if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 
 - (instancetype)init
 {
@@ -90,9 +87,6 @@
         }];
     }
     
-    // 开启转圈圈
-    [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
-    
     
     if (httpMethod == YHHttpMethodPOST) {
         task = [self POST_WithURL:newURL param:param responseSerializerType:responseSerializerType progressBlock:progressBlock successBlock:successBlock errorBlock:errorBlock];
@@ -137,9 +131,6 @@
         }];
     }
     
-    // 开启转圈圈
-    [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
-    
     
     if (httpMethod == YHHttpMethodPOST) {
         task = [self POST_WithURL:newURL param:param responseSerializerType:YHHttpResponseSerializerTypeJSON progressBlock:progressBlock successBlock:successBlock errorBlock:errorBlock];
@@ -171,7 +162,6 @@
             }
         });
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [AFNetworkActivityIndicatorManager sharedManager].enabled = NO;
         id result = responseObject;
         if (responseSerializerType == YHHttpResponseSerializerTypeHTTP) {
             result = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
@@ -187,7 +177,6 @@
             });
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [AFNetworkActivityIndicatorManager sharedManager].enabled = NO;
         if ([self.tasks containsObject:task]) {
             [self.tasks removeObject:task];
         }
@@ -214,7 +203,6 @@
             }
         });
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        [AFNetworkActivityIndicatorManager sharedManager].enabled = NO;
         id result = responseObject;
         if (responseSerializerType == YHHttpResponseSerializerTypeHTTP) {
             result = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
@@ -230,7 +218,6 @@
             });
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [AFNetworkActivityIndicatorManager sharedManager].enabled = NO;
         if ([self.tasks containsObject:task]) {
             [self.tasks removeObject:task];
         }
@@ -406,15 +393,11 @@
     [[AFNetworkReachabilityManager sharedManager] stopMonitoring];
 }
 
-
-#endif
-
 @end
 
 
 
 @implementation YHNet (YHRequestHTTP)
-#if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 + (AFHTTPRequestSerializer *)requestSerializerForHTTP{
     static AFHTTPRequestSerializer *HTTPRequestSerializer = nil;
     static dispatch_once_t onceToken;
@@ -424,13 +407,11 @@
     });
     return HTTPRequestSerializer;
 }
-#endif
 @end
 
 
 
 @implementation YHNet (YHRequestJSON)
-#if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 + (AFJSONRequestSerializer *)requestSerializerForJSON{
     static AFJSONRequestSerializer *JSONRequestSerializer = nil;
     static dispatch_once_t onceToken;
@@ -441,12 +422,10 @@
     });
     return JSONRequestSerializer;
 }
-#endif
 @end
 
 
 @implementation YHNet (YHResponseHTTP)
-#if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 + (AFHTTPResponseSerializer *)responseSerializerForHTTP{
     static AFHTTPResponseSerializer *HTTPResponseSerializer = nil;
     static dispatch_once_t onceToken;
@@ -466,11 +445,9 @@
     });
     return HTTPResponseSerializer;
 }
-#endif
 @end
 
 @implementation YHNet (YHResponseJSON)
-#if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 + (AFJSONResponseSerializer *)responseSerializerForJSON{
     static AFJSONResponseSerializer *JSONResponseSerializer = nil;
     static dispatch_once_t onceToken;
@@ -490,7 +467,6 @@
     });
     return JSONResponseSerializer;
 }
-#endif
 @end
 
 

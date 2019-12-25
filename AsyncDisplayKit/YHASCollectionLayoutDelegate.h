@@ -12,6 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 /**
  * ASCollectionNode瀑布流配置
+ * 目前这儿有个bug，只支持垂直方向的滚动，水平方向的滚动暂时不支持
  */
 @interface YHASCollectionLayoutDelegate : NSObject <ASCollectionLayoutDelegate, ASCollectionViewLayoutInspecting>
 

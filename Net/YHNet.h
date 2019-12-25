@@ -9,14 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
 
-#if __has_include(<AFNetworking/AFNetworking.h>)
-    #import <AFNetworking/AFNetworking.h>
-    #import <AFNetworking/AFNetworkActivityIndicatorManager.h>
-#elif __has_include("AFNetworking.h")
-    #import "AFNetworking.h"
-    #import "AFNetworkActivityIndicatorManager.h"
-#endif
-
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void(^YHHttpRequestProgressBlock)(CGFloat progress);
@@ -50,13 +42,16 @@ typedef NS_ENUM(NSUInteger, YHNetworkStatus) {
 };
 
 @class YHUploadFileModel;
+@class AFHTTPRequestSerializer;
+@class AFJSONResponseSerializer;
+@class AFJSONRequestSerializer;
+@class AFHTTPResponseSerializer;
 @interface YHNet : NSObject
 
 + (YHNet *)sharedInstance;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 
-#if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 
 // 当前网络状态，会根据实际网络状态实时变化
 @property (nonatomic, assign, readonly) YHNetworkStatus networkStatus;
@@ -113,35 +108,25 @@ typedef NS_ENUM(NSUInteger, YHNetworkStatus) {
 // 取消所有的网络请求
 - (void)cancelAllRequest;
 
-#endif
-
 @end
 
 
 
 @interface YHNet (YHRequestHTTP)
-#if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 + (AFHTTPRequestSerializer *)requestSerializerForHTTP;
-#endif
 @end
 
 @interface YHNet (YHRequestJSON)
-#if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 + (AFJSONRequestSerializer *)requestSerializerForJSON;
-#endif
 @end
 
 @interface YHNet (YHResponseHTTP)
-#if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 + (AFHTTPResponseSerializer *)responseSerializerForHTTP;
-#endif
 @end
 
 
 @interface YHNet (YHResponseJSON)
-#if __has_include(<AFNetworking/AFNetworking.h>) || __has_include("AFNetworking.h")
 + (AFJSONResponseSerializer *)responseSerializerForJSON;
-#endif
 @end
 
 
