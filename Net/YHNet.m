@@ -154,7 +154,7 @@
                          progressBlock:(YHHttpRequestProgressBlock)progressBlock
                           successBlock:(YHHttpRequestSuccessBlock)successBlock
                             errorBlock:(YHHttpRequestErrorBlock)errorBlock{
-    NSURLSessionDataTask *task = [self.sessionManager POST:url parameters:param progress:^(NSProgress * _Nonnull uploadProgress) {
+    NSURLSessionDataTask *task = [self.sessionManager POST:url parameters:param headers:nil progress:^(NSProgress * _Nonnull uploadProgress) {
         dispatch_async(dispatch_get_main_queue(), ^{
             CGFloat progress = 1.0 * uploadProgress.completedUnitCount / uploadProgress.totalUnitCount;
             if (progressBlock) {
@@ -195,7 +195,7 @@
                         progressBlock:(YHHttpRequestProgressBlock)progressBlock
                          successBlock:(YHHttpRequestSuccessBlock)successBlock
                            errorBlock:(YHHttpRequestErrorBlock)errorBlock{
-    NSURLSessionDataTask *task = [self.sessionManager GET:url parameters:param progress:^(NSProgress * _Nonnull uploadProgress) {
+    NSURLSessionDataTask *task = [self.sessionManager GET:url parameters:param headers:nil progress:^(NSProgress * _Nonnull uploadProgress) {
         dispatch_async(dispatch_get_main_queue(), ^{
             CGFloat progress = 1.0 * uploadProgress.completedUnitCount / uploadProgress.totalUnitCount;
             if (progressBlock) {
@@ -260,7 +260,7 @@
         }];
     }
     
-    task = [self.sessionManager POST:newURL parameters:param constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+    task = [self.sessionManager POST:newURL parameters:param headers:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         
         [files enumerateObjectsUsingBlock:^(YHUploadFileModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (obj.data) {
