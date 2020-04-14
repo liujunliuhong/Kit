@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString *const k_YH_Email_Regex = @"^[a-zA-Z0-9]+@[a-zA-Z0-9.]+\\.[a-zA-Z0-9]+$";
-static NSString *const k_YH_URL_Regex = @"^(https?|ftps?|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]";
+static NSString *const k_YH_URL_Regex = @"((http[s]{0,1}|ftp)://[a-zA-Z0-9\\-.]+(?::(\\d+))?(?:(?:/[a-zA-Z0-9\\-._?,'+\\&%$=~*!():@\\\\]*)+)?)|(www.[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&*+?:_/=<>]*)?)";
 static NSString *const k_YH_Chinese_Regex = @"[\\u4e00-\\u9fa5\\w\\-]+";
 
 @interface NSString (YHExtension)
