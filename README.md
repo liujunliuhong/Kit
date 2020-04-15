@@ -1,5 +1,5 @@
-# 路漫漫其修远兮，吾将上下而求索
-# 天行健，君子以自强不息；地势坤，君子以厚德载物
+> 个人开发工具，逐步迁移到[Swift](https://github.com/liujunliuhong/SwiftTool)
 
+# 导入方式
 
-个人开发工具，逐步更新到Swift
+`pod 'YHOCTool/Core', :git => "https://github.com/liujunliuhong/Kit.git"`
