@@ -9,7 +9,7 @@
 import Foundation
 import ImageIO
 
-class YHGIFManager: NSObject {
+@objc public class YHGIFManager: NSObject {
     /// 同步压缩图片到指定文件大小
     ///
     /// - Parameters:
@@ -54,7 +54,7 @@ class YHGIFManager: NSObject {
     ///   - rawData: 原始图片数据
     ///   - sampleCount: 采样频率，比如 3 则每三张用第一张，然后延长时间
     /// - Returns: 处理后数据
-    static func compressImageData(_ rawData:Data, sampleCount:Int) -> Data?{
+    private static func compressImageData(_ rawData:Data, sampleCount:Int) -> Data?{
         guard let imageSource = CGImageSourceCreateWithData(rawData as CFData, [kCGImageSourceShouldCache: false] as CFDictionary),
             let writeData = CFDataCreateMutable(nil, 0),
             let imageType = CGImageSourceGetType(imageSource) else {
@@ -95,7 +95,7 @@ class YHGIFManager: NSObject {
     ///   - rawData: 原始图片数据
     ///   - limitLongWidth: 长边限制
     /// - Returns: 处理后数据
-    public static func compressImageData(_ rawData:Data, limitLongWidth:CGFloat) -> Data?{
+    private static func compressImageData(_ rawData:Data, limitLongWidth:CGFloat) -> Data?{
         guard max(rawData.yh_imageSize.height, rawData.yh_imageSize.width) > limitLongWidth else {
             return rawData
         }
@@ -145,7 +145,7 @@ class YHGIFManager: NSObject {
 }
 
 
-extension Data {
+fileprivate extension Data {
     var yh_fitSampleCount:Int{
         guard let imageSource = CGImageSourceCreateWithData(self as CFData, [kCGImageSourceShouldCache: false] as CFDictionary) else {
             return 1
@@ -181,7 +181,7 @@ extension Data {
     }
 }
 
-extension CGImageSource {
+fileprivate extension CGImageSource {
     func yh_frameDurationAtIndex(_ index: Int) -> Double{
         var frameDuration = Double(0.1)
         guard let frameProperties = CGImageSourceCopyPropertiesAtIndex(self, index, nil) as? [AnyHashable:Any], let gifProperties = frameProperties[kCGImagePropertyGIFDictionary] as? [AnyHashable:Any] else {

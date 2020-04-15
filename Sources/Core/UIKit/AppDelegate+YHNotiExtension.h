@@ -5,7 +5,7 @@
 //  Created by apple on 2019/1/31.
 //  Copyright © 2019 yinhe. All rights reserved.
 //
-NS_ASSUME_NONNULL_BEGIN
+
 
 #if __has_include(<AppDelegate/AppDelegate.h>)
 
@@ -35,4 +35,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 #endif
 
-NS_ASSUME_NONNULL_END
+

@@ -8,11 +8,12 @@
 
 #import "YHImageBrowserCellData.h"
 
-#if __has_include(<FLAnimatedImage/FLAnimatedImage.h>)
-    #import <FLAnimatedImage/FLAnimatedImage.h>
-#elif __has_include("FLAnimatedImage.h")
-    #import "FLAnimatedImage.h"
+#if __has_include(<SDWebImage/SDWebImage.h>)
+    #import <SDWebImage/SDWebImage.h>
+#elif __has_include("SDWebImage.h")
+    #import "SDWebImage.h"
 #endif
+
 
 #import "YHImageBrowserDefine.h"
 #import "YHImageBrowserWebImageManager.h"
